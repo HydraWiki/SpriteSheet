@@ -1,6 +1,13 @@
 mw.spriteSheet = {
 	canvas: null,
+	values: {},
 
+
+	/**
+	 * Initialize the sprite sheet.
+	 *
+	 * @return	void
+	 */
 	initialize: function() {
 		if (this.canvas === null) {
 			$('#spritesheet').remove();
@@ -26,40 +33,43 @@ mw.spriteSheet = {
 
 		this.canvas = oCanvas.create({ canvas: "#spritesheet", background: "rgba(0, 0, 0, 0)" });
 
-		$('#sprite_columns').on('change keyup', function () {
+		$('#sprite_columns').on('change keyup', function() {
 			mw.spriteSheet.updateSpriteSheet();
 		});
 
-		$('#sprite_rows').on('change keyup', function () {
+		$('#sprite_rows').on('change keyup', function() {
 			mw.spriteSheet.updateSpriteSheet();
 		});
 
-		$('#sprite_inset').on('change keyup', function () {
+		$('#sprite_inset').on('change keyup', function() {
 			mw.spriteSheet.updateSpriteSheet();
 		});
 	},
 
+	/**
+	 * Update the canvas object containing the sprite sheet.
+	 *
+	 * @return	void
+	 */
 	updateSpriteSheet: function() {
 		this.canvas.reset();
 
-		var columns = Math.abs($('#sprite_columns').val());
-		var rows = Math.abs($('#sprite_rows').val());
-		var inset = Math.abs($('#sprite_inset').val());
+		this.parseValues();
 
-		if (!inset) {
+		if (!this.values.inset) {
 			inset = 1;
 		} else {
-			inset = inset * 2;
+			inset = this.values.inset * 2;
 		}
 
-		if (columns == 0 || rows == 0) {
+		if (isNaN(this.values.columns) || isNaN(this.values.rows) || this.values.columns < 1 || this.values.rows < 1) {
 			return;
 		}
 
-		var columnWidth = this.canvas.width / columns;
-		var rowHeight = this.canvas.height / rows;
+		var columnWidth = this.canvas.width / this.values.columns;
+		var rowHeight = this.canvas.height / this.values.rows;
 
-		for (var i = 0; i <= columns; i++) {
+		for (var i = 0; i <= this.values.columns; i++) {
 			var x = i * columnWidth;
 
 			var rectangle = this.canvas.display.rectangle({
@@ -73,7 +83,7 @@ mw.spriteSheet = {
 			this.canvas.addChild(rectangle);
 		}
 
-		for (var i = 0; i <= rows; i++) {
+		for (var i = 0; i <= this.values.rows; i++) {
 			var y = i * rowHeight;
 
 			var rectangle = this.canvas.display.rectangle({
@@ -87,6 +97,32 @@ mw.spriteSheet = {
 			this.canvas.addChild(rectangle);
 		}
 	},
+
+	/**
+	 * Parse and prepare values for usage.
+	 *
+	 * @return	void
+	 */
+	parseValues: function() {
+		var columns = Math.abs(parseInt($('#sprite_columns').val()));
+		var rows = Math.abs(parseInt($('#sprite_rows').val()));
+		var inset = Math.abs(parseInt($('#sprite_inset').val()));
+
+		this.values = {
+			columns: columns,
+			rows: rows,
+			inset: inset
+		};
+	},
+
+	/**
+	 * Returns the values to generate the sprite sheet.
+	 *
+	 * @return	object	Sprite Sheet Values
+	 */
+	getValues: function() {
+		return this.values;
+	}
 }
 
 $(document).ready(function() {
