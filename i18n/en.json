@@ -4,5 +4,8 @@
 	},
 	"spritesheet": "SpriteSheet",
 	"spritesheet_description": "Defines and displays sprite sheets from uploaded files.",
-	"sprite_sheet": "Sprite Sheet"
+	"sprite_sheet": "Sprite Sheet",
+	"sprite_columns": "Columns",
+	"sprite_rows": "Rows",
+	"sprite_inset": "Inset (px)"
 }

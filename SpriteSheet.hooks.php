@@ -34,7 +34,38 @@ class SpriteSheetHooks {
 	 * @return	boolean True
 	 */
 	static public function onImageOpenShowImageInlineBefore(ImagePage $imagePage, OutputPage $output) {
-		
+		$output->addModules('ext.spriteSheet');
+
+		$form = "
+		<form>
+			<fieldset>
+				<label for='sprite_columns'>".wfMessage('sprite_columns')->escaped()."</label>
+				<input id='sprite_columns' name='sprite_columns' type='text'/>
+
+				<label for='sprite_rows'>".wfMessage('sprite_rows')->escaped()."</label>
+				<input id='sprite_rows' name='sprite_rows' type='text'/>
+
+				<label for='sprite_inset'>".wfMessage('sprite_inset')->escaped()."</label>
+				<input id='sprite_inset' name='sprite_inset' type='text'/>
+			</fieldset>
+		</form>";
+
+		$output->addHtml($form);
+
+		return true;
+	}
+
+	/**
+	 * Setups and Modifies Database Information
+	 *
+	 * @access	public
+	 * @param	object	[Optional] DatabaseUpdater Object
+	 * @return	boolean	true
+	 */
+	static public function onLoadExtensionSchemaUpdates($updater = null) {
+		$extDir = __DIR__;
+
+		$updater->addExtensionUpdate(['addTable', 'spritesheet', "{$extDir}/install/sql/spritesheet_table_spritesheet.sql", true]);
 
 		return true;
 	}
