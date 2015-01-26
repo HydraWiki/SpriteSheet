@@ -1,0 +1,7 @@
+{
+	"@metadata": {
+		"authors": ["Alexia E. Smith"]
+	},
+	"spritesheet": "SpriteSheet",
+	"spritesheet_description": "Defines and displays sprite sheets from uploaded files."
+}
