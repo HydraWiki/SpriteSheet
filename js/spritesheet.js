@@ -2,7 +2,6 @@ mw.spriteSheet = {
 	canvas: null,
 	values: {},
 
-
 	/**
 	 * Initialize the sprite sheet.
 	 *
@@ -31,7 +30,10 @@ mw.spriteSheet = {
 
 		$(spritesheet).appendTo('#file > a');
 
-		this.canvas = oCanvas.create({ canvas: "#spritesheet", background: "rgba(0, 0, 0, 0)" });
+		this.canvas = oCanvas.create({
+			canvas: "#spritesheet",
+			background: "rgba(0, 0, 0, 0)"
+		});
 
 		$('#sprite_columns').on('change keyup', function() {
 			mw.spriteSheet.updateSpriteSheet();
