@@ -3,5 +3,6 @@
 		"authors": ["Alexia E. Smith"]
 	},
 	"spritesheet": "SpriteSheet",
-	"spritesheet_description": "Defines and displays sprite sheets from uploaded files."
+	"spritesheet_description": "Defines and displays sprite sheets from uploaded files.",
+	"sprite_sheet": "Sprite Sheet"
 }

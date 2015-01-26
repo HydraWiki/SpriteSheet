@@ -33,4 +33,5 @@ $wgMessagesDirs['SpriteSheet']					= "{$extDir}/i18n";
 
 $wgAutoloadClasses['SpriteSheetHooks']			= "{$extDir}/SpriteSheet.hooks.php";
 
-$wgHooks['PageContentSave'][]				= 'SpriteSheetHooks::onPageContentSave';
+$wgHooks['ImagePageShowTOC'][]					= 'SpriteSheetHooks::onImagePageShowTOC';
+$wgHooks['ImageOpenShowImageInlineBefore'][]	= 'SpriteSheetHooks::onImageOpenShowImageInlineBefore';
