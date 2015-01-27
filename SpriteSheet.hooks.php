@@ -55,6 +55,8 @@ class SpriteSheetHooks {
 				<input name='page_id' type='hidden' value='".$spriteSheet->getTitle()->getArticleId()."'/>
 				<input name='page_title' type='hidden' value='".htmlentities($spriteSheet->getTitle()->getPrefixedDBkey(), ENT_QUOTES)."'/>
 				<button id='sprite_save' name='sprite_save' type='button'>".wfMessage('save')->escaped()."</button>
+
+				<pre id='sprite_preview'>".wfMessage('click_grid_for_preview')->escaped()."</pre>
 			</fieldset>
 		</form>";
 

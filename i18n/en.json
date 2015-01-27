@@ -14,5 +14,6 @@
 	"ss_api_bad_title": "Could not load Sprite Sheet from the page Title.",
 	"ss_api_fatal_error_loading": "There was a fatal error attempting to load the Sprite Sheet or Title from the database.",
 	"ss_api_fatal_error_saving": "There was a fatal error attempting to save the Sprite Sheet to the database.  The transaction has been rolled backed.",
-	"ss_api_okay": "Okay"
+	"ss_api_okay": "Okay",
+	"click_grid_for_preview": "Click anywhere on the image grid to generate a tag for the sprite."
 }

@@ -1,3 +1,7 @@
+canvas#spritesheet {
+	cursor: pointer;
+}
+
 #spritesheet_editor {
 	display: inline-block;
 	padding: 10px;
@@ -19,3 +23,8 @@
 		#spritesheet_editor fieldset legend {
 			font-weight: bold;
 		}
+
+pre#sprite_preview {
+	line-height: 1em;
+	min-height: 1em;
+}

@@ -23,17 +23,25 @@ mw.spriteSheet = {
 			top: 0
 		});
 
+		$('#file').css({
+			position: 'relative'
+		});
+
 		$('#file > a').css({
 			display: 'inline-block',
 			position: 'relative'
 		});
 
-		$(spritesheet).appendTo('#file > a');
+		$(spritesheet).appendTo('#file');
 
 		this.canvas = oCanvas.create({
 			canvas: "#spritesheet",
 			background: "rgba(0, 0, 0, 0)",
 			fps: 60
+		});
+
+		this.canvas.bind('click tap', function() {
+			mw.spriteSheet.updateTagExample();
 		});
 
 		$('#sprite_columns').on('change keyup', function() {
@@ -186,6 +194,36 @@ mw.spriteSheet = {
 	 */
 	hideProgressIndicator: function() {
 		this.canvas.removeChild(this.progressIndicator);
+	},
+
+	/**
+	 * Update the parser tag example block.
+	 *
+	 * @return	void
+	 */
+	updateTagExample: function() {
+		if (isNaN(this.values.columns) || isNaN(this.values.rows) || this.values.columns < 1 || this.values.rows < 1) {
+			return;
+		}
+
+		var columnWidth = this.canvas.width / this.values.columns;
+		var rowHeight = this.canvas.height / this.values.rows;
+
+		if (this.canvas.touch.canvasFocused) {
+			var xPixel = this.canvas.touch.x;
+			var yPixel = this.canvas.touch.y;
+		} else {
+			var xPixel = this.canvas.mouse.x;
+			var yPixel = this.canvas.mouse.y;
+		}
+
+		var xPos = Math.floor(xPixel / columnWidth);
+		var yPos = Math.floor(yPixel / rowHeight);
+		var title = $("input[name='page_title']").val();
+
+		var example = "{{#sprite:"+title+"|"+xPos+"|"+yPos+"|"+this.values.inset+"}}";
+
+		$('#sprite_preview').html(example);
 	}
 }
 
