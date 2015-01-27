@@ -32,6 +32,7 @@ $wgExtensionMessagesFiles['SpriteSheet']		= "{$extDir}/SpriteSheet.i18n.php";
 $wgMessagesDirs['SpriteSheet']					= "{$extDir}/i18n";
 
 $wgAutoloadClasses['SpriteSheetHooks']			= "{$extDir}/SpriteSheet.hooks.php";
+$wgAutoloadClasses['SpriteSheet']				= "{$extDir}/classes/SpriteSheet.php";
 
 $wgHooks['ImagePageShowTOC'][]					= 'SpriteSheetHooks::onImagePageShowTOC';
 $wgHooks['ImageOpenShowImageInlineBefore'][]	= 'SpriteSheetHooks::onImageOpenShowImageInlineBefore';
@@ -42,5 +43,6 @@ $wgResourceModules['ext.spriteSheet'] = [
 	'remoteExtPath'	=> 'SpriteSheet',
 	'styles'		=> ['css/spritesheet.css'],
 	'scripts'		=> ['js/ocanvas-2.7.3.min.js', 'js/spritesheet.js'],
-	'dependencies'	=> ['jquery']
+	'dependencies'	=> ['jquery'],
+	'position'		=> 'top'
 ];

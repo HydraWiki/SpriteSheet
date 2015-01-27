@@ -63,7 +63,7 @@ class SpriteSheet {
 	 * @param	object	Title
 	 * @return	mixed	SpriteSheet or false on error.
 	 */
-	public function newFromTitle(Title $title) {
+	static public function newFromTitle(Title $title) {
 		if (!$title->getArticleID()) {
 			return false;
 		}
@@ -72,6 +72,8 @@ class SpriteSheet {
 		$spriteSheet->setTitle($title);
 
 		$spriteSheet->newFrom = 'title';
+
+		$spriteSheet->load();
 
 		return $spriteSheet;
 	}
@@ -88,17 +90,17 @@ class SpriteSheet {
 				case 'id':
 					$where = [
 						'sid' => $this->getId()
-					]
+					];
 					break;
 				case 'title':
 					$where = [
 						'page_id' => $this->title->getArticleID()
-					]
+					];
 					break;
 			}
 
-			$result = $wiki->DB->select(
-				['wiki_sites'],
+			$result = $this->DB->select(
+				['spritesheet'],
 				['*'],
 				$where,
 				__METHOD__
@@ -133,7 +135,7 @@ class SpriteSheet {
 	public function setTitle(Title $title) {
 		$this->title = $title;
 
-		$this->data['page_id'] = $this->title->getArticleID()
+		$this->data['page_id'] = $this->title->getArticleID();
 	}
 
 	/**
@@ -154,8 +156,6 @@ class SpriteSheet {
 	 * @return	void
 	 */
 	public function setColumns($columns) {
-		$this->load();
-
 		$this->data['columns'] = abs(intval($columns));
 	}
 
@@ -166,7 +166,7 @@ class SpriteSheet {
 	 * @return	integer	Columns
 	 */
 	public function getColumns() {
-		return $this->data['columns'];
+		return intval($this->data['columns']);
 	}
 
 	/**
@@ -187,7 +187,7 @@ class SpriteSheet {
 	 * @return	integer	Rows
 	 */
 	public function getRows() {
-		return $this->data['rows'];
+		return intval($this->data['rows']);
 	}
 
 	/**
@@ -208,6 +208,6 @@ class SpriteSheet {
 	 * @return	integer	Inset
 	 */
 	public function getInset() {
-		return $this->data['inset'];
+		return intval($this->data['inset']);
 	}
 }

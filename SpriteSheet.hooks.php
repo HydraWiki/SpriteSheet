@@ -36,17 +36,19 @@ class SpriteSheetHooks {
 	static public function onImageOpenShowImageInlineBefore(ImagePage $imagePage, OutputPage $output) {
 		$output->addModules('ext.spriteSheet');
 
+		$spriteSheet = SpriteSheet::newFromTitle($imagePage->getTitle());
+
 		$form = "
 		<form>
 			<fieldset>
 				<label for='sprite_columns'>".wfMessage('sprite_columns')->escaped()."</label>
-				<input id='sprite_columns' name='sprite_columns' type='text'/>
+				<input id='sprite_columns' name='sprite_columns' type='text' value='".$spriteSheet->getColumns()."'/>
 
 				<label for='sprite_rows'>".wfMessage('sprite_rows')->escaped()."</label>
-				<input id='sprite_rows' name='sprite_rows' type='text'/>
+				<input id='sprite_rows' name='sprite_rows' type='text' value='".$spriteSheet->getRows()."'/>
 
 				<label for='sprite_inset'>".wfMessage('sprite_inset')->escaped()."</label>
-				<input id='sprite_inset' name='sprite_inset' type='text'/>
+				<input id='sprite_inset' name='sprite_inset' type='text' value='".$spriteSheet->getInset()."'/>
 			</fieldset>
 		</form>";
 

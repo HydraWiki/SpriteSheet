@@ -37,15 +37,15 @@ mw.spriteSheet = {
 
 		$('#sprite_columns').on('change keyup', function() {
 			mw.spriteSheet.updateSpriteSheet();
-		});
+		}).change();
 
 		$('#sprite_rows').on('change keyup', function() {
 			mw.spriteSheet.updateSpriteSheet();
-		});
+		}).change();
 
 		$('#sprite_inset').on('change keyup', function() {
 			mw.spriteSheet.updateSpriteSheet();
-		});
+		}).change();
 	},
 
 	/**
