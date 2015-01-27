@@ -7,5 +7,6 @@
 	"sprite_sheet": "Sprite Sheet",
 	"sprite_columns": "Columns",
 	"sprite_rows": "Rows",
-	"sprite_inset": "Inset (px)"
+	"sprite_inset": "Inset (px)",
+	"spritesheet_editor": "Sprite Sheet Editor"
 }

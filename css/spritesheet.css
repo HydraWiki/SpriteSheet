@@ -1,0 +1,21 @@
+#spritesheet_editor {
+	display: inline-block;
+	padding: 10px;
+}
+
+	#spritesheet_editor fieldset {
+		background: none repeat scroll 0 0 #f9f9f9;
+		border: 1px solid #aaa;
+		border-radius: 5px;
+		margin: 0;
+		padding: 0 10px 10px;
+	}
+
+	.skin-hydradark #spritesheet_editor fieldset {
+		background: none repeat scroll 0 0 #181818;
+		border: 1px solid #080808;
+	}
+
+		#spritesheet_editor fieldset legend {
+			font-weight: bold;
+		}

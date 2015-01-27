@@ -39,8 +39,9 @@ class SpriteSheetHooks {
 		$spriteSheet = SpriteSheet::newFromTitle($imagePage->getTitle());
 
 		$form = "
-		<form>
+		<form id='spritesheet_editor'>
 			<fieldset>
+				<legend>".wfMessage('sprite_sheet')->escaped()."</legend>
 				<label for='sprite_columns'>".wfMessage('sprite_columns')->escaped()."</label>
 				<input id='sprite_columns' name='sprite_columns' type='text' value='".$spriteSheet->getColumns()."'/>
 
@@ -49,6 +50,8 @@ class SpriteSheetHooks {
 
 				<label for='sprite_inset'>".wfMessage('sprite_inset')->escaped()."</label>
 				<input id='sprite_inset' name='sprite_inset' type='text' value='".$spriteSheet->getInset()."'/>
+
+				<button id='sprite_save' name='sprite_save'>".wfMessage('save')->escaped()."</button>
 			</fieldset>
 		</form>";
 
