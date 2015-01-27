@@ -50,8 +50,8 @@ class SpriteSheetAPI extends ApiBase {
 		}
 
 		switch ($this->params['do']) {
-			case 'updateSpriteSheet':
-				$response = $this->updateSpriteSheet();
+			case 'save':
+				$response = $this->saveSpriteSheet();
 				break;
 			default:
 				$this->dieUsageMsg(['invaliddo', $this->params['do']]);
@@ -75,11 +75,7 @@ class SpriteSheetAPI extends ApiBase {
 				ApiBase::PARAM_TYPE		=> 'string',
 				ApiBase::PARAM_REQUIRED => true
 			],
-			'search' => [
-				ApiBase::PARAM_TYPE		=> 'string',
-				ApiBase::PARAM_REQUIRED => true
-			],
-			'fields' => [
+			'form' => [
 				ApiBase::PARAM_TYPE		=> 'string',
 				ApiBase::PARAM_REQUIRED => false
 			]
@@ -95,21 +91,52 @@ class SpriteSheetAPI extends ApiBase {
 	public function getParamDescription() {
 		return [
 			'do'		=> 'Action to take.',
-			'search'	=> 'Search term to use for finding wikis.',
-			'fields'	=> 'Comma delimited list of fields to return.'
+			'form'		=> 'Form data from a sprite sheet editor form.'
 		];
 	}
 
 	/**
-	 * Update Sprite Sheet information.
+	 * Save Sprite Sheet information.
 	 *
 	 * @access	public
 	 * @return	array	Success, Messages
 	 */
-	public function updateSpriteSheet() {
+	public function saveSpriteSheet() {
 		$sucecss = false;
+		$message = 'ss_api_unknown_error';
 
-		return ['success' => $success, 'message' => $message];
+		if ($this->wgRequest->wasPosted()) {
+			parse_str($this->params['form'], $form);
+			if ($form['sid'] > 0) {
+				$spriteSheet = SpriteSheet::newFromId($form['sid']);
+			} else {
+				$title = Title::newFromDBKey($form['page_title']);
+				if ($title !== null) {
+					$spriteSheet = SpriteSheet::newFromTitle($form['page_title']);
+				} else {
+					$message = 'ss_api_bad_title';
+				}
+			}
+			if ($spriteSheet !== false) {
+				$spriteSheet->setColumns($form['sprite_columns']);
+				$spriteSheet->setRows($form['sprite_rows']);
+				$spriteSheet->setInset($form['sprite_inset']);
+
+				$success = $spriteSheet->save();
+
+				if ($success) {
+					$message = 'ss_api_okay';
+				} else {
+					$message = 'ss_api_fatal_error_saving';
+				}
+			} else {
+				$message = 'ss_api_fatal_error_loading';
+			}
+		} else {
+			$message = 'ss_api_must_be_posted';
+		}
+
+		return ['success' => $success, 'message' => wfMessage($message)->text()];
 	}
 
 	/**

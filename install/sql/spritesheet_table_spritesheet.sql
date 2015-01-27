@@ -5,5 +5,5 @@ CREATE TABLE /*_*/spritesheet (
   `rows` int(11) NOT NULL,
   `inset` int(11) NOT NULL,
   PRIMARY KEY (`sid`),
-  KEY `page_id` (`page_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  UNIQUE KEY `page_id` (`page_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

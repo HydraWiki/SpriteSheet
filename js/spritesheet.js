@@ -32,20 +32,25 @@ mw.spriteSheet = {
 
 		this.canvas = oCanvas.create({
 			canvas: "#spritesheet",
-			background: "rgba(0, 0, 0, 0)"
+			background: "rgba(0, 0, 0, 0)",
+			fps: 60
 		});
 
 		$('#sprite_columns').on('change keyup', function() {
-			mw.spriteSheet.updateSpriteSheet();
+			mw.spriteSheet.update();
 		}).change();
 
 		$('#sprite_rows').on('change keyup', function() {
-			mw.spriteSheet.updateSpriteSheet();
+			mw.spriteSheet.update();
 		}).change();
 
 		$('#sprite_inset').on('change keyup', function() {
-			mw.spriteSheet.updateSpriteSheet();
+			mw.spriteSheet.update();
 		}).change();
+
+		$('#sprite_save').on('click tap', function() {
+			mw.spriteSheet.save();
+		});
 	},
 
 	/**
@@ -53,7 +58,7 @@ mw.spriteSheet = {
 	 *
 	 * @return	void
 	 */
-	updateSpriteSheet: function() {
+	update: function() {
 		this.canvas.reset();
 
 		this.parseValues();
@@ -101,6 +106,32 @@ mw.spriteSheet = {
 	},
 
 	/**
+	 * Save the sprite sheet back to the server.
+	 *
+	 * @return	boolean
+	 */
+	save: function() {
+		var api = new mw.Api();
+
+		mw.spriteSheet.showProgressIndicator();
+		api.post(
+			{
+				action: 'spritesheet',
+				do: 'save',
+				format: 'json',
+				form: $('form#spritesheet_editor').serialize()
+			}
+		).done(
+			function(result) {
+				if (result.success != true) {
+					alert(result.message);
+				}
+				mw.spriteSheet.hideProgressIndicator();
+			}
+		);
+	},
+
+	/**
 	 * Parse and prepare values for usage.
 	 *
 	 * @return	void
@@ -124,6 +155,37 @@ mw.spriteSheet = {
 	 */
 	getValues: function() {
 		return this.values;
+	},
+
+	/**
+	 * Show the progress indicator over top of the canvas.
+	 *
+	 * @return	void
+	 */
+	showProgressIndicator: function() {
+		if (!this.progressIndicator) {
+			this.progressIndicator = this.canvas.display.ellipse({
+				x: this.canvas.width / 2,
+				y: this.canvas.height / 2,
+				radius: 40,
+				stroke: "6px linear-gradient(360deg, #000, #fff)"
+			});
+		}
+
+		this.canvas.addChild(this.progressIndicator);
+
+		this.canvas.setLoop(function () {
+			mw.spriteSheet.progressIndicator.rotation = mw.spriteSheet.progressIndicator.rotation + 10;
+		}).start();
+	},
+
+	/**
+	 * Hide the progress indicator over top of the canvas.
+	 *
+	 * @return	void
+	 */
+	hideProgressIndicator: function() {
+		this.canvas.removeChild(this.progressIndicator);
 	}
 }
 

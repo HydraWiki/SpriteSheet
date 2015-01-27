@@ -33,10 +33,13 @@ $wgMessagesDirs['SpriteSheet']					= "{$extDir}/i18n";
 
 $wgAutoloadClasses['SpriteSheetHooks']			= "{$extDir}/SpriteSheet.hooks.php";
 $wgAutoloadClasses['SpriteSheet']				= "{$extDir}/classes/SpriteSheet.php";
+$wgAutoloadClasses['SpriteSheetAPI']			= "{$extDir}/SpriteSheet.api.php";
 
 $wgHooks['ImagePageShowTOC'][]					= 'SpriteSheetHooks::onImagePageShowTOC';
 $wgHooks['ImageOpenShowImageInlineBefore'][]	= 'SpriteSheetHooks::onImageOpenShowImageInlineBefore';
 $wgHooks['LoadExtensionSchemaUpdates'][]		= 'SpriteSheetHooks::onLoadExtensionSchemaUpdates';
+
+$wgAPIModules['spritesheet']					= 'SpriteSheetAPI';
 
 $wgResourceModules['ext.spriteSheet'] = [
 	'localBasePath'	=> __DIR__,

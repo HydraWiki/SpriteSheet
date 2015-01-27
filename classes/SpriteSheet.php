@@ -57,6 +57,28 @@ class SpriteSheet {
 	}
 
 	/**
+	 * Create a new instance of this class from a Sprite Sheet database identification number.
+	 *
+	 * @access	public
+	 * @param	integer	Sprite Sheet database identification number.
+	 * @return	mixed	SpriteSheet or false on error.
+	 */
+	static public function newFromId($id) {
+		if ($id < 1) {
+			return false;
+		}
+
+		$spriteSheet = new SpriteSheet();
+		$spriteSheet->setId(intval($id));
+
+		$spriteSheet->newFrom = 'id';
+
+		$success = $spriteSheet->load();
+
+		return ($success ? $spriteSheet : false);
+	}
+
+	/**
 	 * Create a new instance of this class from a Title object.
 	 *
 	 * @access	public
@@ -73,9 +95,9 @@ class SpriteSheet {
 
 		$spriteSheet->newFrom = 'title';
 
-		$spriteSheet->load();
+		$success = $spriteSheet->load();
 
-		return $spriteSheet;
+		return ($success ? $spriteSheet : false);
 	}
 
 	/**
@@ -110,9 +132,68 @@ class SpriteSheet {
 
 			if (is_array($row)) {
 				$this->data = $row;
+
+				//Title was not set beforehand.
+				if ($this->title === false) {
+					$this->title = Title::newFromID($row['page_id']);
+					if (!$this->title) {
+						return false;
+					}
+				}
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Save Sprite Sheet to the database.
+	 *
+	 * @access	public
+	 * @return	boolean	Success
+	 */
+	public function save() {
+		$success = false;
+
+		$sId = $this->data['sid'];
+		unset($this->data['sid']);
+
+		$this->DB->begin();
+		if ($sId > 0) {
+			$result = $this->DB->update(
+				'spritesheet',
+				$this->data,
+				['sid' => $sId],
+				__METHOD__
+			);
+		} else {
+			$result = $this->DB->insert(
+				'spritesheet',
+				$this->data,
+				__METHOD__
+			);
+		}
+		if ($result !== false) {
+			$success = true;
+		}
+		$this->DB->commit();
+
+		return $success;
+	}
+
+	/**
+	 * Set the Sprite Sheet ID
+	 *
+	 * @access	public
+	 * @param	integer	Sprite Sheet ID
+	 * @return	boolean	True on success, false if the ID is already set.
+	 */
+	public function setId($id) {
+		if (!$this->data['sid']) {
+			$this->data['sid'] = intval($id);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**

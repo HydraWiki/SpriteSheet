@@ -8,5 +8,11 @@
 	"sprite_columns": "Columns",
 	"sprite_rows": "Rows",
 	"sprite_inset": "Inset (px)",
-	"spritesheet_editor": "Sprite Sheet Editor"
+	"spritesheet_editor": "Sprite Sheet Editor",
+	"ss_unknown_error": "There was an unknown error processing the API request.",
+	"ss_api_must_be_posted": "That API call must be done as a POST request.",
+	"ss_api_bad_title": "Could not load Sprite Sheet from the page Title.",
+	"ss_api_fatal_error_loading": "There was a fatal error attempting to load the Sprite Sheet or Title from the database.",
+	"ss_api_fatal_error_saving": "There was a fatal error attempting to save the Sprite Sheet to the database.  The transaction has been rolled backed.",
+	"ss_api_okay": "Okay"
 }
