@@ -29,12 +29,14 @@ $wgExtensionCredits['other'][] = $credits;
 $extDir = __DIR__;
 
 $wgExtensionMessagesFiles['SpriteSheet']		= "{$extDir}/SpriteSheet.i18n.php";
+$wgExtensionMessagesFiles['SpriteSheetMagic']	= "{$extDir}/SpriteSheet.i18n.magic.php";
 $wgMessagesDirs['SpriteSheet']					= "{$extDir}/i18n";
 
 $wgAutoloadClasses['SpriteSheetHooks']			= "{$extDir}/SpriteSheet.hooks.php";
 $wgAutoloadClasses['SpriteSheet']				= "{$extDir}/classes/SpriteSheet.php";
 $wgAutoloadClasses['SpriteSheetAPI']			= "{$extDir}/SpriteSheet.api.php";
 
+$wgHooks['ParserFirstCallInit'][]				= 'SpriteSheetHooks::onParserFirstCallInit';
 $wgHooks['ImagePageShowTOC'][]					= 'SpriteSheetHooks::onImagePageShowTOC';
 $wgHooks['ImageOpenShowImageInlineBefore'][]	= 'SpriteSheetHooks::onImageOpenShowImageInlineBefore';
 $wgHooks['LoadExtensionSchemaUpdates'][]		= 'SpriteSheetHooks::onLoadExtensionSchemaUpdates';

@@ -12,6 +12,57 @@
 
 class SpriteSheetHooks {
 	/**
+	 * Sets up this extension's parser functions.
+	 *
+	 * @access	public
+	 * @param	object	Parser object passed as a reference.
+	 * @return	boolean	true
+	 */
+	static public function onParserFirstCallInit(Parser &$parser) {
+		$parser->setFunctionHook("sprite", "SpriteSheetHooks::generateSpriteOutput");
+
+		return true;
+	}
+
+	/**
+	 * The #sprite parser tag entry point.
+	 *
+	 * @access	public
+	 * @param	object	Parser object passed as a reference.
+	 * @param	string	Page title with namespace
+	 * @param	integer Column Position
+	 * @param	integer Row Position
+	 * @param	integer Inset in pixels
+	 * @return	string	Wiki Text
+	 */
+	static public function generateSpriteOutput(&$parser, $file = null, $column = 0, $row = 0, $thumbWidth = 0) {
+		$column		= abs(intval($column));
+		$row		= abs(intval($row));
+		$thumbWidth	= abs(intval($thumbWidth));
+
+		$title = Title::newFromDBKey($file);
+
+		if ($title->exists()) {
+			$spriteSheet = SpriteSheet::newFromTitle($title);
+		} else {
+			return "<div class='errorbox'>".wfMessage('could_not_find_title', $file)->text()."</div>";
+		}
+
+		if (!$spriteSheet->getId() || !$spriteSheet->getColumns() || !$spriteSheet->getRows()) {
+			//Either a sprite sheet does not exist or has invalid values.
+			return "<div class='errorbox'>".wfMessage('no_sprite_sheet_defined', $title->getPrefixedText())->text()."</div>";
+		}
+
+		$html = $spriteSheet->getSpriteAtPos($column, $row, $thumbWidth);
+
+		return [
+			$html,
+			'noparse'	=> true,
+			'isHTML'	=> true
+		];
+	}
+
+	/**
 	 * Display link to invoke sprite sheet editor.
 	 *
 	 * @access	public

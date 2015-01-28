@@ -291,4 +291,36 @@ class SpriteSheet {
 	public function getInset() {
 		return intval($this->data['inset']);
 	}
+
+	/**
+	 * Return sprite at coordinate position.
+	 *
+	 * @access	public
+	 * @param	integer	Column
+	 * @param	integer	Row
+	 * @param	integer	[Optional] Thumbnail Width
+	 * @return	mixed	HTML or false on error.
+	 */
+	public function getSpriteAtPos($column, $row, $thumbWidth = null) {
+		$file = wfFindFile($this->getTitle());
+
+		if (is_object($file) && $file->exists()) {
+			//Future support for resized sprites.
+			if ($thumbWidth > 0) {
+				$file = $file->transform(['width' => $thumbWidth, 'height' => $file->getHeight()]);
+			}
+
+			$spriteWidth = ($file->getWidth() / $this->getColumns());
+			$spriteHeight = ($file->getHeight() / $this->getRows());
+
+			$spriteX = ($spriteWidth * $column) + $this->getInset();
+			$spriteY = ($spriteHeight * $row) + $this->getInset();
+
+			$spriteWidth = $spriteWidth - ($this->getInset() * 2);
+			$spriteHeight = $spriteHeight - ($this->getInset() * 2);
+
+			return "<div class='sprite' style='width: {$spriteWidth}px; height: {$spriteHeight}px; overflow: hidden; position: relative;'><img src='".$file->getUrl()."' style='position: absolute; left: -{$spriteX}px; top: -{$spriteY}px;'/></div>";
+		}
+		return false;
+	}
 }

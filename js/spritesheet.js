@@ -221,7 +221,7 @@ mw.spriteSheet = {
 		var yPos = Math.floor(yPixel / rowHeight);
 		var title = $("input[name='page_title']").val();
 
-		var example = "{{#sprite:"+title+"|"+xPos+"|"+yPos+"|"+this.values.inset+"}}";
+		var example = "{{#sprite:"+title+"|"+xPos+"|"+yPos+"}}";
 
 		$('#sprite_preview').html(example);
 	}

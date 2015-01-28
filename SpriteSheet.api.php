@@ -112,7 +112,7 @@ class SpriteSheetAPI extends ApiBase {
 			} else {
 				$title = Title::newFromDBKey($form['page_title']);
 				if ($title !== null) {
-					$spriteSheet = SpriteSheet::newFromTitle($form['page_title']);
+					$spriteSheet = SpriteSheet::newFromTitle($title);
 				} else {
 					$message = 'ss_api_bad_title';
 				}

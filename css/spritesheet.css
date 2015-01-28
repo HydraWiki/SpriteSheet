@@ -28,3 +28,12 @@ pre#sprite_preview {
 	line-height: 1em;
 	min-height: 1em;
 }
+
+.sprite {
+	overflow: hidden;
+	position: relative;
+}
+
+	.sprite > img {
+		position: absolute;
+	}
