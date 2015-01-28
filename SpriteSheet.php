@@ -47,7 +47,27 @@ $wgResourceModules['ext.spriteSheet'] = [
 	'localBasePath'	=> __DIR__,
 	'remoteExtPath'	=> 'SpriteSheet',
 	'styles'		=> ['css/spritesheet.css'],
-	'scripts'		=> ['js/ocanvas-2.7.3.min.js', 'js/spritesheet.js'],
-	'dependencies'	=> ['jquery'],
+	'scripts'		=> [
+		'js/ocanvas-2.7.3.min.js',
+		'js/spritesheet.js',
+		'js/spritecow/jquery.fileClickjack.js',
+		'js/spritecow/intro.js',
+		'js/spritecow/MicroEvent.js',
+		'js/spritecow/Rect.js',
+		'js/spritecow/ImgInput.js',
+		'js/spritecow/SpriteCanvas.js',
+		'js/spritecow/SpriteCanvasView.js',
+		'js/spritecow/InlineEdit.js',
+		'js/spritecow/CssOutput.js',
+		'js/spritecow/Toolbar.js',
+		'js/spritecow/pageLayout.js',
+		'js/spritecow/FeatureTest.js',
+		'js/spritecow/featureTests.js',
+		'js/spritecow/base.js'
+	],
+	'dependencies'	=> [
+		'jquery',
+		'jquery.ui.core'
+	],
 	'position'		=> 'top'
 ];
