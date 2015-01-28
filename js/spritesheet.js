@@ -16,8 +16,16 @@ mw.spriteSheet = {
 		var imageHeight = $('#file > a > img').height();
 
 		var spritesheet = $("<canvas>").attr('id', 'spritesheet').attr('width', imageWidth).attr('height', imageHeight);
+		var spritecow = $("<canvas>").attr('id', 'spritecow').attr('width', imageWidth).attr('height', imageHeight);
 
 		$(spritesheet).css({
+			left: 0,
+			position: 'absolute',
+			top: 0
+		});
+
+		$(spritecow).css({
+			display: 'none',
 			left: 0,
 			position: 'absolute',
 			top: 0
@@ -33,6 +41,7 @@ mw.spriteSheet = {
 		});
 
 		$(spritesheet).appendTo('#file');
+		$(spritecow).appendTo('#file');
 
 		this.canvas = oCanvas.create({
 			canvas: "#spritesheet",

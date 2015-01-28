@@ -91,7 +91,7 @@ class SpriteSheetHooks {
 
 		$form = "
 		<form id='spritesheet_editor'>
-			<fieldset>
+			<fieldset id='spritesheet_form'>
 				<legend>".wfMessage('sprite_sheet')->escaped()."</legend>
 				<label for='sprite_columns'>".wfMessage('sprite_columns')->escaped()."</label>
 				<input id='sprite_columns' name='sprite_columns' type='text' value='".$spriteSheet->getColumns()."'/>
@@ -108,6 +108,9 @@ class SpriteSheetHooks {
 				<button id='sprite_save' name='sprite_save' type='button'>".wfMessage('save')->escaped()."</button>
 
 				<pre id='sprite_preview'>".wfMessage('click_grid_for_preview')->escaped()."</pre>
+			</fieldset>
+			<fieldset id='spritecow_form'>
+				
 			</fieldset>
 		</form>";
 
