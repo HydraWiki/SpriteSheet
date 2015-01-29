@@ -25,7 +25,7 @@ mw.spriteSheet = {
 		});
 
 		$(spritecow).css({
-			display: 'none',
+			//display: 'none',
 			left: 0,
 			position: 'absolute',
 			top: 0
