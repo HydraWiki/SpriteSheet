@@ -110,7 +110,7 @@ class SpriteSheetHooks {
 				<pre id='sprite_preview'>".wfMessage('click_grid_for_preview')->escaped()."</pre>
 			</fieldset>
 			<fieldset id='spritecow_form'>
-				
+				<pre id='spritecow_preview'>".wfMessage('click_grid_for_preview')->escaped()."</pre>
 			</fieldset>
 		</form>";
 

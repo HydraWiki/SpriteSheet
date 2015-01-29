@@ -54,7 +54,6 @@ $wgResourceModules['ext.spriteSheet'] = [
 		'js/spritecow/intro.js',
 		'js/spritecow/MicroEvent.js',
 		'js/spritecow/Rect.js',
-		'js/spritecow/ImgInput.js',
 		'js/spritecow/SpriteCanvas.js',
 		'js/spritecow/SpriteCanvasView.js',
 		'js/spritecow/InlineEdit.js',
