@@ -20,6 +20,7 @@ class SpriteSheetHooks {
 	 */
 	static public function onParserFirstCallInit(Parser &$parser) {
 		$parser->setFunctionHook("sprite", "SpriteSheetHooks::generateSpriteOutput");
+		$parser->setFunctionHook("slice", "SpriteSheetHooks::generateSliceOutput");
 
 		return true;
 	}
@@ -32,7 +33,7 @@ class SpriteSheetHooks {
 	 * @param	string	Page title with namespace
 	 * @param	integer Column Position
 	 * @param	integer Row Position
-	 * @param	integer Inset in pixels
+	 * @param	integer	[Optional] Thumbnail Width
 	 * @return	string	Wiki Text
 	 */
 	static public function generateSpriteOutput(&$parser, $file = null, $column = 0, $row = 0, $thumbWidth = 0) {
@@ -54,6 +55,43 @@ class SpriteSheetHooks {
 		}
 
 		$html = $spriteSheet->getSpriteAtPos($column, $row, $thumbWidth);
+
+		return [
+			$html,
+			'noparse'	=> true,
+			'isHTML'	=> true
+		];
+	}
+	/**
+	 * The #slice parser tag entry point.
+	 *
+	 * @access	public
+	 * @param	object	Parser object passed as a reference.
+	 * @param	string	Page title with namespace
+	 * @param	integer	X coordinate, percentage
+	 * @param	integer	Y coordinate, percentage
+	 * @param	integer	Width, percentage
+	 * @param	integer	Height, percentage
+	 * @param	integer	[Optional] Thumbnail Width
+	 * @return	string	Wiki Text
+	 */
+	static public function generateSliceOutput(&$parser, $file = null, $xPercent = 0, $yPercent = 0, $widthPrecent = 0, $heightPercent = 0, $thumbWidth = 0) {
+		$xPercent		= abs(floatval($xPercent));
+		$yPercent		= abs(floatval($yPercent));
+		$widthPrecent	= abs(floatval($widthPrecent));
+		$heightPercent	= abs(floatval($heightPercent));
+		$thumbWidth		= abs(intval($thumbWidth));
+
+		$title = Title::newFromDBKey($file);
+
+		if ($title->exists()) {
+			//Does not need to be a valid/saved SpriteSheet.  A new SpriteSheet will still give us slices.
+			$spriteSheet = SpriteSheet::newFromTitle($title);
+		} else {
+			return "<div class='errorbox'>".wfMessage('could_not_find_title', $file)->text()."</div>";
+		}
+
+		$html = $spriteSheet->getSlice($xPercent, $yPercent, $widthPrecent, $heightPercent, $thumbWidth);
 
 		return [
 			$html,

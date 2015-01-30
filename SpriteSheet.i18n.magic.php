@@ -13,6 +13,6 @@
 $magicWords = [];
 
 $magicWords['en'] = [
-	'sprite'				=> [0, 'sprite']
+	'sprite'	=> [0, 'sprite'],
+	'slice'		=> [0, 'slice']
 ];
-?>

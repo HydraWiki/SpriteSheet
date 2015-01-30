@@ -245,11 +245,25 @@ mw.spriteSheet = {
 			return;
 		}
 
-		var xPercent = ((this.selector.x / this.canvas.width) * 100).toFixed(2);
-		var yPercent = ((this.selector.y / this.canvas.height) * 100).toFixed(2);
+		if (this.selector.width < 0) {
+			var x = this.selector.x + this.selector.width;
+			var width = Math.abs(this.selector.width);
+		} else {
+			var x = this.selector.x;
+			var width = this.selector.width;
+		}
+		var xPercent = ((x / this.canvas.width) * 100).toFixed(2);
+		var widthPercent = ((width / this.canvas.width) * 100).toFixed(2);
 
-		var widthPercent = ((this.selector.width / this.canvas.width) * 100).toFixed(2);
-		var heightPercent = ((this.selector.height / this.canvas.height) * 100).toFixed(2);
+		if (this.selector.height < 0) {
+			var y = this.selector.y + this.selector.height;
+			var height = Math.abs(this.selector.height);
+		} else {
+			var y = this.selector.y;
+			var height = this.selector.height;
+		}
+		var yPercent = ((y / this.canvas.height) * 100).toFixed(2);
+		var heightPercent = ((height / this.canvas.height) * 100).toFixed(2);
 
 		var title = $("input[name='page_title']").val();
 

@@ -305,7 +305,6 @@ class SpriteSheet {
 		$file = wfFindFile($this->getTitle());
 
 		if (is_object($file) && $file->exists()) {
-			//Future support for resized sprites.
 			if ($thumbWidth > 0) {
 				$file = $file->transform(['width' => $thumbWidth, 'height' => $file->getHeight()]);
 			}
@@ -320,6 +319,36 @@ class SpriteSheet {
 			$spriteHeight = $spriteHeight - ($this->getInset() * 2);
 
 			return "<div class='sprite' style='width: {$spriteWidth}px; height: {$spriteHeight}px; overflow: hidden; position: relative;'><img src='".$file->getUrl()."' style='position: absolute; left: -{$spriteX}px; top: -{$spriteY}px;'/></div>";
+		}
+		return false;
+	}
+
+	/**
+	 * Return slice from input.
+	 *
+	 * @access	public
+	 * @param	integer	X coordinate, percentage
+	 * @param	integer	Y coordinate, percentage
+	 * @param	integer	Width, percentage
+	 * @param	integer	Height, percentage
+	 * @param	integer	[Optional] Thumbnail Width
+	 * @return	mixed	HTML or false on error.
+	 */
+	public function getSlice($xPercent, $yPercent, $widthPrecent, $heightPercent, $thumbWidth = null) {
+		$file = wfFindFile($this->getTitle());
+
+		if (is_object($file) && $file->exists()) {
+			if ($thumbWidth > 0) {
+				$file = $file->transform(['width' => $thumbWidth, 'height' => $file->getHeight()]);
+			}
+
+			$sliceX = $file->getWidth() * ($xPercent / 100);
+			$sliceY = $file->getHeight() * ($yPercent / 100);
+
+			$sliceWidth = $file->getWidth() * ($widthPrecent / 100);
+			$sliceHeight = $file->getHeight() * ($heightPercent / 100);
+
+			return "<div class='sprite' style='width: {$sliceWidth}px; height: {$sliceHeight}px; overflow: hidden; position: relative;'><img src='".$file->getUrl()."' style='position: absolute; left: -{$sliceX}px; top: -{$sliceY}px;'/></div>";
 		}
 		return false;
 	}
