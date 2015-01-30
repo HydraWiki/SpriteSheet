@@ -1,6 +1,7 @@
 mw.spriteSheet = {
 	canvas: null,
 	values: {},
+	selector: null,
 
 	/**
 	 * Initialize the sprite sheet.
@@ -16,16 +17,8 @@ mw.spriteSheet = {
 		var imageHeight = $('#file > a > img').height();
 
 		var spritesheet = $("<canvas>").attr('id', 'spritesheet').attr('width', imageWidth).attr('height', imageHeight);
-		var spritecow = $("<canvas>").attr('id', 'spritecow').attr('width', imageWidth).attr('height', imageHeight);
 
 		$(spritesheet).css({
-			left: 0,
-			position: 'absolute',
-			top: 0
-		});
-
-		$(spritecow).css({
-			//display: 'none',
 			left: 0,
 			position: 'absolute',
 			top: 0
@@ -41,7 +34,6 @@ mw.spriteSheet = {
 		});
 
 		$(spritesheet).appendTo('#file');
-		$(spritecow).appendTo('#file');
 
 		this.canvas = oCanvas.create({
 			canvas: "#spritesheet",
@@ -50,7 +42,15 @@ mw.spriteSheet = {
 		});
 
 		this.canvas.bind('click tap', function() {
-			mw.spriteSheet.updateTagExample();
+			mw.spriteSheet.updateSpriteTagExample();
+		});
+
+		this.canvas.bind('mousedown', function() {
+			mw.spriteSheet.startSelection();
+		});
+
+		this.canvas.bind('mouseup', function() {
+			mw.spriteSheet.stopSelection();
 		});
 
 		$('#sprite_columns').on('change keyup', function() {
@@ -210,7 +210,7 @@ mw.spriteSheet = {
 	 *
 	 * @return	void
 	 */
-	updateTagExample: function() {
+	updateSpriteTagExample: function() {
 		if (isNaN(this.values.columns) || isNaN(this.values.rows) || this.values.columns < 1 || this.values.rows < 1) {
 			return;
 		}
@@ -233,6 +233,69 @@ mw.spriteSheet = {
 		var example = "{{#sprite:"+title+"|"+xPos+"|"+yPos+"}}";
 
 		$('#sprite_preview').html(example);
+	},
+
+	/**
+	 * Update the parser tag example block.
+	 *
+	 * @return	void
+	 */
+	updateSliceTagExample: function() {
+		if (this.selector.width == 0 || this.selector.height == 0) {
+			return;
+		}
+
+		var xPercent = ((this.selector.x / this.canvas.width) * 100).toFixed(2);
+		var yPercent = ((this.selector.y / this.canvas.height) * 100).toFixed(2);
+
+		var widthPercent = ((this.selector.width / this.canvas.width) * 100).toFixed(2);
+		var heightPercent = ((this.selector.height / this.canvas.height) * 100).toFixed(2);
+
+		var title = $("input[name='page_title']").val();
+
+		var example = "{{#slice:"+title+"|"+xPercent+"|"+yPercent+"|"+widthPercent+"|"+heightPercent+"}}";
+
+		$('#slice_preview').html(example);
+	},
+
+	/**
+	 * Start selection of a canvas area.
+	 *
+	 * @return	void
+	 */
+	startSelection: function () {
+		if (this.selector !== null) {
+			this.canvas.removeChild(this.selector);
+		}
+		this.selector = this.canvas.display.rectangle({
+			x: this.canvas.mouse.x,
+			y: this.canvas.mouse.y,
+			origin: {x: "top", y: "left"},
+			width: 0,
+			height: 0,
+			fill: "rgba(195, 223,253, 0.5)",
+			stroke: "inside 1px rgba(195, 223,253, 0.5)"
+		});
+		this.canvas.addChild(this.selector);
+
+		this.selector.timeline = this.canvas.setLoop(function () {
+			var width = mw.spriteSheet.canvas.mouse.x - mw.spriteSheet.selector.x;
+			var height = mw.spriteSheet.canvas.mouse.y - mw.spriteSheet.selector.y;
+
+			mw.spriteSheet.selector.width = width;
+			mw.spriteSheet.selector.height = height;
+			mw.spriteSheet.canvas.redraw();
+		}).start();
+	},
+
+	/**
+	 * Stop selection of a canvas area.
+	 *
+	 * @return	void
+	 */
+	stopSelection: function () {
+		this.selector.timeline.stop();
+		this.updateSliceTagExample();
 	}
 }
 
