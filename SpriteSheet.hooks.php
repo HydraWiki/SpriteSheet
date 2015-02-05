@@ -146,7 +146,6 @@ class SpriteSheetHooks {
 				<button id='sprite_save' name='sprite_save' type='button'>".wfMessage('save')->escaped()."</button>
 
 				<pre id='sprite_preview'>".wfMessage('click_grid_for_preview')->escaped()."</pre>
-				<pre id='slice_preview'>".wfMessage('click_grid_for_preview')->escaped()."</pre>
 			</fieldset>
 		</form>";
 

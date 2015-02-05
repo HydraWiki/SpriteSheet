@@ -2,6 +2,7 @@ mw.spriteSheet = {
 	canvas: null,
 	values: {},
 	selector: null,
+	mouseDrag: false,
 
 	/**
 	 * Initialize the sprite sheet.
@@ -41,16 +42,17 @@ mw.spriteSheet = {
 			fps: 60
 		});
 
-		this.canvas.bind('click tap', function() {
-			mw.spriteSheet.updateSpriteTagExample();
-		});
-
 		this.canvas.bind('mousedown', function() {
+			mw.spriteSheet.canvas.bind('mousemove', function() {
+				mw.spriteSheet.mouseDrag = true;
+			});
 			mw.spriteSheet.startSelection();
 		});
 
 		this.canvas.bind('mouseup', function() {
+			mw.spriteSheet.canvas.unbind('mousemove');
 			mw.spriteSheet.stopSelection();
+			mw.spriteSheet.mouseDrag = false;
 		});
 
 		$('#sprite_columns').on('change keyup', function() {
@@ -269,7 +271,7 @@ mw.spriteSheet = {
 
 		var example = "{{#slice:"+title+"|"+xPercent+"|"+yPercent+"|"+widthPercent+"|"+heightPercent+"}}";
 
-		$('#slice_preview').html(example);
+		$('#sprite_preview').html(example);
 	},
 
 	/**
@@ -309,7 +311,11 @@ mw.spriteSheet = {
 	 */
 	stopSelection: function () {
 		this.selector.timeline.stop();
-		this.updateSliceTagExample();
+		if (this.mouseDrag == true) {
+			this.updateSliceTagExample();
+		} else {
+			this.updateSpriteTagExample();
+		}
 	}
 }
 
