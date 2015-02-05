@@ -1,6 +1,9 @@
 mw.spriteSheet = {
 	canvas: null,
 	values: {},
+	selectedSprite: {},
+	selectedSlice: {},
+	selectedType: null,
 	selector: null,
 	mouseDrag: false,
 
@@ -44,6 +47,7 @@ mw.spriteSheet = {
 
 		this.canvas.bind('mousedown', function() {
 			mw.spriteSheet.canvas.bind('mousemove', function() {
+				mw.spriteSheet.canvas.addChild(mw.spriteSheet.selector);
 				mw.spriteSheet.mouseDrag = true;
 			});
 			mw.spriteSheet.startSelection();
@@ -56,19 +60,23 @@ mw.spriteSheet = {
 		});
 
 		$('#sprite_columns').on('change keyup', function() {
-			mw.spriteSheet.update();
+			mw.spriteSheet.updateSpriteSheet();
 		}).change();
 
 		$('#sprite_rows').on('change keyup', function() {
-			mw.spriteSheet.update();
+			mw.spriteSheet.updateSpriteSheet();
 		}).change();
 
 		$('#sprite_inset').on('change keyup', function() {
-			mw.spriteSheet.update();
+			mw.spriteSheet.updateSpriteSheet();
 		}).change();
 
-		$('#sprite_save').on('click tap', function() {
-			mw.spriteSheet.save();
+		$('#save_sheet').on('click tap', function() {
+			mw.spriteSheet.saveSpriteSheet();
+		});
+
+		$('#save_named_sprite').on('click tap', function() {
+			mw.spriteSheet.saveNamedSprite();
 		});
 	},
 
@@ -77,7 +85,7 @@ mw.spriteSheet = {
 	 *
 	 * @return	void
 	 */
-	update: function() {
+	updateSpriteSheet: function() {
 		this.canvas.reset();
 
 		this.parseValues();
@@ -129,16 +137,44 @@ mw.spriteSheet = {
 	 *
 	 * @return	boolean
 	 */
-	save: function() {
+	saveSpriteSheet: function() {
 		var api = new mw.Api();
 
-		mw.spriteSheet.showProgressIndicator();
+		this.showProgressIndicator();
 		api.post(
 			{
 				action: 'spritesheet',
-				do: 'save',
+				do: 'saveSpriteSheet',
 				format: 'json',
 				form: $('form#spritesheet_editor fieldset#spritesheet_form').serialize()
+			}
+		).done(
+			function(result) {
+				if (result.success != true) {
+					alert(result.message);
+				}
+				mw.spriteSheet.hideProgressIndicator();
+			}
+		);
+	},
+
+	/**
+	 * Save a named sprite/slice back to the server.
+	 *
+	 * @return	boolean
+	 */
+	saveNamedSprite: function() {
+		var api = new mw.Api();
+
+		this.showProgressIndicator();
+		api.post(
+			{
+				action: 'spritesheet',
+				do: 'saveNamedSprite',
+				format: 'json',
+				form: $('form#spritesheet_editor fieldset#spritesheet_form').serialize(),
+				type: mw.spriteSheet.selectedType,
+				values: (mw.spriteSheet.selectedType == 'slice' ? JSON.stringify(mw.spriteSheet.selectedSlice) : JSON.stringify(mw.spriteSheet.selectedSprite))
 			}
 		).done(
 			function(result) {
@@ -232,9 +268,15 @@ mw.spriteSheet = {
 		var yPos = Math.floor(yPixel / rowHeight);
 		var title = $("input[name='page_title']").val();
 
+		this.selectedSprite.xPos = xPos;
+		this.selectedSprite.yPos = yPos;
+
 		var example = "{{#sprite:"+title+"|"+xPos+"|"+yPos+"}}";
 
 		$('#sprite_preview').html(example);
+
+		$('button#save_named_sprite').html(mw.message('save_named_sprite').escaped());
+		this.selectedType = 'sprite';
 	},
 
 	/**
@@ -269,9 +311,17 @@ mw.spriteSheet = {
 
 		var title = $("input[name='page_title']").val();
 
+		this.selectedSlice.xPercent = xPercent;
+		this.selectedSlice.yPercent = yPercent;
+		this.selectedSlice.widthPercent = widthPercent;
+		this.selectedSlice.heightPercent = heightPercent;
+
 		var example = "{{#slice:"+title+"|"+xPercent+"|"+yPercent+"|"+widthPercent+"|"+heightPercent+"}}";
 
 		$('#sprite_preview').html(example);
+
+		$('button#save_named_sprite').html(mw.message('save_named_slice').escaped());
+		this.selectedType = 'slice';
 	},
 
 	/**
@@ -292,7 +342,6 @@ mw.spriteSheet = {
 			fill: "rgba(195, 223,253, 0.5)",
 			stroke: "inside 1px rgba(195, 223,253, 0.5)"
 		});
-		this.canvas.addChild(this.selector);
 
 		this.selector.timeline = this.canvas.setLoop(function () {
 			var width = mw.spriteSheet.canvas.mouse.x - mw.spriteSheet.selector.x;

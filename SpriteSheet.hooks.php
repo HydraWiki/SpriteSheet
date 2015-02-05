@@ -61,7 +61,7 @@ class SpriteSheetHooks {
 			return "<div class='errorbox'>".wfMessage('no_sprite_sheet_defined', $title->getPrefixedText())->text()."</div>";
 		}
 
-		$html = $spriteSheet->getSpriteAtPos($column, $row, $thumbWidth);
+		$html = $spriteSheet->getSpriteAtCoordinates($column, $row, $thumbWidth);
 
 		return [
 			$html,
@@ -150,12 +150,11 @@ class SpriteSheetHooks {
 				<input name='sid' type='hidden' value='".self::$spriteSheet->getId()."'/>
 				<input name='page_id' type='hidden' value='".self::$spriteSheet->getTitle()->getArticleId()."'/>
 				<input name='page_title' type='hidden' value='".htmlentities(self::$spriteSheet->getTitle()->getPrefixedDBkey(), ENT_QUOTES)."'/>
-				<button id='sprite_save' name='sprite_save' type='button'>".wfMessage('save')->escaped()."</button>
-			</fieldset>
-			<fieldset id='spritepreview_form'>
-				<label for='sprite_label'>".wfMessage('sprite_label')->escaped()."</label>
-				<input id='sprite_label' name='sprite_label' type='text' value=''/>
+				<button id='save_sheet' name='save_sheet' type='button'>".wfMessage('save_sheet')->escaped()."</button>
+
 				<pre id='sprite_preview'>".wfMessage('click_grid_for_preview')->escaped()."</pre>
+				<input id='sprite_label' name='sprite_label' type='text' value=''/>
+				<button id='save_named_sprite' name='save_named_sprite' type='button'>".wfMessage('save_named_sprite')->escaped()."</button>
 			</fieldset>
 		</form>";
 

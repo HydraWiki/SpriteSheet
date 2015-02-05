@@ -55,5 +55,9 @@ $wgResourceModules['ext.spriteSheet'] = [
 	'dependencies'	=> [
 		'jquery'
 	],
+	'messages'		=> [
+		'save_named_sprite',
+		'save_named_slice'
+	],
 	'position'		=> 'top'
 ];

@@ -293,6 +293,27 @@ class SpriteSheet {
 	}
 
 	/**
+	 * Returns false if the column or row are out of bounds.
+	 *
+	 * @access	public
+	 * @param	integer	Column
+	 * @param	integer	Row
+	 * @return	boolean	Valid
+	 */
+	public function validateSpriteCoordindates($column, $row) {
+		$column++;
+		$row++;
+
+		if ($column > $this->getColumns() || $column < 0) {
+			return false;
+		}
+		if ($row > $this->getRows() || $row < 0) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Return sprite at coordinate position.
 	 *
 	 * @access	public
@@ -301,7 +322,7 @@ class SpriteSheet {
 	 * @param	integer	[Optional] Thumbnail Width
 	 * @return	mixed	HTML or false on error.
 	 */
-	public function getSpriteAtPos($column, $row, $thumbWidth = null) {
+	public function getSpriteAtCoordinates($column, $row, $thumbWidth = null) {
 		$file = wfFindFile($this->getTitle());
 
 		if (is_object($file) && $file->exists()) {
@@ -321,6 +342,42 @@ class SpriteSheet {
 			return "<div class='sprite' style='width: {$spriteWidth}px; height: {$spriteHeight}px; overflow: hidden; position: relative;'><img src='".$file->getUrl()."' style='position: absolute; left: -{$spriteX}px; top: -{$spriteY}px;'/></div>";
 		}
 		return false;
+	}
+
+	/**
+	 * Returns false if the slice percentages are out of bounds.
+	 *
+	 * @access	public
+	 * @param	integer	X coordinate, percentage
+	 * @param	integer	Y coordinate, percentage
+	 * @param	integer	Width, percentage
+	 * @param	integer	Height, percentage
+	 * @return	boolean	Valid
+	 */
+	public function validateSlicePercentages($xPercent, $yPercent, $widthPrecent, $heightPercent) {
+		$position = [
+			$xPercent,
+			$yPercent
+		];
+
+		foreach ($position as $value) {
+			if ($value >= 100 || $value < 0) {
+				return false;
+			}
+		}
+
+		$dimensions = [
+			$widthPrecent,
+			$heightPercent
+		];
+
+		foreach ($dimensions as $value) {
+			if ($value > 100 || $value <= 0) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

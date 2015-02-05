@@ -50,8 +50,11 @@ class SpriteSheetAPI extends ApiBase {
 		}
 
 		switch ($this->params['do']) {
-			case 'save':
+			case 'saveSpriteSheet':
 				$response = $this->saveSpriteSheet();
+				break;
+			case 'saveNamedSprite':
+				$response = $this->saveNamedSprite();
 				break;
 			default:
 				$this->dieUsageMsg(['invaliddo', $this->params['do']]);
@@ -78,6 +81,14 @@ class SpriteSheetAPI extends ApiBase {
 			'form' => [
 				ApiBase::PARAM_TYPE		=> 'string',
 				ApiBase::PARAM_REQUIRED => false
+			],
+			'type' => [
+				ApiBase::PARAM_TYPE		=> 'string',
+				ApiBase::PARAM_REQUIRED => false
+			],
+			'values' => [
+				ApiBase::PARAM_TYPE		=> 'string',
+				ApiBase::PARAM_REQUIRED => false
 			]
 		];
 	}
@@ -91,7 +102,9 @@ class SpriteSheetAPI extends ApiBase {
 	public function getParamDescription() {
 		return [
 			'do'		=> 'Action to take.',
-			'form'		=> 'Form data from a sprite sheet editor form.'
+			'form'		=> 'Form data from a sprite sheet editor form.',
+			'type'		=> 'Sprite or Slice',
+			'values'	=> 'Values for the sprite or slice being saved.'
 		];
 	}
 
@@ -102,7 +115,7 @@ class SpriteSheetAPI extends ApiBase {
 	 * @return	array	Success, Messages
 	 */
 	public function saveSpriteSheet() {
-		$sucecss = false;
+		$success = false;
 		$message = 'ss_api_unknown_error';
 
 		if ($this->wgRequest->wasPosted()) {
@@ -128,6 +141,59 @@ class SpriteSheetAPI extends ApiBase {
 					$message = 'ss_api_okay';
 				} else {
 					$message = 'ss_api_fatal_error_saving';
+				}
+			} else {
+				$message = 'ss_api_fatal_error_loading';
+			}
+		} else {
+			$message = 'ss_api_must_be_posted';
+		}
+
+		return ['success' => $success, 'message' => wfMessage($message)->text()];
+	}
+
+	/**
+	 * Save a named sprite/slice.
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	public function saveNamedSprite() {
+		$success = false;
+		$message = 'ss_api_unknown_error';
+
+		if ($this->wgRequest->wasPosted()) {
+			$values = @json_decode($this->params['values'], true);
+			parse_str($this->params['form'], $form);
+
+			if ($form['sid'] > 0) {
+				$spriteSheet = SpriteSheet::newFromId($form['sid']);
+			} else {
+				$title = Title::newFromDBKey($form['page_title']);
+				if ($title !== null) {
+					$spriteSheet = SpriteSheet::newFromTitle($title);
+				} else {
+					$message = 'ss_api_bad_title';
+				}
+			}
+			if ($spriteSheet !== false) {
+				switch ($this->params['type']) {
+					case 'sprite':
+						if ($spriteSheet->validateSpriteCoordindates($values['xPos'], $values['yPos'])) {
+							
+						} else {
+							$message = 'ss_api_invalid_coordinates';
+						}
+						break;
+					case 'slice':
+						if ($spriteSheet->validateSlicePercentages($values['xPercent'], $values['yPercent'], $values['widthPercent'], $values['heightPercent'])) {
+							
+						} else {
+							$message = 'ss_api_invalid_precentages';
+						}
+						break;
+					default:
+						break;
 				}
 			} else {
 				$message = 'ss_api_fatal_error_loading';
