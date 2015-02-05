@@ -12,6 +12,13 @@
 
 class SpriteSheetHooks {
 	/**
+	 * SpriteSheet Object - Used to hold a SpriteSheet when viewing an image page.
+	 *
+	 * @var		object
+	 */
+	static private $spriteSheet = null;
+
+	/**
 	 * Sets up this extension's parser functions.
 	 *
 	 * @access	public
@@ -125,31 +132,51 @@ class SpriteSheetHooks {
 	static public function onImageOpenShowImageInlineBefore(ImagePage $imagePage, OutputPage $output) {
 		$output->addModules('ext.spriteSheet');
 
-		$spriteSheet = SpriteSheet::newFromTitle($imagePage->getTitle());
+		self::$spriteSheet = SpriteSheet::newFromTitle($imagePage->getTitle());
 
 		$form = "
 		<form id='spritesheet_editor'>
 			<fieldset id='spritesheet_form'>
 				<legend>".wfMessage('sprite_sheet')->escaped()."</legend>
 				<label for='sprite_columns'>".wfMessage('sprite_columns')->escaped()."</label>
-				<input id='sprite_columns' name='sprite_columns' type='text' value='".$spriteSheet->getColumns()."'/>
+				<input id='sprite_columns' name='sprite_columns' type='text' value='".self::$spriteSheet->getColumns()."'/>
 
 				<label for='sprite_rows'>".wfMessage('sprite_rows')->escaped()."</label>
-				<input id='sprite_rows' name='sprite_rows' type='text' value='".$spriteSheet->getRows()."'/>
+				<input id='sprite_rows' name='sprite_rows' type='text' value='".self::$spriteSheet->getRows()."'/>
 
 				<label for='sprite_inset'>".wfMessage('sprite_inset')->escaped()."</label>
-				<input id='sprite_inset' name='sprite_inset' type='text' value='".$spriteSheet->getInset()."'/>
+				<input id='sprite_inset' name='sprite_inset' type='text' value='".self::$spriteSheet->getInset()."'/>
 
-				<input name='sid' type='hidden' value='".$spriteSheet->getId()."'/>
-				<input name='page_id' type='hidden' value='".$spriteSheet->getTitle()->getArticleId()."'/>
-				<input name='page_title' type='hidden' value='".htmlentities($spriteSheet->getTitle()->getPrefixedDBkey(), ENT_QUOTES)."'/>
+				<input name='sid' type='hidden' value='".self::$spriteSheet->getId()."'/>
+				<input name='page_id' type='hidden' value='".self::$spriteSheet->getTitle()->getArticleId()."'/>
+				<input name='page_title' type='hidden' value='".htmlentities(self::$spriteSheet->getTitle()->getPrefixedDBkey(), ENT_QUOTES)."'/>
 				<button id='sprite_save' name='sprite_save' type='button'>".wfMessage('save')->escaped()."</button>
-
+			</fieldset>
+			<fieldset id='spritepreview_form'>
+				<label for='sprite_label'>".wfMessage('sprite_label')->escaped()."</label>
+				<input id='sprite_label' name='sprite_label' type='text' value=''/>
 				<pre id='sprite_preview'>".wfMessage('click_grid_for_preview')->escaped()."</pre>
 			</fieldset>
 		</form>";
 
 		$output->addHtml($form);
+
+		return true;
+	}
+
+	/**
+	 * Modify the page rendering hash when altering the output.
+	 *
+	 * @access	public
+	 * @param	string	Page rendering hash
+	 * @param	object	User Object
+	 * @param	array	Options used to generate the initial hash.
+	 * @return	boolean True
+	 */
+	static public function onPageRenderingHash(&$hash, User $user, &$forOptions) {
+		if (self::$spriteSheet instanceOf SpriteSheet && self::$spriteSheet->getId()) {
+			$hash .= '!'.self::$spriteSheet->getId().'-'.self::$spriteSheet->getColumns().'-'.self::$spriteSheet->getRows().'-'.self::$spriteSheet->getInset();
+		}
 
 		return true;
 	}

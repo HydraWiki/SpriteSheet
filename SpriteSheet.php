@@ -39,6 +39,7 @@ $wgAutoloadClasses['SpriteSheetAPI']			= "{$extDir}/SpriteSheet.api.php";
 $wgHooks['ParserFirstCallInit'][]				= 'SpriteSheetHooks::onParserFirstCallInit';
 $wgHooks['ImagePageShowTOC'][]					= 'SpriteSheetHooks::onImagePageShowTOC';
 $wgHooks['ImageOpenShowImageInlineBefore'][]	= 'SpriteSheetHooks::onImageOpenShowImageInlineBefore';
+$wgHooks['PageRenderingHash'][]					= 'SpriteSheetHooks::onPageRenderingHash';
 $wgHooks['LoadExtensionSchemaUpdates'][]		= 'SpriteSheetHooks::onLoadExtensionSchemaUpdates';
 
 $wgAPIModules['spritesheet']					= 'SpriteSheetAPI';

@@ -138,7 +138,7 @@ mw.spriteSheet = {
 				action: 'spritesheet',
 				do: 'save',
 				format: 'json',
-				form: $('form#spritesheet_editor').serialize()
+				form: $('form#spritesheet_editor fieldset#spritesheet_form').serialize()
 			}
 		).done(
 			function(result) {
