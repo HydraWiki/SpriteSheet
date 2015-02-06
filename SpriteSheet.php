@@ -57,7 +57,9 @@ $wgResourceModules['ext.spriteSheet'] = [
 	],
 	'messages'		=> [
 		'save_named_sprite',
-		'save_named_slice'
+		'save_named_slice',
+		'please_enter_sprite_name',
+		'please_select_sprite'
 	],
 	'position'		=> 'top'
 ];

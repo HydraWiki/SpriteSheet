@@ -194,6 +194,18 @@ mw.spriteSheet = {
 	saveNamedSprite: function() {
 		var api = new mw.Api();
 
+		var spriteName = $('#sprite_label').val();
+
+		if (!this.selectedType) {
+			alert(mw.message('please_select_sprite').text());
+			return;
+		}
+
+		if (!spriteName) {
+			alert(mw.message('please_enter_sprite_name').text());
+			return;
+		}
+
 		this.showProgressIndicator();
 		api.post(
 			{

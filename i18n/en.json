@@ -22,5 +22,7 @@
 	"could_not_find_title": "Could not find the image [[:$1]] to load a sprite sheet.",
 	"save_sheet": "Save Sheet",
 	"save_named_sprite": "Save Named Sprite",
-	"save_named_slice": "Save Named Slice"
+	"save_named_slice": "Save Named Slice",
+	"please_enter_sprite_name": "Please enter a name for this custom sprite.",
+	"please_select_sprite": "Please select a sprite or create a custom slice first."
 }
