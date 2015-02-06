@@ -225,4 +225,25 @@ class SpriteName {
 	public function getTitle() {
 		return $this->data['name'];
 	}
+
+	/**
+	 * Set the SpriteSheet
+	 *
+	 * @access	public
+	 * @param	object	SpriteSheet
+	 * @return	void
+	 */
+	public function setSpriteSheet(SpriteSheet $spriteSheet) {
+		$this->spriteSheet = $this->spriteSheet;
+	}
+
+	/**
+	 * Return the SpriteSheet object associated with this sprite name.
+	 *
+	 * @access	public
+	 * @return	object	SpriteSheet
+	 */
+	public function getSpriteSheet() {
+		return $this->spriteSheet;
+	}
 }

@@ -186,23 +186,41 @@ class SpriteSheetAPI extends ApiBase {
 				}
 			}
 			if ($spriteSheet !== false) {
-				switch ($this->params['type']) {
-					case 'sprite':
-						if ($spriteSheet->validateSpriteCoordindates($values['xPos'], $values['yPos'])) {
-							
-						} else {
-							$message = 'ss_api_invalid_coordinates';
-						}
-						break;
-					case 'slice':
-						if ($spriteSheet->validateSlicePercentages($values['xPercent'], $values['yPercent'], $values['widthPercent'], $values['heightPercent'])) {
-							
-						} else {
-							$message = 'ss_api_invalid_precentages';
-						}
-						break;
-					default:
-						break;
+				$spriteName = SpriteName::newFromName($form['sprite_name']);
+				$validName = false;
+
+				if (!$spriteName) {
+					$message = 'ss_api_invalid_sprite_name';
+					$validName = true;
+				}
+
+				if ($spriteName->getId() && $spriteName->getSpriteSheet()->getId() != $spriteSheet->getId()) {
+					$message = 'ss_api_sprite_name_in_use';
+					$validName = true;
+				}
+
+				if ($validName) {
+					//Reset this regardless.
+					$spriteName->setSpriteSheet($spriteSheet);
+
+					switch ($this->params['type']) {
+						case 'sprite':
+							if ($spriteSheet->validateSpriteCoordindates($values['xPos'], $values['yPos'])) {
+								$spriteName->setValues($values);
+							} else {
+								$message = 'ss_api_invalid_coordinates';
+							}
+							break;
+						case 'slice':
+							if ($spriteSheet->validateSlicePercentages($values['xPercent'], $values['yPercent'], $values['widthPercent'], $values['heightPercent'])) {
+								$spriteName->setValues($values);
+							} else {
+								$message = 'ss_api_invalid_precentages';
+							}
+							break;
+						default:
+							break;
+					}
 				}
 			} else {
 				$message = 'ss_api_fatal_error_loading';
