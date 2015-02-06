@@ -120,8 +120,8 @@ class SpriteSheetAPI extends ApiBase {
 
 		if ($this->wgRequest->wasPosted()) {
 			parse_str($this->params['form'], $form);
-			if ($form['sid'] > 0) {
-				$spriteSheet = SpriteSheet::newFromId($form['sid']);
+			if ($form['spritesheet_id'] > 0) {
+				$spriteSheet = SpriteSheet::newFromId($form['spritesheet_id']);
 			} else {
 				$title = Title::newFromDBKey($form['page_title']);
 				if ($title !== null) {
@@ -149,7 +149,16 @@ class SpriteSheetAPI extends ApiBase {
 			$message = 'ss_api_must_be_posted';
 		}
 
-		return ['success' => $success, 'message' => wfMessage($message)->text()];
+		$return = [
+			'success' => $success,
+			'message' => wfMessage($message)->text()
+		];
+
+		if ($success) {
+			$return['spriteSheetId'] = $spriteSheet->getId();
+		}
+
+		return $return;
 	}
 
 	/**
@@ -166,8 +175,8 @@ class SpriteSheetAPI extends ApiBase {
 			$values = @json_decode($this->params['values'], true);
 			parse_str($this->params['form'], $form);
 
-			if ($form['sid'] > 0) {
-				$spriteSheet = SpriteSheet::newFromId($form['sid']);
+			if ($form['spritesheet_id'] > 0) {
+				$spriteSheet = SpriteSheet::newFromId($form['spritesheet_id']);
 			} else {
 				$title = Title::newFromDBKey($form['page_title']);
 				if ($title !== null) {

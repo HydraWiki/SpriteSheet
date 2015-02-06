@@ -111,7 +111,7 @@ class SpriteSheet {
 			switch ($this->newFrom) {
 				case 'id':
 					$where = [
-						'sid' => $this->getId()
+						'spritesheet_id' => $this->getId()
 					];
 					break;
 				case 'title':
@@ -154,15 +154,16 @@ class SpriteSheet {
 	public function save() {
 		$success = false;
 
-		$sId = $this->data['sid'];
-		unset($this->data['sid']);
+		//Temporarily store and unset the spritesheet ID.
+		$spriteSheetId = $this->data['spritesheet_id'];
+		unset($this->data['spritesheet_id']);
 
 		$this->DB->begin();
-		if ($sId > 0) {
+		if ($spriteSheetId > 0) {
 			$result = $this->DB->update(
 				'spritesheet',
 				$this->data,
-				['sid' => $sId],
+				['spritesheet_id' => $spriteSheetId],
 				__METHOD__
 			);
 		} else {
@@ -171,11 +172,14 @@ class SpriteSheet {
 				$this->data,
 				__METHOD__
 			);
+			$spriteSheetId = $this->DB->insertId();
 		}
 		if ($result !== false) {
 			$success = true;
 		}
 		$this->DB->commit();
+
+		$this->data['spritesheet_id'] = $spriteSheetId;
 
 		return $success;
 	}
@@ -188,8 +192,8 @@ class SpriteSheet {
 	 * @return	boolean	True on success, false if the ID is already set.
 	 */
 	public function setId($id) {
-		if (!$this->data['sid']) {
-			$this->data['sid'] = intval($id);
+		if (!$this->data['spritesheet_id']) {
+			$this->data['spritesheet_id'] = intval($id);
 			return true;
 		} else {
 			return false;
@@ -203,7 +207,7 @@ class SpriteSheet {
 	 * @return	integer	Sprite Sheet ID
 	 */
 	public function getId() {
-		return intval($this->data['sid']);
+		return intval($this->data['spritesheet_id']);
 	}
 
 	/**

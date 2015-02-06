@@ -147,7 +147,7 @@ class SpriteSheetHooks {
 				<label for='sprite_inset'>".wfMessage('sprite_inset')->escaped()."</label>
 				<input id='sprite_inset' name='sprite_inset' type='text' value='".self::$spriteSheet->getInset()."'/>
 
-				<input name='sid' type='hidden' value='".self::$spriteSheet->getId()."'/>
+				<input name='spritesheet_id' type='hidden' value='".self::$spriteSheet->getId()."'/>
 				<input name='page_id' type='hidden' value='".self::$spriteSheet->getTitle()->getArticleId()."'/>
 				<input name='page_title' type='hidden' value='".htmlentities(self::$spriteSheet->getTitle()->getPrefixedDBkey(), ENT_QUOTES)."'/>
 				<button id='save_sheet' name='save_sheet' type='button'>".wfMessage('save_sheet')->escaped()."</button>
@@ -191,6 +191,7 @@ class SpriteSheetHooks {
 		$extDir = __DIR__;
 
 		$updater->addExtensionUpdate(['addTable', 'spritesheet', "{$extDir}/install/sql/spritesheet_table_spritesheet.sql", true]);
+		$updater->addExtensionUpdate(['addTable', 'spritename', "{$extDir}/install/sql/spritesheet_table_spritename.sql", true]);
 
 		return true;
 	}

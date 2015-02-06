@@ -6,6 +6,7 @@ mw.spriteSheet = {
 	selectedType: null,
 	selector: null,
 	mouseDrag: false,
+	sheetSaved: false,
 
 	/**
 	 * Initialize the sprite sheet.
@@ -61,15 +62,15 @@ mw.spriteSheet = {
 
 		$('#sprite_columns').on('change keyup', function() {
 			mw.spriteSheet.updateSpriteSheet();
-		}).change();
+		});
 
 		$('#sprite_rows').on('change keyup', function() {
 			mw.spriteSheet.updateSpriteSheet();
-		}).change();
+		});
 
 		$('#sprite_inset').on('change keyup', function() {
 			mw.spriteSheet.updateSpriteSheet();
-		}).change();
+		});
 
 		$('#save_sheet').on('click tap', function() {
 			mw.spriteSheet.saveSpriteSheet();
@@ -78,14 +79,18 @@ mw.spriteSheet = {
 		$('#save_named_sprite').on('click tap', function() {
 			mw.spriteSheet.saveNamedSprite();
 		});
+
+		this.updateSpriteSheet(true);
+		this.sheetSaved = true;
 	},
 
 	/**
 	 * Update the canvas object containing the sprite sheet.
 	 *
+	 * @param	boolean	Skip saving
 	 * @return	void
 	 */
-	updateSpriteSheet: function() {
+	updateSpriteSheet: function(skipSave) {
 		this.canvas.reset();
 
 		this.parseValues();
@@ -130,6 +135,17 @@ mw.spriteSheet = {
 			});
 			this.canvas.addChild(rectangle);
 		}
+		this.sheetSaved = false;
+
+		if (skipSave !== true) {
+			clearTimeout(this.saveTimeout);
+			this.saveTimeout = setTimeout(
+				function() {
+					mw.spriteSheet.saveSpriteSheet();
+				},
+				1000
+			);
+		}
 	},
 
 	/**
@@ -141,6 +157,7 @@ mw.spriteSheet = {
 		var api = new mw.Api();
 
 		this.showProgressIndicator();
+		$('#save_sheet').attr('disabled', true);
 		api.post(
 			{
 				action: 'spritesheet',
@@ -150,10 +167,21 @@ mw.spriteSheet = {
 			}
 		).done(
 			function(result) {
+				mw.spriteSheet.hideProgressIndicator();
+				$('#save_sheet').attr('disabled', false);
+
 				if (result.success != true) {
 					alert(result.message);
+					return;
 				}
-				mw.spriteSheet.hideProgressIndicator();
+
+				var spriteSheetId = $("input[name='spritesheet_id']").val();
+
+				if (result.spriteSheetId > 0 && spriteSheetId <= 0) {
+					$("input[name='spritesheet_id']").val(result.spriteSheetId);
+				}
+
+				mw.spriteSheet.sheetSaved = true;
 			}
 		);
 	},
