@@ -63,7 +63,7 @@ class SpriteName {
 	 * @param	integer	SpriteName database identification number.
 	 * @return	mixed	SpriteName object or false on error.
 	 */
-	static public function newFromName($id) {
+	static public function newFromId($id) {
 		if ($id < 1) {
 			return false;
 		}
@@ -87,7 +87,7 @@ class SpriteName {
 	 */
 	static public function newFromName($name) {
 		$spriteName = new SpriteName();
-		$spriteName->setTitle($name);
+		$spriteName->setName($name);
 
 		$spriteName->newFrom = 'name';
 
@@ -112,7 +112,7 @@ class SpriteName {
 					break;
 				case 'name':
 					$where = [
-						'sprite_name' => $this->getName()
+						'name' => $this->getName()
 					];
 					break;
 			}
@@ -149,22 +149,26 @@ class SpriteName {
 	public function save() {
 		$success = false;
 
-		//Temporarily store and unset the spritesheet ID.
-		$spriteNameId = $this->data['spritename_id'];
-		unset($this->data['spritename_id']);
+		$spriteNameId = $this->getId();
+
+		$save = [
+			'spritesheet_id'	=> $this->getSpriteSheet()->getId(),
+			'name'				=> $this->getName(),
+			'values'			=> $this->getValues(false)
+		];
 
 		$this->DB->begin();
 		if ($spriteNameId > 0) {
 			$result = $this->DB->update(
 				'spritename',
-				$this->data,
+				$save,
 				['spritename_id' => $spriteNameId],
 				__METHOD__
 			);
 		} else {
 			$result = $this->DB->insert(
 				'spritename',
-				$this->data,
+				$save,
 				__METHOD__
 			);
 			$spriteNameId = $this->DB->insertId();
@@ -173,8 +177,6 @@ class SpriteName {
 			$success = true;
 		}
 		$this->DB->commit();
-
-		$this->data['spritename_id'] = $spriteNameId;
 
 		return $success;
 	}
@@ -222,8 +224,30 @@ class SpriteName {
 	 * @access	public
 	 * @return	string	Sprite Name
 	 */
-	public function getTitle() {
+	public function getName() {
 		return $this->data['name'];
+	}
+
+	/**
+	 * Set the values.
+	 *
+	 * @access	public
+	 * @param	array	Values
+	 * @return	void
+	 */
+	public function setValues(array $values) {
+		$this->data['values'] = @json_encode($values);
+	}
+
+	/**
+	 * Return the saved values for this named sprite/slice.
+	 *
+	 * @access	public
+	 * @param	boolean	[Optional] Return as an array by default or as the raw JSON string.
+	 * @return	array	Values
+	 */
+	public function getValues($asArray = true) {
+		return ($asArray ? @json_decode($this->data['values'], true) : $this->data['values']);
 	}
 
 	/**

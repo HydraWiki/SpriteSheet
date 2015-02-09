@@ -207,6 +207,7 @@ class SpriteSheetAPI extends ApiBase {
 						case 'sprite':
 							if ($spriteSheet->validateSpriteCoordindates($values['xPos'], $values['yPos'])) {
 								$spriteName->setValues($values);
+								$spriteName->save();
 							} else {
 								$message = 'ss_api_invalid_coordinates';
 							}
@@ -214,6 +215,7 @@ class SpriteSheetAPI extends ApiBase {
 						case 'slice':
 							if ($spriteSheet->validateSlicePercentages($values['xPercent'], $values['yPercent'], $values['widthPercent'], $values['heightPercent'])) {
 								$spriteName->setValues($values);
+								$spriteName->save();
 							} else {
 								$message = 'ss_api_invalid_precentages';
 							}

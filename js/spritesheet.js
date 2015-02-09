@@ -194,7 +194,7 @@ mw.spriteSheet = {
 	saveNamedSprite: function() {
 		var api = new mw.Api();
 
-		var spriteName = $('#sprite_label').val();
+		var spriteName = $('#sprite_name').val();
 
 		if (!this.selectedType) {
 			alert(mw.message('please_select_sprite').text());
