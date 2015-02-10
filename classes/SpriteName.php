@@ -140,10 +140,11 @@ class SpriteName {
 				$this->data = $row;
 
 				if ($this->spritesheet === false) {
-					$this->spritesheet = SpriteSheet::newFromID($row['spritesheet_id']);
-					if (!$this->spritesheet) {
+					$spriteSheet = SpriteSheet::newFromID($row['spritesheet_id']);
+					if (!$spriteSheet) {
 						return false;
 					}
+					$this->setSpriteSheet($spriteSheet);
 				}
 			}
 		}
