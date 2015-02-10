@@ -47,6 +47,16 @@ class SpriteName {
 	public $newFrom = null;
 
 	/**
+	 * Valid named sprite types.
+	 *
+	 * @var		array
+	 */
+	public $types = [
+		'sprite',
+		'slice'
+	];
+
+	/**
 	 * Main Constructor
 	 *
 	 * @access	public
@@ -152,9 +162,10 @@ class SpriteName {
 		$spriteNameId = $this->getId();
 
 		$save = [
-			'spritesheet_id'	=> $this->getSpriteSheet()->getId(),
-			'name'				=> $this->getName(),
-			'values'			=> $this->getValues(false)
+			'`spritesheet_id`'	=> $this->getSpriteSheet()->getId(),
+			'`name`'			=> $this->getName(),
+			'`type`'			=> $this->getType(),
+			'`values`'			=> $this->getValues(false)
 		];
 
 		$this->DB->begin();
@@ -229,6 +240,33 @@ class SpriteName {
 	}
 
 	/**
+	 * Set the Sprite Type
+	 *
+	 * @access	public
+	 * @param	string	Sprite Type
+	 * @return	boolean	Success
+	 */
+	public function setType($type) {
+		if (!in_array($type, $this->types)) {
+			return false;
+		}
+
+		$this->data['type'] = $type;
+
+		return true;
+	}
+
+	/**
+	 * Return the sprite Type.
+	 *
+	 * @access	public
+	 * @return	string	Sprite Type
+	 */
+	public function getType() {
+		return $this->data['type'];
+	}
+
+	/**
 	 * Set the values.
 	 *
 	 * @access	public
@@ -258,7 +296,7 @@ class SpriteName {
 	 * @return	void
 	 */
 	public function setSpriteSheet(SpriteSheet $spriteSheet) {
-		$this->spriteSheet = $this->spriteSheet;
+		$this->spriteSheet = $spriteSheet;
 	}
 
 	/**
@@ -269,5 +307,15 @@ class SpriteName {
 	 */
 	public function getSpriteSheet() {
 		return $this->spriteSheet;
+	}
+
+	/**
+	 * Return a parser tag for this named sprite.
+	 *
+	 * @access	public
+	 * @return	string	Parser Tag
+	 */
+	public function getParserTag() {
+		return "{{".$this->getType().":".$this->getName()."}}";
 	}
 }

@@ -187,16 +187,16 @@ class SpriteSheetAPI extends ApiBase {
 			}
 			if ($spriteSheet !== false) {
 				$spriteName = SpriteName::newFromName($form['sprite_name']);
-				$validName = false;
+				$validName = true;
 
 				if (!$spriteName) {
 					$message = 'ss_api_invalid_sprite_name';
-					$validName = true;
+					$validName = false;
 				}
 
 				if ($spriteName->getId() && $spriteName->getSpriteSheet()->getId() != $spriteSheet->getId()) {
 					$message = 'ss_api_sprite_name_in_use';
-					$validName = true;
+					$validName = false;
 				}
 
 				if ($validName) {
@@ -207,7 +207,15 @@ class SpriteSheetAPI extends ApiBase {
 						case 'sprite':
 							if ($spriteSheet->validateSpriteCoordindates($values['xPos'], $values['yPos'])) {
 								$spriteName->setValues($values);
-								$spriteName->save();
+								$spriteName->setType('sprite');
+
+								$success = $spriteName->save();
+
+								if ($success) {
+									$message = 'ss_api_okay';
+								} else {
+									$message = 'ss_api_fatal_error_saving';
+								}
 							} else {
 								$message = 'ss_api_invalid_coordinates';
 							}
@@ -215,7 +223,15 @@ class SpriteSheetAPI extends ApiBase {
 						case 'slice':
 							if ($spriteSheet->validateSlicePercentages($values['xPercent'], $values['yPercent'], $values['widthPercent'], $values['heightPercent'])) {
 								$spriteName->setValues($values);
-								$spriteName->save();
+								$spriteName->setType('sprite');
+
+								$success = $spriteName->save();
+
+								if ($success) {
+									$message = 'ss_api_okay';
+								} else {
+									$message = 'ss_api_fatal_error_saving';
+								}
 							} else {
 								$message = 'ss_api_invalid_precentages';
 							}
@@ -231,7 +247,16 @@ class SpriteSheetAPI extends ApiBase {
 			$message = 'ss_api_must_be_posted';
 		}
 
-		return ['success' => $success, 'message' => wfMessage($message)->text()];
+		$return = [
+			'success' => $success,
+			'message' => wfMessage($message)->text()
+		];
+
+		if ($success) {
+			$return['tag'] = $spriteSheet->getParserTag();
+		}
+
+		return $return;
 	}
 
 	/**

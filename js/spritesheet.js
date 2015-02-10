@@ -222,6 +222,7 @@ mw.spriteSheet = {
 					alert(result.message);
 				}
 				mw.spriteSheet.hideProgressIndicator();
+				$('#sprite_preview').html(result.tag);
 			}
 		);
 	},
