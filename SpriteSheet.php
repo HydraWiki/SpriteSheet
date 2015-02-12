@@ -48,6 +48,13 @@ $wgHooks['LoadExtensionSchemaUpdates'][]		= 'SpriteSheetHooks::onLoadExtensionSc
 
 $wgAPIModules['spritesheet']					= 'SpriteSheetAPI';
 
+$wgLogTypes['sprite']							= 'sprite';
+$wgLogNames['sprite']							= 'sprite_log_name';
+$wgLogHeaders['sprite']							= 'sprite_log_description';
+$wgLogActions['sprite/sheet']					= 'sprite_sheet_action';
+$wgLogActions['sprite/sprite']					= 'sprite_sprite_action';
+$wgLogActions['sprite/slice']					= 'sprite_slice_action';
+
 $wgResourceModules['ext.spriteSheet'] = [
 	'localBasePath'	=> __DIR__,
 	'remoteExtPath'	=> 'SpriteSheet',

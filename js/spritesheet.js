@@ -76,6 +76,12 @@ mw.spriteSheet = {
 			mw.spriteSheet.saveSpriteSheet();
 		});
 
+		$("input[name='sprite_name']").keyup(function(key) {
+			if (key.keyCode == 13) {
+				mw.spriteSheet.saveNamedSprite();
+			}
+		});
+
 		$('#save_named_sprite').on('click tap', function() {
 			mw.spriteSheet.saveNamedSprite();
 		});
@@ -322,6 +328,7 @@ mw.spriteSheet = {
 		this.selectedType = 'sprite';
 
 		$('#named_sprite_popup').show();
+		$("input[name='sprite_name']").focus().select();
 	},
 
 	/**
@@ -369,6 +376,7 @@ mw.spriteSheet = {
 		this.selectedType = 'slice';
 
 		$('#named_sprite_popup').show();
+		$("input[name='sprite_name']").focus().select();
 	},
 
 	/**

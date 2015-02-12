@@ -146,6 +146,15 @@ class SpriteSheetAPI extends ApiBase {
 				$success = $spriteSheet->save();
 
 				if ($success) {
+					$log = new LogPage('sprite');
+					$log->addEntry(
+						'sheet',
+						$spriteSheet->getTitle(),
+						$comment,
+						[],
+						$this->wgUser
+					);
+
 					$message = 'ss_api_okay';
 				} else {
 					$message = 'ss_api_fatal_error_saving';
@@ -228,6 +237,15 @@ class SpriteSheetAPI extends ApiBase {
 								$success = $spriteName->save();
 
 								if ($success) {
+									$log = new LogPage('sprite');
+									$log->addEntry(
+										'sprite',
+										$spriteName->getSpriteSheet()->getTitle(),
+										$comment,
+										[],
+										$this->wgUser
+									);
+
 									$message = 'ss_api_okay';
 								} else {
 									$message = 'ss_api_fatal_error_saving';
@@ -244,6 +262,15 @@ class SpriteSheetAPI extends ApiBase {
 								$success = $spriteName->save();
 
 								if ($success) {
+									$log = new LogPage('sprite');
+									$log->addEntry(
+										'slice',
+										$spriteName->getSpriteSheet()->getTitle(),
+										$comment,
+										[],
+										$this->wgUser
+									);
+
 									$message = 'ss_api_okay';
 								} else {
 									$message = 'ss_api_fatal_error_saving';
