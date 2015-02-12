@@ -118,6 +118,14 @@ class SpriteSheetAPI extends ApiBase {
 		$success = false;
 		$message = 'ss_api_unknown_error';
 
+		if (!$this->wgUser->isAllowed('edit_sprites')) {
+			$message = 'ss_api_no_permission';
+			return [
+				'success' => $success,
+				'message' => wfMessage($message)->text()
+			];
+		}
+
 		if ($this->wgRequest->wasPosted()) {
 			parse_str($this->params['form'], $form);
 			if ($form['spritesheet_id'] > 0) {
@@ -170,6 +178,14 @@ class SpriteSheetAPI extends ApiBase {
 	public function saveNamedSprite() {
 		$success = false;
 		$message = 'ss_api_unknown_error';
+
+		if (!$this->wgUser->isAllowed('edit_sprites')) {
+			$message = 'ss_api_no_permission';
+			return [
+				'success' => $success,
+				'message' => wfMessage($message)->text()
+			];
+		}
 
 		if ($this->wgRequest->wasPosted()) {
 			$values = @json_decode($this->params['values'], true);

@@ -28,6 +28,9 @@ $wgExtensionCredits['other'][] = $credits;
 /******************************************/
 $extDir = __DIR__;
 
+$wgAvailableRights[] = 'edit_sprites';
+$wgGroupPermissions['autoconfirmed']['edit_sprites'] = true;
+
 $wgExtensionMessagesFiles['SpriteSheet']		= "{$extDir}/SpriteSheet.i18n.php";
 $wgExtensionMessagesFiles['SpriteSheetMagic']	= "{$extDir}/SpriteSheet.i18n.magic.php";
 $wgMessagesDirs['SpriteSheet']					= "{$extDir}/i18n";
