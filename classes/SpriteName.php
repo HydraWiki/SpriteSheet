@@ -23,7 +23,7 @@ class SpriteName {
 	 *
 	 * @var		object
 	 */
-	private $spritesheet = false;
+	private $spriteSheet = false;
 
 	/**
 	 * Data holder for database values.
@@ -139,7 +139,7 @@ class SpriteName {
 			if (is_array($row)) {
 				$this->data = $row;
 
-				if ($this->spritesheet === false) {
+				if ($this->spriteSheet === false) {
 					$spriteSheet = SpriteSheet::newFromID($row['spritesheet_id']);
 					if (!$spriteSheet) {
 						return false;
@@ -148,6 +148,9 @@ class SpriteName {
 				}
 			}
 		}
+
+		$this->isLoaded = true;
+
 		return true;
 	}
 
@@ -185,6 +188,7 @@ class SpriteName {
 			);
 			$spriteNameId = $this->DB->insertId();
 		}
+
 		if ($result !== false) {
 			$success = true;
 		}
@@ -216,7 +220,7 @@ class SpriteName {
 	 * @return	integer	Sprite Name ID
 	 */
 	public function getId() {
-		return intval($this->data['spritesheet_id']);
+		return intval($this->data['spritename_id']);
 	}
 
 	/**

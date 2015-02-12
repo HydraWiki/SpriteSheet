@@ -220,6 +220,8 @@ mw.spriteSheet = {
 			function(result) {
 				if (result.success != true) {
 					alert(result.message);
+				} else {
+					$('#named_sprite_popup').hide();
 				}
 				mw.spriteSheet.hideProgressIndicator();
 				$('#sprite_preview').html(result.tag);
@@ -318,6 +320,8 @@ mw.spriteSheet = {
 
 		$('button#save_named_sprite').html(mw.message('save_named_sprite').escaped());
 		this.selectedType = 'sprite';
+
+		$('#named_sprite_popup').show();
 	},
 
 	/**
@@ -363,6 +367,8 @@ mw.spriteSheet = {
 
 		$('button#save_named_sprite').html(mw.message('save_named_slice').escaped());
 		this.selectedType = 'slice';
+
+		$('#named_sprite_popup').show();
 	},
 
 	/**

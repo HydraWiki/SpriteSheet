@@ -142,6 +142,9 @@ class SpriteSheet {
 				}
 			}
 		}
+
+		$this->isLoaded = true;
+
 		return true;
 	}
 
