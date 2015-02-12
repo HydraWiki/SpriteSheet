@@ -223,7 +223,7 @@ class SpriteSheetAPI extends ApiBase {
 						case 'slice':
 							if ($spriteSheet->validateSlicePercentages($values['xPercent'], $values['yPercent'], $values['widthPercent'], $values['heightPercent'])) {
 								$spriteName->setValues($values);
-								$spriteName->setType('sprite');
+								$spriteName->setType('slice');
 
 								$success = $spriteName->save();
 
