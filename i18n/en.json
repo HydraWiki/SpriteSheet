@@ -32,6 +32,6 @@
     "sprite_log_name": "SpriteSheet change log",
     "sprite_log_description": "This is the log of sprite sheets that have been created or saved.",
     "sprite_sheet_action": "edited the sprite sheet for [[$1]]",
-    "sprite_sprite_action": "created a named sprite for [[$1]]",
-    "sprite_slice_action": "created a named slice for [[$1]]"
+    "sprite_sprite_action": "created a named sprite \"$2\" for [[$1]]",
+    "sprite_slice_action": "created a named slice \"$2\" for [[$1]]"
 }

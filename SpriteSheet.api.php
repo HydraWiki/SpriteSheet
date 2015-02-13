@@ -242,7 +242,7 @@ class SpriteSheetAPI extends ApiBase {
 										'sprite',
 										$spriteName->getSpriteSheet()->getTitle(),
 										$comment,
-										[],
+										[$spriteName->getName()],
 										$this->wgUser
 									);
 
@@ -267,7 +267,7 @@ class SpriteSheetAPI extends ApiBase {
 										'slice',
 										$spriteName->getSpriteSheet()->getTitle(),
 										$comment,
-										[],
+										[$spriteName->getName()],
 										$this->wgUser
 									);
 
