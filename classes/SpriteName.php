@@ -321,6 +321,6 @@ class SpriteName {
 	 * @return	string	Parser Tag
 	 */
 	public function getParserTag() {
-		return "{{".$this->getType().":".$this->getName()."}}";
+		return "{{#".$this->getType().":".$this->getName()."}}";
 	}
 }
