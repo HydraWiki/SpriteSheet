@@ -18,7 +18,7 @@ $credits = [
 	'name'				=> 'SpriteSheet',
 	'author'			=> ['Curse Inc', 'Wiki Platform Team'],
 	'descriptionmsg'	=> 'spritesheet_description',
-	'version'			=> '1.0'
+	'version'			=> '0.9'
 ];
 $wgExtensionCredits['other'][] = $credits;
 
