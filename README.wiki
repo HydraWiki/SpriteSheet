@@ -21,8 +21,8 @@
 The '''SpriteSheet''' extension allows uploaded images to be divided into sprite sheets or custom slices to be displayed without having to use an external image editor.  The resulting sprites and slices are dynamically generated using CSS.
 
 ;Project Homepage: [https://github.com/CurseStaff/SpriteSheet Documentation at Github]
-;Source Code: [https://github.com/CurseStaff/SpriteSheet Source code at Github]
-;Bugs:[https://github.com/CurseStaff/SpriteSheet/issues issues at Github]
+;Source Code: [https://github.com/CurseStaff/SpriteSheet Source Code at Github]
+;Bugs: [https://github.com/CurseStaff/SpriteSheet/issues Issue Tracker at Github]
 ;Licensing: SpriteSheet is released under [http://opensource.org/licenses/lgpl-3.0.html The GNU Lesser General Public License, version 3.0].
 
 
