@@ -21,6 +21,7 @@
 The '''SpriteSheet''' extension allows uploaded images to be divided into sprite sheets or custom slices to be displayed without having to use an external image editor.  The resulting sprites and slices are dynamically generated using CSS.
 
 ;Project Homepage: [https://github.com/CurseStaff/SpriteSheet Documentation at Github]
+;Mediawiki Extension Page: [https://www.mediawiki.org/wiki/Extension:SpriteSheet Extension:SpriteSheet]
 ;Source Code: [https://github.com/CurseStaff/SpriteSheet Source Code at Github]
 ;Bugs: [https://github.com/CurseStaff/SpriteSheet/issues Issue Tracker at Github]
 ;Licensing: SpriteSheet is released under [http://opensource.org/licenses/lgpl-3.0.html The GNU Lesser General Public License, version 3.0].
@@ -51,21 +52,20 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 |-
 | <code>X Coordinate Position</code>
 | '''Required:''' yes
-:The X Coordinate Position of the sprite to select.
+:The X Coordinate Position of the sprite to select.  Coordinates use zero based numbering.
 |-
 | <code>Y Coordinate Position</code>
 | '''Required:''' yes
-:The X Coordinate Position of the sprite to select.
+:The Y Coordinate Position of the sprite to select.  Coordinates use zero based numbering.
 |-
 | <code>Thumb Width</code>
 | '''Required:''' no, '''Default:''' <tt>none</tt>
 :Size the thumbnail width of the entire image before selecting the sprite.  This is the width of the entire image; not the individual sprite.
 |}
 
-===== Examples =====
+===== Example =====
 
-[[File:SpriteSheetExample1.jpg|thumb|Example #1]]
-
+To display the sprite located at column 2, row 3:
 <pre>{#sprite:File:SpriteSheetExample1.jpg|2|3}}</pre>
 
 
@@ -84,21 +84,21 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 | '''Required:''' yes
 :The file page containing the image to use.
 |-
-| <code>X Coordinate Position, in Percentage</code>
+| <code>X Percentage Position</code>
 | '''Required:''' yes
-:The X Coordinate Position of the sprite to select.
+:The X Percentage Position of the slice to cut.
 |-
-| <code>Y Coordinate Position, in Percentage</code>
+| <code>Y Percentage Position</code>
 | '''Required:''' yes
-:The X Coordinate Position of the sprite to select.
+:The Y Percentage Position of the slice to cut.
 |-
 | <code>Width, in Percentage</code>
 | '''Required:''' yes
-:Width in percentage starting from the X coordinate.
+:Width in percentage starting from the X position.
 |-
 | <code>Height, in Percentage</code>
 | '''Required:''' yes
-:Height in percentage starting from the Y coordinate.
+:Height in percentage starting from the Y position.
 |-
 | <code>Thumb Width</code>
 | '''Required:''' no, '''Default:''' <tt>none</tt>
@@ -106,7 +106,5 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 |}
 
 ===== Examples =====
-
-[[File:SpriteSheetExample2.jpg|thumb|Example #2]]
 
 <pre>{#slice:File:SpriteSheetExample1.jpg|35.25|17.03|30.75|29.26}}</pre>
