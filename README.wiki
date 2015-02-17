@@ -105,6 +105,6 @@ To display the sprite located at column 2, row 3:
 :Size the thumbnail width of the entire image before selecting the sprite.  This is the width of the entire image; not the individual sprite.
 |}
 
-===== Examples =====
+===== Example =====
 
 <pre>{#slice:File:SpriteSheetExample1.jpg|35.25|17.03|30.75|29.26}}</pre>
