@@ -35,35 +35,12 @@ With optional thumbnail resize:
 
 ####Attributes for #sprite Tag
 
-{| class="wikitable"
-|-
-! Attribute
-! Description
-|-
-| <code>File</code>
-| '''Required:''' yes
-:The file page containing the image to use.
-|-
-| <code>X Coordinate Position</code>
-| '''Required:''' yes
-:The X Coordinate Position of the sprite to select.  Coordinates use zero based numbering.
-|-
-| <code>Y Coordinate Position</code>
-| '''Required:''' yes
-:The Y Coordinate Position of the sprite to select.  Coordinates use zero based numbering.
-|-
-| <code>Thumb Width</code>
-| '''Required:''' no, '''Default:''' <tt>none</tt>
-:Size the thumbnail width of the entire image before selecting the sprite.  This is the width of the entire image; not the individual sprite.
-|}
-
-|       Attribute       | Description                                                                                                                                                             |
-|:---------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| File                  | **Required**: yes
-	The file page containing the image to use.                                                                                                                |
-| X Coordinate Position | **Required**: yes The X Coordinate Position of the sprite to select.,Coordinates use zero based numbering.                                                                  |
-| Y Coordinate Position | **Required**: yes The Y Coordinate Position of the sprite to select.,Coordinates use zero based numbering.                                                                  |
-| Thumb Width           | **Required**: no, **Default**: none Size the thumbnail width of the entire image before selecting,the sprite.,This is the width of the entire image; not the individual,sprite. |
+|       Attribute       | Description                                                                                                                                                                         |
+|----------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| File                  | **Required**: yes<br/>The file page containing the image to use.                                                                                                                    |
+| X Coordinate Position | **Required**: yes<br/>The X Coordinate Position of the sprite to select.,Coordinates use zero based numbering.                                                                      |
+| Y Coordinate Position | **Required**: yes<br/>The Y Coordinate Position of the sprite to select.,Coordinates use zero based numbering.                                                                      |
+| Thumb Width           | **Required**: no, **Default**: none<br/>Size the thumbnail width of the entire image before selecting,the sprite.,This is the width of the entire image; not the individual,sprite. |
 
 ####Example
 
@@ -82,35 +59,14 @@ With optional thumbnail resize:
 
 ####Attributes for #slice Tag
 
-{| class="wikitable"
-|-
-! Attribute
-! Description
-|-
-| <code>File</code>
-| '''Required:''' yes
-:The file page containing the image to use.
-|-
-| <code>X Percentage Position</code>
-| '''Required:''' yes
-:The X Percentage Position of the slice to cut.
-|-
-| <code>Y Percentage Position</code>
-| '''Required:''' yes
-:The Y Percentage Position of the slice to cut.
-|-
-| <code>Width, in Percentage</code>
-| '''Required:''' yes
-:Width in percentage starting from the X position.
-|-
-| <code>Height, in Percentage</code>
-| '''Required:''' yes
-:Height in percentage starting from the Y position.
-|-
-| <code>Thumb Width</code>
-| '''Required:''' no, '''Default:''' <tt>none</tt>
-:Size the thumbnail width of the entire image before selecting the sprite.  This is the width of the entire image; not the individual sprite.
-|}
+|       Attribute       | Description                                                                                                                                                                          |
+|----------------------:|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| File                  | **Required**: yes<br/>The file page containing the image to use.                                                                                                                     |
+| X Percentage Position | **Required**: yes<br/>The X Percentage Position of the slice to cut.                                                                                                                 |
+| Y Percentage Position | **Required**: yes<br/>The Y Percentage Position of the slice to cut.                                                                                                                 |
+| Width, in Percentage | **Required**: yes<br/>Width in percentage starting from the Y position.                                                                                                               |
+| Height, in Percentage | **Required**: yes<br/>Height in percentage starting from the Y position.                                                                                                             |
+| Thumb Width           | **Required**: no, **Default**: none<br/>Size the thumbnail width of the entire image before selecting the sprite.  This is the width of the entire image; not the individual sprite. |
 
 ####Example
 
