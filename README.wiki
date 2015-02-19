@@ -33,13 +33,18 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 
 ==Usage==
 
-[[https://github.com/CurseStaff/SpriteSheet/raw/master/documentation/BasicInterface.png]]
+[[File:SpriteSheet-BasicInterface.png]]
 
-=== Tags ===
+===Tags===
 
 ====#sprite - Parser Tag====
-* <code><nowiki>{{#sprite:File:Image_Name.png|xPos|yPos}}</nowiki></code>
-* With optional thumbnail resize: <code><nowiki>{{#sprite:File:Image_Name.png|xPos|yPos|thumbWidth}}</nowiki></code>
+Basic Syntax:
+
+	<code><nowiki>{{#sprite:File:Image_Name.png|xPos|yPos}}</nowiki></code>
+
+With optional thumbnail resize:
+
+	<code><nowiki>{{#sprite:File:Image_Name.png|xPos|yPos|thumbWidth}}</nowiki></code>
 
 ===== Attributes for #sprite Tag =====
 
@@ -61,19 +66,26 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 :The Y Coordinate Position of the sprite to select.  Coordinates use zero based numbering.
 |-
 | <code>Thumb Width</code>
-| '''Required:''' no, '''Default:''' <tt>none</tt>
+| '''Required:''' no, '''Default:''' <tt>null</tt>
 :Size the thumbnail width of the entire image before selecting the sprite.  This is the width of the entire image; not the individual sprite.
 |}
 
 ===== Example =====
 
-To display the sprite located at column 2, row 3:
-<pre>{#sprite:File:SpriteSheetExample1.jpg|2|3}}</pre>
+To display the sprite located at column 5, row 5:
+<pre>{{#sprite:File:Hanamura-screenshot-001.20Mxx.jpg|5|5}}</pre>
+
+[[File::SpriteSheet-SpriteUsageExample.png]]
 
 
 ====#slice - Parser Tag====
-* <code><nowiki>{{#slice:File:Image_Name.png|xPercent|yPercent|widthPercent|heightPercent}}</nowiki></code>
-* With optional thumbnail resize: <code><nowiki>{{#slice:File:Image_Name.png|xPercent|yPercent|widthPercent|heightPercent|thumbWidth}}</nowiki></code>
+Basic Syntax:
+
+	<code><nowiki>{{#slice:File:Image_Name.png|xPercent|yPercent|widthPercent|heightPercent}}</nowiki></code>
+
+With optional thumbnail resize:
+
+	<code><nowiki>{{#slice:File:Image_Name.png|xPercent|yPercent|widthPercent|heightPercent|thumbWidth}}</nowiki></code>
 
 ===== Attributes for #slice Tag =====
 
@@ -109,4 +121,15 @@ To display the sprite located at column 2, row 3:
 
 ===== Example =====
 
-<pre>{#slice:File:SpriteSheetExample1.jpg|35.25|17.03|30.75|29.26}}</pre>
+<pre>{{#slice:File:Hanamura-screenshot-001.20Mxx.jpg|27.63|32.53|25.62|24.89}}</pre>
+
+[[File::SpriteSheet-SliceUsageExample.png]]
+
+===Naming Sprites/Slices===
+
+[[File::SpriteSheet-SpriteNaming.png]]
+
+After a sprite or slice has been selected a pop up will open under the tag preview.  This allows a custom name to be set for the selection that can be recalled later.  It uses the same #sprite and #slice parser tags with only the name as the first argument.
+
+<pre>{{#sprite:Plaque}}</pre>
+<pre>{{#slice:Plaque}}</pre>

@@ -9,7 +9,6 @@ The **SpriteSheet** extension allows uploaded images to be divided into sprite s
 
 #Installation
 
-
 Download and place the file(s) in a directory called EmbedVideo in your extensions/ folder.
 
 Add the following code at the bottom of your LocalSettings.php:
