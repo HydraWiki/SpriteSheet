@@ -1,10 +1,10 @@
-The '''SpriteSheet''' extension allows uploaded images to be divided into sprite sheets or custom slices to be displayed without having to use an external image editor.  The resulting sprites and slices are dynamically generated using CSS.
+The **SpriteSheet** extension allows uploaded images to be divided into sprite sheets or custom slices to be displayed without having to use an external image editor.  The resulting sprites and slices are dynamically generated using CSS.
 
-;Project Homepage: [https://github.com/CurseStaff/SpriteSheet Documentation at Github]
-;Mediawiki Extension Page: [https://www.mediawiki.org/wiki/Extension:SpriteSheet Extension:SpriteSheet]
-;Source Code: [https://github.com/CurseStaff/SpriteSheet Source Code at Github]
-;Bugs: [https://github.com/CurseStaff/SpriteSheet/issues Issue Tracker at Github]
-;Licensing: SpriteSheet is released under [http://opensource.org/licenses/lgpl-3.0.html The GNU Lesser General Public License, version 3.0].
+* **Project Homepage:** [Documentation at Github](https://github.com/CurseStaff/SpriteSheet)
+* **Mediawiki Extension Page:** [Extension:SpriteSheet](https://www.mediawiki.org/wiki/Extension:SpriteSheet)
+* **Source Code:** [Source Code at Github](https://github.com/CurseStaff/SpriteSheet)
+* **Bugs:** [Issue Tracker at Github](https://github.com/CurseStaff/SpriteSheet/issues)
+* **Licensing:** SpriteSheet is released under [The GNU Lesser General Public License, version 3.0](http://opensource.org/licenses/lgpl-3.0.html).
 
 
 #Installation
@@ -40,7 +40,7 @@ With optional thumbnail resize:
 | File                  | **Required**: yes<br/>The file page containing the image to use.                                                                                                                    |
 | X Coordinate Position | **Required**: yes<br/>The X Coordinate Position of the sprite to select.,Coordinates use zero based numbering.                                                                      |
 | Y Coordinate Position | **Required**: yes<br/>The Y Coordinate Position of the sprite to select.,Coordinates use zero based numbering.                                                                      |
-| Thumb Width           | **Required**: no, **Default**: none<br/>Size the thumbnail width of the entire image before selecting,the sprite.,This is the width of the entire image; not the individual,sprite. |
+| Thumb Width           | **Required**: no, **Default**: null<br/>Size the thumbnail width of the entire image before selecting,the sprite.,This is the width of the entire image; not the individual,sprite. |
 
 ####Example
 
