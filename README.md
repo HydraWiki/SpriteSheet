@@ -45,7 +45,7 @@ With optional thumbnail resize:
 ####Example
 
 To display the sprite located at column 2, row 3:
-<pre>{#sprite:File:SpriteSheetExample1.jpg|2|3}}</pre>
+<pre>{{#sprite:File:SpriteSheetExample1.jpg|2|3}}</pre>
 
 
 ###\#slice - Parser Tag
@@ -70,4 +70,12 @@ With optional thumbnail resize:
 
 ####Example
 
-<pre>{#slice:File:SpriteSheetExample1.jpg|35.25|17.03|30.75|29.26}}</pre>
+<pre>{{#slice:File:Hanamura-screenshot-001.20Mxx.jpg|27.63|32.53|25.62|24.89}}</pre>
+
+![](documentation/SliceUsageExample.png)
+
+##Naming Sprites/Slices
+
+![](documentation/SpriteNaming.png)
+
+After a sprite or slice has been selected a pop up will open under the tag preview.  This allows a custom name to be set for the selection that can be recalled later.
