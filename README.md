@@ -57,6 +57,14 @@ With optional thumbnail resize:
 :Size the thumbnail width of the entire image before selecting the sprite.  This is the width of the entire image; not the individual sprite.
 |}
 
+|       Attribute       | Description                                                                                                                                                             |
+|:---------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| File                  | **Required**: yes
+	The file page containing the image to use.                                                                                                                |
+| X Coordinate Position | **Required**: yes The X Coordinate Position of the sprite to select.,Coordinates use zero based numbering.                                                                  |
+| Y Coordinate Position | **Required**: yes The Y Coordinate Position of the sprite to select.,Coordinates use zero based numbering.                                                                  |
+| Thumb Width           | **Required**: no, **Default**: none Size the thumbnail width of the entire image before selecting,the sprite.,This is the width of the entire image; not the individual,sprite. |
+
 ####Example
 
 To display the sprite located at column 2, row 3:
