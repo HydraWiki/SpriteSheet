@@ -79,4 +79,7 @@ With optional thumbnail resize:
 
 ![](documentation/SpriteNaming.png)
 
-After a sprite or slice has been selected a pop up will open under the tag preview.  This allows a custom name to be set for the selection that can be recalled later.
+After a sprite or slice has been selected a pop up will open under the tag preview.  This allows a custom name to be set for the selection that can be recalled later.  It uses the same #sprite and #slice parser tags with only the name as the first argument.
+
+<pre>{{#sprite:Plaque}}</pre>
+<pre>{{#slice:Plaque}}</pre>
