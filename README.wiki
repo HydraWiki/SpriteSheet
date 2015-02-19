@@ -33,7 +33,7 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 
 ==Usage==
 
-[[documentation/BasicInterface.png]]
+[[Image:documentation/BasicInterface.png]]
 
 === Tags ===
 
