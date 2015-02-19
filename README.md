@@ -45,8 +45,9 @@ With optional thumbnail resize:
 ####Example
 
 To display the sprite located at column 2, row 3:
-<pre>{{#sprite:File:SpriteSheetExample1.jpg|2|3}}</pre>
+<pre>{{#sprite:File:Hanamura-screenshot-001.20Mxx.jpg|5|5}}</pre>
 
+![](documentation/SpriteUsageExample.png)
 
 ###\#slice - Parser Tag
 Basic Syntax:
