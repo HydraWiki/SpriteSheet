@@ -44,7 +44,7 @@ With optional thumbnail resize:
 
 ####Example
 
-To display the sprite located at column 2, row 3:
+To display the sprite located at column 5, row 5:
 <pre>{{#sprite:File:Hanamura-screenshot-001.20Mxx.jpg|5|5}}</pre>
 
 ![](documentation/SpriteUsageExample.png)
