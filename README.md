@@ -9,7 +9,14 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 
 #Installation
 
-{{ {{TNTN|ExtensionInstall}} |download-link=[https://github.com/CurseStaff/SpriteSheet/archive/v0.9.0.zip Download]}}
+
+Download and place the file(s) in a directory called EmbedVideo in your extensions/ folder.
+
+Add the following code at the bottom of your LocalSettings.php:
+
+	require_once("$IP/extensions/EmbedVideo/EmbedVideo.php");
+
+Done! Navigate to "Special:Version" on your wiki to verify that the extension is successfully installed.
 
 #Usage
 
@@ -19,9 +26,11 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 
 ###\#sprite - Parser Tag
 Basic Syntax:
+
 	{{#sprite:File:Image_Name.png|xPos|yPos}}
 
 With optional thumbnail resize:
+
 	{{#sprite:File:Image_Name.png|xPos|yPos|thumbWidth}}
 
 ####Attributes for #sprite Tag
@@ -56,9 +65,11 @@ To display the sprite located at column 2, row 3:
 
 ###\#slice - Parser Tag
 Basic Syntax:
+
 	{{#slice:File:Image_Name.png|xPercent|yPercent|widthPercent|heightPercent}}
 
 With optional thumbnail resize:
+
 	{{#slice:File:Image_Name.png|xPercent|yPercent|widthPercent|heightPercent|thumbWidth}}
 
 ####Attributes for #slice Tag
