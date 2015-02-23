@@ -40,13 +40,6 @@ class SpriteName {
 	protected $isLoaded = false;
 
 	/**
-	 * Where this object was loaded from.
-	 *
-	 * @var		string
-	 */
-	public $newFrom = null;
-
-	/**
 	 * Valid named sprite types.
 	 *
 	 * @var		array
@@ -60,77 +53,38 @@ class SpriteName {
 	 * Main Constructor
 	 *
 	 * @access	public
+	 * @param	string	Sprite/Slice Name
+	 * @param	object	Valid SpriteSheet that exists.
 	 * @return	void
 	 */
-	public function __construct() {
+	public function __construct($name, SpriteSheet $spriteSheet) {
 		$this->DB = wfGetDB(DB_MASTER);
-	}
 
-	/**
-	 * Create a new instance of this class from a Sprite Name database identification number.
-	 *
-	 * @access	public
-	 * @param	integer	SpriteName database identification number.
-	 * @return	mixed	SpriteName object or false on error.
-	 */
-	static public function newFromId($id) {
-		if ($id < 1) {
-			return false;
+		if (!$spriteSheet->exists()) {
+			throw new MWException(__METHOD__." was called with an invalid SpriteSheet.");
 		}
 
-		$spriteName = new SpriteName();
-		$spriteName->setId(intval($id));
+		$this->spriteSheet = $spriteSheet;
+		$this->data['name'] = $name;
 
-		$spriteName->newFrom = 'id';
-
-		$success = $spriteName->load();
-
-		return ($success ? $spriteName : false);
-	}
-
-	/**
-	 * Create a new instance of this class from a sprite name.
-	 *
-	 * @access	public
-	 * @param	string	Sprite Name
-	 * @return	mixed	SpriteName object or false on error.
-	 */
-	static public function newFromName($name) {
-		$spriteName = new SpriteName();
-		$spriteName->setName($name);
-
-		$spriteName->newFrom = 'name';
-
-		$success = $spriteName->load();
-
-		return ($success ? $spriteName : false);
+		$this->load();
 	}
 
 	/**
 	 * Load from the database.
 	 *
 	 * @access	public
-	 * @return	boolean	Success
+	 * @return	void
 	 */
 	public function load() {
 		if (!$this->isLoaded) {
-			switch ($this->newFrom) {
-				case 'id':
-					$where = [
-						'spritename_id' => $this->getId()
-					];
-					break;
-				case 'name':
-					$where = [
-						'name' => $this->getName()
-					];
-					break;
-			}
-
 			$result = $this->DB->select(
 				['spritename'],
 				['*'],
-				$where,
+				[
+					'spritesheet_id'	=> $this->spriteSheet->getId(),
+					'name' 				=> $this->getName()
+				],
 				__METHOD__
 			);
 
@@ -138,20 +92,10 @@ class SpriteName {
 
 			if (is_array($row)) {
 				$this->data = $row;
-
-				if ($this->spriteSheet === false) {
-					$spriteSheet = SpriteSheet::newFromID($row['spritesheet_id']);
-					if (!$spriteSheet) {
-						return false;
-					}
-					$this->setSpriteSheet($spriteSheet);
-				}
 			}
 		}
 
 		$this->isLoaded = true;
-
-		return true;
 	}
 
 	/**
@@ -198,22 +142,6 @@ class SpriteName {
 	}
 
 	/**
-	 * Set the Sprite Name ID
-	 *
-	 * @access	public
-	 * @param	integer	Sprite Name ID
-	 * @return	boolean	True on success, false if the ID is already set.
-	 */
-	public function setId($id) {
-		if (!$this->data['spritename_id']) {
-			$this->data['spritename_id'] = intval($id);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
 	 * Return the database identification number for this Sprite Name.
 	 *
 	 * @access	public
@@ -221,6 +149,16 @@ class SpriteName {
 	 */
 	public function getId() {
 		return intval($this->data['spritename_id']);
+	}
+
+	/**
+	 * Return if this sprite name exists.
+	 *
+	 * @access	public
+	 * @return	boolean
+	 */
+	public function exists() {
+		return $this->data['spritename_id'] > 0;
 	}
 
 	/**
@@ -294,17 +232,6 @@ class SpriteName {
 	}
 
 	/**
-	 * Set the SpriteSheet
-	 *
-	 * @access	public
-	 * @param	object	SpriteSheet
-	 * @return	void
-	 */
-	public function setSpriteSheet(SpriteSheet $spriteSheet) {
-		$this->spriteSheet = $spriteSheet;
-	}
-
-	/**
 	 * Return the SpriteSheet object associated with this sprite name.
 	 *
 	 * @access	public
@@ -321,6 +248,6 @@ class SpriteName {
 	 * @return	string	Parser Tag
 	 */
 	public function getParserTag() {
-		return "{{#".$this->getType().":".$this->getName()."}}";
+		return "{{#".$this->getType().":".$this->getSpriteSheet()->getTitle()->getPrefixedDBkey()."|".$this->getName()."}}";
 	}
 }

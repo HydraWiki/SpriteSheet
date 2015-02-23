@@ -47,6 +47,13 @@ class SpriteSheet {
 	public $newFrom = null;
 
 	/**
+	 * Memory Cache for already loaded SpriteName objects.
+	 *
+	 * @var		array
+	 */
+	private $spriteNameCache = [];
+
+	/**
 	 * Main Constructor
 	 *
 	 * @access	public
@@ -214,6 +221,16 @@ class SpriteSheet {
 	}
 
 	/**
+	 * Return if this sprite sheet exists.
+	 *
+	 * @access	public
+	 * @return	boolean
+	 */
+	public function exists() {
+		return $this->data['spritesheet_id'] > 0;
+	}
+
+	/**
 	 * Set the Title object.
 	 *
 	 * @access	public
@@ -349,6 +366,43 @@ class SpriteSheet {
 			return "<div class='sprite' style='width: {$spriteWidth}px; height: {$spriteHeight}px; overflow: hidden; position: relative;'><img src='".$file->getUrl()."' style='position: absolute; left: -{$spriteX}px; top: -{$spriteY}px;'/></div>";
 		}
 		return false;
+	}
+
+	/**
+	 * Get the HTML representation of a named sprite.
+	 *
+	 * @access	public
+	 * @param	string	Sprite Name
+	 * @param	integer	[Optional] Thumbnail Width
+	 * @return	mixed	HTML or false on error.
+	 */
+	public function getSpriteFromName($name, $thumbWidth = null) {
+		$spriteName = $this->getSpriteName($name);
+
+		if ($spriteName->exists()) {
+			$values = $spriteName->getValues();
+			return $this->getSpriteAtCoordinates($values['xPos'], $values['yPos'], $thumbWidth);
+		}
+		return false;
+	}
+
+	/**
+	 * Get a new SpriteName class and cache it as needed.
+	 *
+	 * @access	public
+	 * @param	string	Name
+	 * @return	object	SpriteName
+	 */
+	public function getSpriteName($name) {
+		if (array_key_exists($name, $this->spriteNameCache)) {
+			$spriteName = $this->spriteNameCache[$name];
+		} else {
+			$spriteName = new SpriteName($name, $this);
+			if ($spriteName->exists()) {
+				$this->spriteNameCache[$name] = $spriteName;
+			}
+		}
+		return $spriteName;
 	}
 
 	/**

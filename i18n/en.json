@@ -20,6 +20,7 @@
 	"click_grid_for_preview": "Click a grid box below to generate a sprite tag or click and drag to generate a custom slice.",
 	"no_sprite_sheet_defined": "There is no sprite sheet defined for the specified image.  Please visit [[:$1]] to define one.",
 	"could_not_find_title": "Could not find the image [[:$1]] to load a sprite sheet.",
+	"could_not_find_named_sprite": "Image [[:$1]] does not have a sprite named $2.",
 	"save_sheet": "Save Sheet",
 	"save_named_sprite": "Save Named Sprite",
 	"save_named_slice": "Save Named Slice",

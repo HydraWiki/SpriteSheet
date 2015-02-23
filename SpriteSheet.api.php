@@ -219,7 +219,7 @@ class SpriteSheetAPI extends ApiBase {
 					$validName = false;
 				}
 
-				if ($validName && $spriteName->getId() && $spriteName->getSpriteSheet()->getId() != $spriteSheet->getId()) {
+				if ($validName && $spriteName->getId()) {
 					$message = 'ss_api_sprite_name_in_use';
 					$validName = false;
 				}

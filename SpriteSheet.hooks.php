@@ -44,36 +44,44 @@ class SpriteSheetHooks {
 	 * @return	string	Wiki Text
 	 */
 	static public function generateSpriteOutput(&$parser, $file = null, $column = 0, $row = 0, $thumbWidth = 0) {
-		$column		= abs(intval($column));
-		$row		= abs(intval($row));
-		$thumbWidth	= abs(intval($thumbWidth));
+		$namedMode = false;
+		if (!is_numeric($column) && empty($thumbWidth)) {
+			//For named sprites the column will be the sprite name and row will be the optional thumb width.  Thus the actual $thumbWidth variable should be empty.
+			$namedMode = true;
+			$rawSpriteName = trim($column);
+			$thumbWidth = intval($row);
+		} else {
+			$column		= abs(intval($column));
+			$row		= abs(intval($row));
+			$thumbWidth	= abs(intval($thumbWidth));
+		}
 
 		$title = Title::newFromDBKey($file);
 
 		if ($title->exists()) {
 			$spriteSheet = SpriteSheet::newFromTitle($title);
-		} else {
-			$spriteName = SpriteName::newFromName($file);
-			if (!$spriteName || $spriteName->getSpriteSheet() === false) {
-				return "<div class='errorbox'>".wfMessage('could_not_find_title', $file)->text()."</div>";
-			} else {
+
+			if (!$spriteSheet->getId() || !$spriteSheet->getColumns() || !$spriteSheet->getRows()) {
+				//Either a sprite sheet does not exist or has invalid values.
+				return "<div class='errorbox'>".wfMessage('no_sprite_sheet_defined', $title->getPrefixedText())->text()."</div>";
+			}
+
+			if ($namedMode) {
+				$spriteName = $spriteSheet->getSpriteName($rawSpriteName);
+				if (!$spriteName->exists()) {
+					return "<div class='errorbox'>".wfMessage('could_not_find_named_sprite', $file, $rawSpriteName)->text()."</div>";
+				}
 				if ($spriteName->getType() != 'sprite') {
 					return "<div class='errorbox'>".wfMessage('wrong_named_sprite_slice')->text()."</div>";
 				}
-				$spriteSheet = $spriteName->getSpriteSheet();
-				$values = $spriteName->getValues();
-				$thumbWidth = $column;
-				$column = $values['xPos'];
-				$row = $values['yPos'];
+
+				$html = $spriteSheet->getSpriteFromName($spriteName->getName(), $thumbWidth);
+			} else {
+				$html = $spriteSheet->getSpriteAtCoordinates($column, $row, $thumbWidth);
 			}
+		} else {
+			return "<div class='errorbox'>".wfMessage('could_not_find_title', $file)->text()."</div>";
 		}
-
-		if (!$spriteSheet->getId() || !$spriteSheet->getColumns() || !$spriteSheet->getRows()) {
-			//Either a sprite sheet does not exist or has invalid values.
-			return "<div class='errorbox'>".wfMessage('no_sprite_sheet_defined', $title->getPrefixedText())->text()."</div>";
-		}
-
-		$html = $spriteSheet->getSpriteAtCoordinates($column, $row, $thumbWidth);
 
 		return [
 			$html,
@@ -221,6 +229,9 @@ class SpriteSheetHooks {
 
 		$updater->addExtensionUpdate(['addTable', 'spritesheet', "{$extDir}/install/sql/spritesheet_table_spritesheet.sql", true]);
 		$updater->addExtensionUpdate(['addTable', 'spritename', "{$extDir}/install/sql/spritesheet_table_spritename.sql", true]);
+
+		//2015-02-23
+		$updater->addExtensionUpdate(['renameIndex', 'spritename', 'name', 'spritesheet_id_name', false, "{$extDir}/upgrade/sql/spritesheet_upgrade_spritesheet_alter_index_name.sql", true]);
 
 		return true;
 	}

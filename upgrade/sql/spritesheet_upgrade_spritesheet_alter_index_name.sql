@@ -1,0 +1,1 @@
+ALTER TABLE /*_*/spritename DROP INDEX `name`, ADD UNIQUE `spritesheet_id_name` ( `spritesheet_id`, `name` ), DROP INDEX `spritesheet_id`;
