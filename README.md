@@ -78,7 +78,9 @@ With optional thumbnail resize:
 
 ![](documentation/SpriteNaming.png)
 
-After a sprite or slice has been selected a pop up will open under the tag preview.  This allows a custom name to be set for the selection that can be recalled later.  It uses the same #sprite and #slice parser tags with only the name as the first argument.
+After a sprite or slice has been selected a pop up will open under the tag preview.  This allows a custom name to be set for the selection that can be recalled later.  It uses the same #sprite and #slice parser tags with only the name as the first argument after the file name.  Adding the optional thumb width is still supported.
 
-<pre>{{#sprite:Plaque}}</pre>
-<pre>{{#slice:Plaque}}</pre>
+<pre>{{#sprite:File:Hanamura-screenshot-001.20Mxx.jpg|Plaque}}</pre>
+<pre>{{#sprite:File:Hanamura-screenshot-001.20Mxx.jpg|Plaque|800}}</pre>
+<pre>{{#slice:File:Hanamura-screenshot-001.20Mxx.jpg|Plaque}}</pre>
+<pre>{{#slice:File:Hanamura-screenshot-001.20Mxx.jpg|Plaque|500}}</pre>
