@@ -103,37 +103,41 @@ class SpriteSheetHooks {
 	 * @return	string	Wiki Text
 	 */
 	static public function generateSliceOutput(&$parser, $file = null, $xPercent = 0, $yPercent = 0, $widthPercent = 0, $heightPercent = 0, $thumbWidth = 0) {
-		$xPercent		= abs(floatval($xPercent));
-		$yPercent		= abs(floatval($yPercent));
-		$widthPercent	= abs(floatval($widthPercent));
-		$heightPercent	= abs(floatval($heightPercent));
-		$thumbWidth		= abs(intval($thumbWidth));
+		$namedMode = false;
+		if (!is_numeric($column) && empty($widthPercent)) {
+			//For named slice the $xPercent will be the slice name and $yPercent will be the optional thumb width.  The rest should be empty.
+			$namedMode = true;
+			$rawSliceName = trim($xPercent);
+			$thumbWidth = intval($yPercent);
+		} else {
+			$xPercent		= abs(floatval($xPercent));
+			$yPercent		= abs(floatval($yPercent));
+			$widthPercent	= abs(floatval($widthPercent));
+			$heightPercent	= abs(floatval($heightPercent));
+			$thumbWidth		= abs(intval($thumbWidth));
+		}
 
 		$title = Title::newFromDBKey($file);
 
 		if ($title->exists()) {
-			//Does not need to be a valid/saved SpriteSheet.  A new SpriteSheet will still give us slices.
 			$spriteSheet = SpriteSheet::newFromTitle($title);
-		} else {
-			$spriteName = SpriteName::newFromName($file);
-			if (!$spriteName || $spriteName->getSpriteSheet() === false) {
-				return "<div class='errorbox'>".wfMessage('could_not_find_title', $file)->text()."</div>";
-			} else {
-				if ($spriteName->getType() != 'slice') {
+
+			if ($namedMode) {
+				$sliceName = $spriteSheet->getSpriteName($rawSliceName);
+				if (!$sliceName->exists()) {
+					return "<div class='errorbox'>".wfMessage('could_not_find_named_slice', $file, $rawSliceName)->text()."</div>";
+				}
+				if ($sliceName->getType() != 'slice') {
 					return "<div class='errorbox'>".wfMessage('wrong_named_sprite_slice')->text()."</div>";
 				}
-				$spriteSheet = $spriteName->getSpriteSheet();
-				$values = $spriteName->getValues();
 
-				$thumbWidth = $xPercent;
-				$xPercent = $values['xPercent'];
-				$yPercent = $values['yPercent'];
-				$widthPercent = $values['widthPercent'];
-				$heightPercent = $values['heightPercent'];
+				$html = $spriteSheet->getSliceFromName($sliceName->getName(), $thumbWidth);
+			} else {
+				$html = $spriteSheet->getSlice($xPercent, $yPercent, $widthPercent, $heightPercent, $thumbWidth);
 			}
+		} else {
+			return "<div class='errorbox'>".wfMessage('could_not_find_title', $file)->text()."</div>";
 		}
-
-		$html = $spriteSheet->getSlice($xPercent, $yPercent, $widthPercent, $heightPercent, $thumbWidth);
 
 		return [
 			$html,

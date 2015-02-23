@@ -65,7 +65,7 @@ class SpriteName {
 		}
 
 		$this->spriteSheet = $spriteSheet;
-		$this->data['name'] = $name;
+		$this->setName($name);
 
 		$this->load();
 	}
@@ -180,6 +180,26 @@ class SpriteName {
 	 */
 	public function getName() {
 		return $this->data['name'];
+	}
+
+	/**
+	 * Is the sprite name valid?
+	 *
+	 * @access	public
+	 * @return	boolean	Valid
+	 */
+	public function isNameValid() {
+		$valid = true;
+
+		if (empty($this->data['name'])) {
+			$valid = false;
+		}
+
+		if (strlen($this->data['name']) > 255) {
+			$valid = false;
+		}
+
+		return $valid;
 	}
 
 	/**

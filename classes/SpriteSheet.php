@@ -406,6 +406,17 @@ class SpriteSheet {
 	}
 
 	/**
+	 * Convenience function to get to getSpriteName().
+	 *
+	 * @access	public
+	 * @param	string	Name
+	 * @return	object	SpriteName
+	 */
+	public function getSliceName($name) {
+		return $this->getSpriteName($name);
+	}
+
+	/**
 	 * Returns false if the slice percentages are out of bounds.
 	 *
 	 * @access	public
@@ -467,6 +478,24 @@ class SpriteSheet {
 			$sliceHeight = $file->getHeight() * ($heightPercent / 100);
 
 			return "<div class='sprite' style='width: {$sliceWidth}px; height: {$sliceHeight}px; overflow: hidden; position: relative;'><img src='".$file->getUrl()."' style='position: absolute; left: -{$sliceX}px; top: -{$sliceY}px;'/></div>";
+		}
+		return false;
+	}
+
+	/**
+	 * Get the HTML representation of a named slice.
+	 *
+	 * @access	public
+	 * @param	string	Slice Name
+	 * @param	integer	[Optional] Thumbnail Width
+	 * @return	mixed	HTML or false on error.
+	 */
+	public function getSliceFromName($name, $thumbWidth = null) {
+		$sliceName = $this->getSliceName($name);
+
+		if ($sliceName->exists()) {
+			$values = $sliceName->getValues();
+			return $this->getSlice($values['xPercent'], $values['yPercent'], $values['widthPercent'], $values['heightPercent'], $thumbWidth);
 		}
 		return false;
 	}

@@ -211,23 +211,15 @@ class SpriteSheetAPI extends ApiBase {
 				}
 			}
 			if ($spriteSheet !== false) {
-				$spriteName = SpriteName::newFromName($form['sprite_name']);
+				$spriteName = $spriteSheet->getSpriteName($form['sprite_name']);
 				$validName = true;
 
-				if (!$spriteName) {
+				if (!$spriteName->isNameValid()) {
 					$message = 'ss_api_invalid_sprite_name';
 					$validName = false;
 				}
 
-				if ($validName && $spriteName->getId()) {
-					$message = 'ss_api_sprite_name_in_use';
-					$validName = false;
-				}
-
 				if ($validName) {
-					//Reset this regardless.
-					$spriteName->setSpriteSheet($spriteSheet);
-
 					switch ($this->params['type']) {
 						case 'sprite':
 							if ($spriteSheet->validateSpriteCoordindates($values['xPos'], $values['yPos'])) {
@@ -240,7 +232,7 @@ class SpriteSheetAPI extends ApiBase {
 									$log = new LogPage('sprite');
 									$log->addEntry(
 										'sprite',
-										$spriteName->getSpriteSheet()->getTitle(),
+										$spriteSheet->getTitle(),
 										$comment,
 										[$spriteName->getName()],
 										$this->wgUser
@@ -265,7 +257,7 @@ class SpriteSheetAPI extends ApiBase {
 									$log = new LogPage('sprite');
 									$log->addEntry(
 										'slice',
-										$spriteName->getSpriteSheet()->getTitle(),
+										$spriteSheet->getTitle(),
 										$comment,
 										[$spriteName->getName()],
 										$this->wgUser
