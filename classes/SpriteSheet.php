@@ -397,7 +397,7 @@ class SpriteSheet {
 		if (array_key_exists($name, $this->spriteNameCache)) {
 			$spriteName = $this->spriteNameCache[$name];
 		} else {
-			$spriteName = new SpriteName($name, $this);
+			$spriteName = SpriteName::newFromName($name, $this);
 			if ($spriteName->exists()) {
 				$this->spriteNameCache[$name] = $spriteName;
 			}
@@ -414,6 +414,31 @@ class SpriteSheet {
 	 */
 	public function getSliceName($name) {
 		return $this->getSpriteName($name);
+	}
+
+	/**
+	 * Function Documentation
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	public function getAllSpriteNames() {
+		$result = $this->DB->select(
+			['spritename'],
+			['*'],
+			[
+				'spritesheet_id'	=> $this->getId(),
+			],
+			__METHOD__
+		);
+
+		while ($row = $result->fetchRow()) {
+			$spriteName = SpriteName::newFromRow($row, $this);
+			if ($spriteName->exists()) {
+				$this->spriteNameCache[$spriteName->getName()] = $spriteName;
+			}
+		}
+		return $this->spriteNameCache;
 	}
 
 	/**

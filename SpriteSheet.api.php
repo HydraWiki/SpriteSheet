@@ -53,8 +53,11 @@ class SpriteSheetAPI extends ApiBase {
 			case 'saveSpriteSheet':
 				$response = $this->saveSpriteSheet();
 				break;
-			case 'saveNamedSprite':
-				$response = $this->saveNamedSprite();
+			case 'saveSpriteName':
+				$response = $this->saveSpriteName();
+				break;
+			case 'getAllSpriteNames':
+				$response = $this->getAllSpriteNames();
 				break;
 			default:
 				$this->dieUsageMsg(['invaliddo', $this->params['do']]);
@@ -89,6 +92,10 @@ class SpriteSheetAPI extends ApiBase {
 			'values' => [
 				ApiBase::PARAM_TYPE		=> 'string',
 				ApiBase::PARAM_REQUIRED => false
+			],
+			'spritesheet_id' => [
+				ApiBase::PARAM_TYPE		=> 'integer',
+				ApiBase::PARAM_REQUIRED => false
 			]
 		];
 	}
@@ -101,20 +108,21 @@ class SpriteSheetAPI extends ApiBase {
 	 */
 	public function getParamDescription() {
 		return [
-			'do'		=> 'Action to take.',
-			'form'		=> 'Form data from a sprite sheet editor form.',
-			'type'		=> 'Sprite or Slice',
-			'values'	=> 'Values for the sprite or slice being saved.'
+			'do'				=> 'Action to take.',
+			'form'				=> 'Form data from a sprite sheet editor form.',
+			'type'				=> 'Sprite or Slice',
+			'values'			=> 'Values for the sprite or slice being saved.',
+			'spritesheet_id'	=> 'SpriteSheet ID of the the SpriteSheet to load.'
 		];
 	}
 
 	/**
 	 * Save Sprite Sheet information.
 	 *
-	 * @access	public
+	 * @access	private
 	 * @return	array	Success, Messages
 	 */
-	public function saveSpriteSheet() {
+	private function saveSpriteSheet() {
 		$success = false;
 		$message = 'ss_api_unknown_error';
 
@@ -181,10 +189,10 @@ class SpriteSheetAPI extends ApiBase {
 	/**
 	 * Save a named sprite/slice.
 	 *
-	 * @access	public
+	 * @access	private
 	 * @return	void
 	 */
-	public function saveNamedSprite() {
+	private function saveSpriteName() {
 		$success = false;
 		$message = 'ss_api_unknown_error';
 
@@ -290,6 +298,49 @@ class SpriteSheetAPI extends ApiBase {
 		if ($success) {
 			$return['tag'] = $spriteName->getParserTag();
 		}
+
+		return $return;
+	}
+
+	/**
+	 * Function Documentation
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function getAllSpriteNames() {
+		$spriteSheetId = intval($this->params['spritesheet_id']);
+		if ($spriteSheetId > 0) {
+			$spriteSheet = SpriteSheet::newFromId($spriteSheetId);
+		} else {
+			$message = 'ss_api_bad_title';
+		}
+
+		$data = [];
+		if (!empty($spriteSheet) && $spriteSheet->exists()) {
+			$spriteNames = $spriteSheet->getAllSpriteNames();
+
+			asort($spriteNames);
+
+			foreach ($spriteNames as $name => $spriteName) {
+				$data[$spriteName->getName()] = [
+					'id'		=> $spriteName->getId(),
+					'name'		=> $spriteName->getName(),
+					'type'		=> $spriteName->getType(),
+					'values'	=> $spriteName->getValues(),
+					'tag'		=> $spriteName->getParserTag(),
+				];
+			}
+
+			$message = 'ss_api_okay';
+		} else {
+			$message = 'ss_api_fatal_error_loading';
+		}
+
+		$return = [
+			'data' => $data,
+			'message' => wfMessage($message)->text()
+		];
 
 		return $return;
 	}

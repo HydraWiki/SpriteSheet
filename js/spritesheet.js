@@ -78,12 +78,12 @@ mw.spriteSheet = {
 
 		$("input[name='sprite_name']").keyup(function(key) {
 			if (key.keyCode == 13) {
-				mw.spriteSheet.saveNamedSprite();
+				mw.spriteSheet.saveSpriteName();
 			}
 		});
 
 		$('#save_named_sprite').on('click tap', function() {
-			mw.spriteSheet.saveNamedSprite();
+			mw.spriteSheet.saveSpriteName();
 		});
 
 		$('#named_sprite_popup a.close').on('click', function() {
@@ -201,7 +201,7 @@ mw.spriteSheet = {
 	 *
 	 * @return	boolean
 	 */
-	saveNamedSprite: function() {
+	saveSpriteName: function() {
 		var api = new mw.Api();
 
 		var spriteName = $('#sprite_name').val();
@@ -220,7 +220,7 @@ mw.spriteSheet = {
 		api.post(
 			{
 				action: 'spritesheet',
-				do: 'saveNamedSprite',
+				do: 'saveSpriteName',
 				format: 'json',
 				form: $('form#spritesheet_editor fieldset#spritesheet_form').serialize(),
 				type: mw.spriteSheet.selectedType,

@@ -40,6 +40,13 @@ class SpriteName {
 	protected $isLoaded = false;
 
 	/**
+	 * Where this object was loaded from.
+	 *
+	 * @var		string
+	 */
+	public $newFrom = null;
+
+	/**
 	 * Valid named sprite types.
 	 *
 	 * @var		array
@@ -57,7 +64,7 @@ class SpriteName {
 	 * @param	object	Valid SpriteSheet that exists.
 	 * @return	void
 	 */
-	public function __construct($name, SpriteSheet $spriteSheet) {
+	public function __construct(SpriteSheet $spriteSheet) {
 		$this->DB = wfGetDB(DB_MASTER);
 
 		if (!$spriteSheet->exists()) {
@@ -65,30 +72,70 @@ class SpriteName {
 		}
 
 		$this->spriteSheet = $spriteSheet;
-		$this->setName($name);
+	}
 
-		$this->load();
+	/**
+	 * Main Constructor
+	 *
+	 * @access	public
+	 * @param	string	Sprite/Slice Name
+	 * @param	object	Valid SpriteSheet that exists.
+	 * @return	void
+	 */
+	public function newFromName($name, SpriteSheet $spriteSheet) {
+		$spriteName = new SpriteName($spriteSheet);
+
+		$spriteName->newFrom = 'name';
+
+		$spriteName->setName($name);
+
+		$spriteName->load();
+
+		return $spriteName;
+	}
+
+	/**
+	 * Load a new SpriteName object from a database row.
+	 *
+	 * @access	public
+	 * @param	array	Database Row
+	 * @param	object	Valid SpriteSheet that exists.
+	 * @return	mixed	SpriteName or false on error.
+	 */
+	static public function newFromRow($row, SpriteSheet $spriteSheet) {
+		$spriteName = new SpriteName($spriteSheet);
+
+		$spriteName->newFrom = 'row';
+
+		$spriteName->load($row);
+
+		return $spriteName;
 	}
 
 	/**
 	 * Load from the database.
 	 *
 	 * @access	public
+	 * @param	array	[Optional] Database row to load from.
 	 * @return	void
 	 */
-	public function load() {
+	public function load($row = null) {
 		if (!$this->isLoaded) {
-			$result = $this->DB->select(
-				['spritename'],
-				['*'],
-				[
-					'spritesheet_id'	=> $this->spriteSheet->getId(),
-					'name' 				=> $this->getName()
-				],
-				__METHOD__
-			);
+			switch ($this->newFrom) {
+				case 'name':
+					$result = $this->DB->select(
+						['spritename'],
+						['*'],
+						[
+							'spritesheet_id'	=> $this->spriteSheet->getId(),
+							'name' 				=> $this->getName()
+						],
+						__METHOD__
+					);
 
-			$row = $result->fetchRow();
+					$row = $result->fetchRow();
+					break;
+			}
 
 			if (is_array($row)) {
 				$this->data = $row;
