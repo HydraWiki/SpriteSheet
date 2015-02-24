@@ -86,6 +86,10 @@ mw.spriteSheet = {
 			mw.spriteSheet.saveNamedSprite();
 		});
 
+		$('#named_sprite_popup a.close').on('click', function() {
+			$('#named_sprite_popup').hide();
+		});
+
 		this.updateSpriteSheet(true);
 		this.sheetSaved = true;
 	},

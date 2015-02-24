@@ -195,6 +195,7 @@ class SpriteSheetHooks {
 				<div id='named_sprite_popup'>
 					<input id='sprite_name' name='sprite_name' type='text' value=''/>
 					<button id='save_named_sprite' name='save_named_sprite' type='button'>".wfMessage('save_named_sprite')->escaped()."</button>
+					<a class='close'>&nbsp;</a>
 				</div>
 			</fieldset>
 		</form>";
