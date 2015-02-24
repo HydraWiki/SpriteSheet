@@ -120,7 +120,7 @@ class SpriteSheetAPI extends ApiBase {
 	 * Save Sprite Sheet information.
 	 *
 	 * @access	private
-	 * @return	array	Success, Messages
+	 * @return	array	API Response
 	 */
 	private function saveSpriteSheet() {
 		$success = false;
@@ -190,7 +190,7 @@ class SpriteSheetAPI extends ApiBase {
 	 * Save a named sprite/slice.
 	 *
 	 * @access	private
-	 * @return	void
+	 * @return	array	API Response
 	 */
 	private function saveSpriteName() {
 		$success = false;
@@ -303,12 +303,15 @@ class SpriteSheetAPI extends ApiBase {
 	}
 
 	/**
-	 * Function Documentation
+	 * Return all sprite names for the specified sprite sheet.
 	 *
 	 * @access	private
-	 * @return	void
+	 * @return	array	API Response
 	 */
 	private function getAllSpriteNames() {
+		$success = false;
+		$message = 'ss_api_unknown_error';
+
 		$spriteSheetId = intval($this->params['spritesheet_id']);
 		if ($spriteSheetId > 0) {
 			$spriteSheet = SpriteSheet::newFromId($spriteSheetId);
@@ -333,13 +336,15 @@ class SpriteSheetAPI extends ApiBase {
 			}
 
 			$message = 'ss_api_okay';
+			$success = true;
 		} else {
 			$message = 'ss_api_fatal_error_loading';
 		}
 
 		$return = [
-			'data' => $data,
-			'message' => wfMessage($message)->text()
+			'success'	=> $success,
+			'data'		=> $data,
+			'message'	=> wfMessage($message)->text()
 		];
 
 		return $return;

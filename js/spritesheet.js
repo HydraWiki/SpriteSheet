@@ -240,6 +240,36 @@ mw.spriteSheet = {
 	},
 
 	/**
+	 * Save a named sprite/slice back to the server.
+	 *
+	 * @return	boolean
+	 */
+	getAllSpriteNames: function() {
+		var api = new mw.Api();
+
+		var spriteSheetId = $("input[name='spritesheet_id']").val();
+
+		this.showProgressIndicator();
+		api.get(
+			{
+				action: 'spritesheet',
+				do: 'getAllSpriteNames',
+				format: 'json',
+				spritesheet_id: spriteSheetId
+			}
+		).done(
+			function(result) {
+				if (result.success != true) {
+					alert(result.message);
+				} else {
+					console.log(result);
+				}
+				mw.spriteSheet.hideProgressIndicator();
+			}
+		);
+	},
+
+	/**
 	 * Parse and prepare values for usage.
 	 *
 	 * @return	void
