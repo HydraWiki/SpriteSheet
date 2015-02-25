@@ -7,6 +7,7 @@ mw.spriteSheet = {
 	selector: null,
 	mouseDrag: false,
 	sheetSaved: false,
+	spriteNames: {},
 
 	/**
 	 * Initialize the sprite sheet.
@@ -88,6 +89,10 @@ mw.spriteSheet = {
 
 		$('#named_sprite_popup a.close').on('click', function() {
 			$('#named_sprite_popup').hide();
+		});
+
+		$('#show_named_sprites').on('click tap', function() {
+			mw.spriteSheet.toggleSpriteNameList();
 		});
 
 		this.updateSpriteSheet(true);
@@ -173,7 +178,7 @@ mw.spriteSheet = {
 				action: 'spritesheet',
 				do: 'saveSpriteSheet',
 				format: 'json',
-				form: $('form#spritesheet_editor fieldset#spritesheet_form').serialize()
+				form: $('#spritesheet_editor form fieldset#spritesheet_form').serialize()
 			}
 		).done(
 			function(result) {
@@ -222,7 +227,7 @@ mw.spriteSheet = {
 				action: 'spritesheet',
 				do: 'saveSpriteName',
 				format: 'json',
-				form: $('form#spritesheet_editor fieldset#spritesheet_form').serialize(),
+				form: $('#spritesheet_editor form fieldset#spritesheet_form').serialize(),
 				type: mw.spriteSheet.selectedType,
 				values: (mw.spriteSheet.selectedType == 'slice' ? JSON.stringify(mw.spriteSheet.selectedSlice) : JSON.stringify(mw.spriteSheet.selectedSprite))
 			}
@@ -249,24 +254,62 @@ mw.spriteSheet = {
 
 		var spriteSheetId = $("input[name='spritesheet_id']").val();
 
-		this.showProgressIndicator();
-		api.get(
-			{
-				action: 'spritesheet',
-				do: 'getAllSpriteNames',
-				format: 'json',
-				spritesheet_id: spriteSheetId
-			}
-		).done(
-			function(result) {
-				if (result.success != true) {
-					alert(result.message);
-				} else {
-					console.log(result);
+		if (!Object.keys(this.spriteNames).length) {
+			this.showProgressIndicator();
+			api.get(
+				{
+					action: 'spritesheet',
+					do: 'getAllSpriteNames',
+					format: 'json',
+					spritesheet_id: spriteSheetId
+				},
+				{
+					async: false
 				}
-				mw.spriteSheet.hideProgressIndicator();
-			}
-		);
+			).done(
+				function(result) {
+					if (result.success != true) {
+						alert(result.message);
+					} else {
+						mw.spriteSheet.spriteNames = result.data;
+					}
+					mw.spriteSheet.hideProgressIndicator();
+				}
+			);
+		}
+	},
+
+	/**
+	 * Display a list of sprite names.
+	 *
+	 * @return	void
+	 */
+	toggleSpriteNameList: function() {
+		if (!$("#named_sprites > *").length) {
+			this.getAllSpriteNames();
+
+			var list;
+
+			list = $("<ul>");
+
+			$.each(this.spriteNames, function(spriteName, data) {
+				$(list).append(mw.spriteSheet.formatSpriteNameListItem(data));
+			});
+			$("#named_sprites").html(list).slideDown();
+			$('button#show_named_sprites').html(mw.message('hide_named_sprites').escaped());
+		} else {
+			$("#named_sprites").html('').slideUp();
+			$('button#show_named_sprites').html(mw.message('show_named_sprites').escaped());
+		}
+	},
+
+	/**
+	 * Format a sprite name list item.
+	 *
+	 * @return	string	HTML <li> List Item
+	 */
+	formatSpriteNameListItem: function(data) {
+		return $("<li>").append(data.name);
 	},
 
 	/**

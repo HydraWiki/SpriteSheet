@@ -174,31 +174,35 @@ class SpriteSheetHooks {
 		self::$spriteSheet = SpriteSheet::newFromTitle($imagePage->getTitle());
 
 		$form = "
-		<form id='spritesheet_editor'>
-			<fieldset id='spritesheet_form'>
-				<legend>".wfMessage('sprite_sheet')->escaped()."</legend>
-				<label for='sprite_columns'>".wfMessage('sprite_columns')->escaped()."</label>
-				<input id='sprite_columns' name='sprite_columns' type='text' value='".self::$spriteSheet->getColumns()."'/>
+		<div id='spritesheet_editor'>
+			<form>
+				<fieldset id='spritesheet_form'>
+					<legend>".wfMessage('sprite_sheet')->escaped()."</legend>
+					<label for='sprite_columns'>".wfMessage('sprite_columns')->escaped()."</label>
+					<input id='sprite_columns' name='sprite_columns' type='text' value='".self::$spriteSheet->getColumns()."'/>
 
-				<label for='sprite_rows'>".wfMessage('sprite_rows')->escaped()."</label>
-				<input id='sprite_rows' name='sprite_rows' type='text' value='".self::$spriteSheet->getRows()."'/>
+					<label for='sprite_rows'>".wfMessage('sprite_rows')->escaped()."</label>
+					<input id='sprite_rows' name='sprite_rows' type='text' value='".self::$spriteSheet->getRows()."'/>
 
-				<label for='sprite_inset'>".wfMessage('sprite_inset')->escaped()."</label>
-				<input id='sprite_inset' name='sprite_inset' type='text' value='".self::$spriteSheet->getInset()."'/>
+					<label for='sprite_inset'>".wfMessage('sprite_inset')->escaped()."</label>
+					<input id='sprite_inset' name='sprite_inset' type='text' value='".self::$spriteSheet->getInset()."'/>
 
-				<input name='spritesheet_id' type='hidden' value='".self::$spriteSheet->getId()."'/>
-				<input name='page_id' type='hidden' value='".self::$spriteSheet->getTitle()->getArticleId()."'/>
-				<input name='page_title' type='hidden' value='".htmlentities(self::$spriteSheet->getTitle()->getPrefixedDBkey(), ENT_QUOTES)."'/>
-				<button id='save_sheet' name='save_sheet' type='button'>".wfMessage('save_sheet')->escaped()."</button>
+					<input name='spritesheet_id' type='hidden' value='".self::$spriteSheet->getId()."'/>
+					<input name='page_id' type='hidden' value='".self::$spriteSheet->getTitle()->getArticleId()."'/>
+					<input name='page_title' type='hidden' value='".htmlentities(self::$spriteSheet->getTitle()->getPrefixedDBkey(), ENT_QUOTES)."'/>
+					<button id='save_sheet' name='save_sheet' type='button'>".wfMessage('save_sheet')->escaped()."</button>
 
-				<pre id='sprite_preview'>".wfMessage('click_grid_for_preview')->escaped()."</pre>
-				<div id='named_sprite_popup'>
-					<input id='sprite_name' name='sprite_name' type='text' value=''/>
-					<button id='save_named_sprite' name='save_named_sprite' type='button'>".wfMessage('save_named_sprite')->escaped()."</button>
-					<a class='close'>&nbsp;</a>
-				</div>
-			</fieldset>
-		</form>";
+					<pre id='sprite_preview'>".wfMessage('click_grid_for_preview')->escaped()."</pre>
+					<div id='named_sprite_popup'>
+						<input id='sprite_name' name='sprite_name' type='text' value=''/>
+						<button id='save_named_sprite' name='save_named_sprite' type='button'>".wfMessage('save_named_sprite')->escaped()."</button>
+						<a class='close'>&nbsp;</a>
+					</div>
+				</fieldset>
+			</form>
+			<button id='show_named_sprites' name='show_named_sprites' type='button'>".wfMessage('show_named_sprites')->escaped()."</button>
+			<div id='named_sprites'></div>
+		</div>";
 
 		$output->addHtml($form);
 
