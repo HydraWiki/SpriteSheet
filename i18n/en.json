@@ -25,6 +25,7 @@
 	"save_sheet": "Save Sheet",
 	"save_named_sprite": "Save Named Sprite",
 	"save_named_slice": "Save Named Slice",
+	"update_name": "Update Name",
 	"please_enter_sprite_name": "Please enter a name for this custom sprite.",
 	"please_select_sprite": "Please select a sprite or create a custom slice first.",
 	"ss_api_invalid_sprite_name": "The supplied name for the custom sprite or slice is invalid.  Names must be 1 to 255 characters long and contain alphanumeric characters.",
@@ -37,5 +38,6 @@
     "sprite_sprite_action": "created a named sprite \"$2\" for [[$1]]",
     "sprite_slice_action": "created a named slice \"$2\" for [[$1]]",
 	"show_named_sprites": "Show Named Sprites/Slices",
-	"hide_named_sprites": "Hide Named Sprites/Slices"
+	"hide_named_sprites": "Hide Named Sprites/Slices",
+	"click_to_edit": "Click to Edit"
 }

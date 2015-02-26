@@ -5,9 +5,11 @@ mw.spriteSheet = {
 	selectedSlice: {},
 	selectedType: null,
 	selector: null,
+	highlight: {},
 	mouseDrag: false,
 	sheetSaved: false,
 	spriteNames: {},
+	namedSpriteEditor: null,
 
 	/**
 	 * Initialize the sprite sheet.
@@ -87,13 +89,17 @@ mw.spriteSheet = {
 			mw.spriteSheet.saveSpriteName();
 		});
 
-		$('#named_sprite_popup a.close').on('click', function() {
-			$('#named_sprite_popup').hide();
+		$('.named_sprite_popup a.close').on('click', function() {
+			$(this).parent().hide();
 		});
 
 		$('#show_named_sprites').on('click tap', function() {
 			mw.spriteSheet.toggleSpriteNameList();
 		});
+
+		this.namedSpriteEditor = $("#named_sprite_editor").detach();
+
+		$("#file").append(this.namedSpriteEditor);
 
 		this.updateSpriteSheet(true);
 		this.sheetSaved = true;
@@ -110,6 +116,7 @@ mw.spriteSheet = {
 
 		this.parseValues();
 
+		//This changing of an inset of 0 to 1 is just for pixel display purposes and has no bearing on positional data.
 		if (!this.values.inset) {
 			inset = 1;
 		} else {
@@ -236,7 +243,50 @@ mw.spriteSheet = {
 				if (result.success != true) {
 					alert(result.message);
 				} else {
-					$('#named_sprite_popup').hide();
+					$('#named_sprite_add').hide();
+				}
+				mw.spriteSheet.hideProgressIndicator();
+				$('#sprite_preview').html(result.tag);
+			}
+		);
+	},
+
+	/**
+	 * Update the name of a sprite/slice back to the server.
+	 *
+	 * @return	boolean
+	 */
+	updateSpriteName: function() {
+		var api = new mw.Api();
+
+		var spriteName = $('#sprite_name').val();
+
+		if (!this.selectedType) {
+			alert(mw.message('please_select_sprite').text());
+			return;
+		}
+
+		if (!spriteName) {
+			alert(mw.message('please_enter_sprite_name').text());
+			return;
+		}
+
+		this.showProgressIndicator();
+		api.post(
+			{
+				action: 'spritesheet',
+				do: 'saveSpriteName',
+				format: 'json',
+				form: $('#spritesheet_editor form fieldset#spritesheet_form').serialize(),
+				type: mw.spriteSheet.selectedType,
+				values: (mw.spriteSheet.selectedType == 'slice' ? JSON.stringify(mw.spriteSheet.selectedSlice) : JSON.stringify(mw.spriteSheet.selectedSprite))
+			}
+		).done(
+			function(result) {
+				if (result.success != true) {
+					alert(result.message);
+				} else {
+					$('#named_sprite_add').hide();
 				}
 				mw.spriteSheet.hideProgressIndicator();
 				$('#sprite_preview').html(result.tag);
@@ -280,12 +330,23 @@ mw.spriteSheet = {
 	},
 
 	/**
+	 * Return a boolean indiciating if sprite names have been populated.
+	 *
+	 * @return	boolean
+	 */
+	haveAllSpriteNames: function() {
+		return Object.keys(this.spriteNames).length > 0;
+	},
+
+	/**
 	 * Display a list of sprite names.
 	 *
 	 * @return	void
 	 */
 	toggleSpriteNameList: function() {
-		if (!$("#named_sprites > *").length) {
+		if (!this.haveAllSpriteNames()) {
+			$("#named_sprites").hide();
+
 			this.getAllSpriteNames();
 
 			var list;
@@ -295,10 +356,24 @@ mw.spriteSheet = {
 			$.each(this.spriteNames, function(spriteName, data) {
 				$(list).append(mw.spriteSheet.formatSpriteNameListItem(data));
 			});
-			$("#named_sprites").html(list).slideDown();
+			$("#named_sprites").html(list);
+
+			$("#named_sprites ul li").on("click", function() {
+				mw.spriteSheet.showSpriteNameEditor($(this).attr('data-name'));
+			});
+			$("#named_sprites ul li").on("mouseenter", function() {
+				mw.spriteSheet.highlightSpriteName($(this).attr('data-name'), true);
+			});
+			$("#named_sprites ul li").on("mouseleave", function() {
+				mw.spriteSheet.highlightSpriteName($(this).attr('data-name'), false);
+			});
+		}
+
+		if (!$("#named_sprites").is(':visible')) {
+			$("#named_sprites").slideDown();
 			$('button#show_named_sprites').html(mw.message('hide_named_sprites').escaped());
 		} else {
-			$("#named_sprites").html('').slideUp();
+			$("#named_sprites").slideUp();
 			$('button#show_named_sprites').html(mw.message('show_named_sprites').escaped());
 		}
 	},
@@ -309,7 +384,71 @@ mw.spriteSheet = {
 	 * @return	string	HTML <li> List Item
 	 */
 	formatSpriteNameListItem: function(data) {
-		return $("<li>").append(data.name);
+		return $("<li>").attr("data-id", data.id).attr("data-name", data.name).attr("title", mw.message('click_to_edit').escaped()).append(data.name);
+	},
+
+	/**
+	 * Highlight a named sprite on the canvas.
+	 *
+	 * @param	string	Sprite Name Key
+	 * @param	boolean	Show or Hide the Highlight
+	 * @return	void
+	 */
+	highlightSpriteName: function(spriteName, show) {
+		var spriteData = this.spriteNames[spriteName];
+
+		if (show === true && Object.keys(spriteData).length) {
+			switch (spriteData.type) {
+				case 'sprite':
+					inset = this.values.inset * 2;
+
+					var columnWidth = this.canvas.width / this.values.columns;
+					var rowHeight = this.canvas.height / this.values.rows;
+
+					var x = spriteData.values.xPos * columnWidth;
+					var y = spriteData.values.yPos * rowHeight;
+
+					this.highlight[spriteName] = this.canvas.display.rectangle({
+						x: x + (Math.floor(inset / 2)),
+						y: y + (Math.floor(inset / 2)),
+						width: columnWidth - inset,
+						height: rowHeight - inset,
+						fill: "rgba(26, 114, 193, 0.6)",
+						stroke: "inside 1px rgba(26, 114, 193, 1)"
+					});
+					this.canvas.addChild(this.highlight[spriteName]);
+					break;
+				case 'slice':
+					this.highlight[spriteName] = this.canvas.display.rectangle({
+						x: this.canvas.width * (spriteData.values.xPercent / 100),
+						y: this.canvas.height * (spriteData.values.yPercent / 100),
+						origin: {x: "top", y: "left"},
+						width: this.canvas.width * (spriteData.values.widthPercent / 100),
+						height: this.canvas.height * (spriteData.values.heightPercent / 100),
+						fill: "rgba(26, 114, 193, 0.6)",
+						stroke: "inside 1px rgba(26, 114, 193, 1)"
+					});
+					this.canvas.addChild(this.highlight[spriteName]);
+					break;
+			}
+		} else if (show === false && this.highlight.hasOwnProperty(spriteName)) {
+			this.canvas.removeChild(this.highlight[spriteName]);
+		}
+	},
+
+	/**
+	 * Invoke the sprite name editor.
+	 *
+	 * @param	string	Sprite Name Key
+	 * @return	void
+	 */
+	showSpriteNameEditor: function(spriteName) {
+		var spriteData = this.spriteNames[spriteName];
+
+		this.highlightSpriteName(spriteName, true);
+
+		$("#named_sprite_editor").css('left', this.highlight[spriteName].x + (this.highlight[spriteName].width / 2) - 35).css('top', this.highlight[spriteName].y + this.highlight[spriteName].height + 19);
+		$("#named_sprite_editor").show();
 	},
 
 	/**
@@ -404,7 +543,7 @@ mw.spriteSheet = {
 		$('button#save_named_sprite').html(mw.message('save_named_sprite').escaped());
 		this.selectedType = 'sprite';
 
-		$('#named_sprite_popup').show();
+		$('#named_sprite_add').show();
 		$("input[name='sprite_name']").focus().select();
 	},
 
@@ -452,7 +591,7 @@ mw.spriteSheet = {
 		$('button#save_named_sprite').html(mw.message('save_named_slice').escaped());
 		this.selectedType = 'slice';
 
-		$('#named_sprite_popup').show();
+		$('#named_sprite_add').show();
 		$("input[name='sprite_name']").focus().select();
 	},
 
@@ -471,8 +610,8 @@ mw.spriteSheet = {
 			origin: {x: "top", y: "left"},
 			width: 0,
 			height: 0,
-			fill: "rgba(195, 223,253, 0.5)",
-			stroke: "inside 1px rgba(195, 223,253, 0.5)"
+			fill: "rgba(195, 223, 253, 0.5)",
+			stroke: "inside 1px rgba(195, 223, 253, 0.5)"
 		});
 
 		this.selector.timeline = this.canvas.setLoop(function () {

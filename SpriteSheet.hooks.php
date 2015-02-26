@@ -179,13 +179,13 @@ class SpriteSheetHooks {
 				<fieldset id='spritesheet_form'>
 					<legend>".wfMessage('sprite_sheet')->escaped()."</legend>
 					<label for='sprite_columns'>".wfMessage('sprite_columns')->escaped()."</label>
-					<input id='sprite_columns' name='sprite_columns' type='text' value='".self::$spriteSheet->getColumns()."'/>
+					<input id='sprite_columns' name='sprite_columns' type='number' min='0' value='".self::$spriteSheet->getColumns()."'/>
 
 					<label for='sprite_rows'>".wfMessage('sprite_rows')->escaped()."</label>
-					<input id='sprite_rows' name='sprite_rows' type='text' value='".self::$spriteSheet->getRows()."'/>
+					<input id='sprite_rows' name='sprite_rows' type='number' min='0' value='".self::$spriteSheet->getRows()."'/>
 
 					<label for='sprite_inset'>".wfMessage('sprite_inset')->escaped()."</label>
-					<input id='sprite_inset' name='sprite_inset' type='text' value='".self::$spriteSheet->getInset()."'/>
+					<input id='sprite_inset' name='sprite_inset' type='number' min='0' value='".self::$spriteSheet->getInset()."'/>
 
 					<input name='spritesheet_id' type='hidden' value='".self::$spriteSheet->getId()."'/>
 					<input name='page_id' type='hidden' value='".self::$spriteSheet->getTitle()->getArticleId()."'/>
@@ -193,7 +193,7 @@ class SpriteSheetHooks {
 					<button id='save_sheet' name='save_sheet' type='button'>".wfMessage('save_sheet')->escaped()."</button>
 
 					<pre id='sprite_preview'>".wfMessage('click_grid_for_preview')->escaped()."</pre>
-					<div id='named_sprite_popup'>
+					<div id='named_sprite_add' class='named_sprite_popup'>
 						<input id='sprite_name' name='sprite_name' type='text' value=''/>
 						<button id='save_named_sprite' name='save_named_sprite' type='button'>".wfMessage('save_named_sprite')->escaped()."</button>
 						<a class='close'>&nbsp;</a>
@@ -202,6 +202,12 @@ class SpriteSheetHooks {
 			</form>
 			<button id='show_named_sprites' name='show_named_sprites' type='button'>".wfMessage('show_named_sprites')->escaped()."</button>
 			<div id='named_sprites'></div>
+			<div id='named_sprite_editor' class='named_sprite_popup'>
+				<input id='sprite_name' name='sprite_name' type='text' value=''/>
+				<button id='save_named_sprite' name='save_named_sprite' type='button'>".wfMessage('update_name')->escaped()."</button>
+				<button id='save_named_sprite' name='save_named_sprite' type='button'>".wfMessage('update_name')->escaped()."</button>
+				<a class='close'>&nbsp;</a>
+			</div>
 		</div>";
 
 		$output->addHtml($form);
