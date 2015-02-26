@@ -205,7 +205,7 @@ class SpriteSheetHooks {
 			<div id='named_sprite_editor' class='named_sprite_popup'>
 				<input id='sprite_name' name='sprite_name' type='text' value=''/>
 				<button id='save_named_sprite' name='save_named_sprite' type='button'>".wfMessage('update_name')->escaped()."</button>
-				<button id='save_named_sprite' name='save_named_sprite' type='button'>".wfMessage('update_name')->escaped()."</button>
+				<button id='delete_named_sprite' name='delete_named_sprite' type='button'>".wfMessage('delete_name')->escaped()."</button>
 				<a class='close'>&nbsp;</a>
 			</div>
 		</div>";
