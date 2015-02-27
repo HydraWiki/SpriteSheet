@@ -114,6 +114,10 @@ class SpriteSheetAPI extends ApiBase {
 			'new_sprite_name' => [
 				ApiBase::PARAM_TYPE		=> 'string',
 				ApiBase::PARAM_REQUIRED => false
+			],
+			'sprite_name' => [
+				ApiBase::PARAM_TYPE		=> 'string',
+				ApiBase::PARAM_REQUIRED => false
 			]
 		];
 	}
@@ -133,7 +137,8 @@ class SpriteSheetAPI extends ApiBase {
 			'spritesheet_id'	=> 'SpriteSheet ID of the the SpriteSheet to load.',
 			'spritename_id'		=> 'SpriteName ID of the the SpriteName to load.',
 			'old_sprite_name'	=> 'Old Sprite Name for the designated SpriteName object.',
-			'new_sprite_name'	=> 'New Sprite Name for the designated SpriteName object.'
+			'new_sprite_name'	=> 'New Sprite Name for the designated SpriteName object.',
+			'sprite_name'		=> 'Sprite Name for the designated SpriteName object.'
 		];
 	}
 
@@ -384,6 +389,59 @@ class SpriteSheetAPI extends ApiBase {
 		if ($success) {
 			$return['tag'] = $spriteName->getParserTag();
 		}
+
+		return $return;
+	}
+
+	/**
+	 * Delete a named sprite/slice.
+	 *
+	 * @access	private
+	 * @return	array	API Response
+	 */
+	private function deleteSpriteName() {
+		$success = false;
+		$message = 'ss_api_unknown_error';
+
+		if (!$this->wgUser->isAllowed('edit_sprites')) {
+			$message = 'ss_api_no_permission';
+			return [
+				'success' => $success,
+				'message' => wfMessage($message)->text()
+			];
+		}
+
+		if ($this->wgRequest->wasPosted()) {
+			$spriteSheetId = intval($this->params['spritesheet_id']);
+			$spriteNameId = intval($this->params['spritename_id']);
+
+			if ($spriteSheetId > 0) {
+				$spriteSheet = SpriteSheet::newFromId($spriteSheetId);
+			}
+
+			if ($spriteSheet !== false) {
+				$spriteName = $spriteSheet->getSpriteName($this->params['sprite_name']);
+
+				if (!$spriteName->exists() || $spriteName->getId() != $spriteNameId) {
+					$message = 'ss_api_fatal_error_deleting_name';
+				} else {
+					$success = $spriteName->delete();
+				}
+
+				if ($success) {
+					$message = 'ss_api_okay';
+				}
+			} else {
+				$message = 'ss_api_fatal_error_loading';
+			}
+		} else {
+			$message = 'ss_api_must_be_posted';
+		}
+
+		$return = [
+			'success' => $success,
+			'message' => wfMessage($message)->text()
+		];
 
 		return $return;
 	}

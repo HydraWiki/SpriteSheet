@@ -73,7 +73,8 @@ $wgResourceModules['ext.spriteSheet'] = [
 		'please_select_sprite',
 		'show_named_sprites',
 		'hide_named_sprites',
-		'click_to_edit'
+		'click_to_edit',
+		'click_grid_for_preview'
 	],
 	'position'		=> 'top'
 ];

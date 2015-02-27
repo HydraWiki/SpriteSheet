@@ -218,6 +218,34 @@ class SpriteName {
 	}
 
 	/**
+	 * Delete this Sprite Name from the database.
+	 *
+	 * @access	public
+	 * @return	boolean	Success
+	 */
+	public function delete() {
+		$success = false;
+
+		$spriteNameId = $this->getId();
+
+		$this->DB->begin();
+		if ($spriteNameId > 0) {
+			$result = $this->DB->delete(
+				'spritename',
+				['spritename_id' => $spriteNameId],
+				__METHOD__
+			);
+		}
+
+		if ($result !== false) {
+			$success = true;
+		}
+		$this->DB->commit();
+
+		return $success;
+	}
+
+	/**
 	 * Return the database identification number for this Sprite Name.
 	 *
 	 * @access	public

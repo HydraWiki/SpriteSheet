@@ -100,6 +100,10 @@ mw.spriteSheet = {
 			mw.spriteSheet.updateSpriteName();
 		});
 
+		$('#delete_named_sprite').on('click tap', function() {
+			mw.spriteSheet.deleteSpriteName();
+		});
+
 		$('.named_sprite_popup a.close').on('click', function() {
 			$(this).parent().hide();
 		});
@@ -312,10 +316,57 @@ mw.spriteSheet = {
 					mw.spriteSheet.spriteNames[newSpriteName] = spriteData;
 
 					//Update the visual list.
-					$("#named_sprites ul li[data-id='1']").html(newSpriteName).attr('data-name', newSpriteName);
+					$("#named_sprites ul li[data-id='"+spriteData.id+"']").html(newSpriteName).attr('data-name', newSpriteName);
 
 					//Update the preview.
 					mw.spriteSheet.updateSpritePreview(result.tag);
+				}
+				mw.spriteSheet.hideProgressIndicator();
+			}
+		);
+	},
+
+	/**
+	 * Delete a SpriteName through the API.
+	 *
+	 * @return	boolean
+	 */
+	deleteSpriteName: function() {
+		var api = new mw.Api();
+
+		var spriteData = this.spriteNames[this.currentlyEditing];
+
+		this.showProgressIndicator();
+		api.post(
+			{
+				action: 'spritesheet',
+				do: 'deleteSpriteName',
+				format: 'json',
+				spritesheet_id: spriteData.spritesheet_id,
+				spritename_id: spriteData.id,
+				sprite_name: spriteData.name
+			}
+		).done(
+			function(result) {
+				if (result.success != true) {
+					alert(result.message);
+				} else {
+					$('#named_sprite_editor').hide();
+
+					//No longer editing anything.
+					mw.spriteSheet.currentlyEditing = null;
+
+					//Hide the highlight created under the older name first.
+					mw.spriteSheet.highlightSpriteName(spriteData.name, false);
+
+					//Nuke the sprite data from the names list.
+					delete mw.spriteSheet.spriteNames[spriteData.name]
+
+					//Update the visual list.
+					$("#named_sprites ul li[data-id='"+spriteData.id+"']").remove();
+
+					//Reset the preview to default.
+					mw.spriteSheet.updateSpritePreview(mw.message('click_grid_for_preview').escaped());
 				}
 				mw.spriteSheet.hideProgressIndicator();
 			}
