@@ -30,7 +30,7 @@
 	"please_enter_sprite_name": "Please enter a name for this custom sprite.",
 	"please_select_sprite": "Please select a sprite or create a custom slice first.",
 	"ss_api_invalid_sprite_name": "The supplied name for the custom sprite or slice is invalid.  Names must be 1 to 255 characters long and contain alphanumeric characters.",
-	"ss_api_sprite_name_in_use": "That sprite name is already in use on another sprite sheet.",
+	"ss_api_sprite_name_in_use": "That sprite name is already in use on this sheet.  Please delete it first.",
 	"wrong_named_sprite_slice": "A matching named sprite or slice was found, but the incorrect tag was used.  Please change the tag to match.",
 	"ss_api_no_permission": "You do not have permission to edit or modify sprites.",
     "sprite_log_name": "SpriteSheet change log",

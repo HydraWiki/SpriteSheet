@@ -10,6 +10,7 @@ mw.spriteSheet = {
 	sheetSaved: false,
 	spriteNames: {},
 	namedSpriteEditor: null,
+	currentlyEditing: null,
 
 	/**
 	 * Initialize the sprite sheet.
@@ -85,8 +86,18 @@ mw.spriteSheet = {
 			}
 		});
 
+		$("input[name='update_sprite_name']").keyup(function(key) {
+			if (key.keyCode == 13) {
+				mw.spriteSheet.updateSpriteName();
+			}
+		});
+
 		$('#save_named_sprite').on('click tap', function() {
 			mw.spriteSheet.saveSpriteName();
+		});
+
+		$('#update_named_sprite').on('click tap', function() {
+			mw.spriteSheet.updateSpriteName();
 		});
 
 		$('.named_sprite_popup a.close').on('click', function() {
@@ -246,7 +257,7 @@ mw.spriteSheet = {
 					$('#named_sprite_add').hide();
 				}
 				mw.spriteSheet.hideProgressIndicator();
-				$('#sprite_preview').html(result.tag);
+				mw.spriteSheet.updateSpritePreview(result.tag);
 			}
 		);
 	},
@@ -259,14 +270,12 @@ mw.spriteSheet = {
 	updateSpriteName: function() {
 		var api = new mw.Api();
 
-		var spriteName = $('#sprite_name').val();
+		var spriteData = this.spriteNames[this.currentlyEditing];
 
-		if (!this.selectedType) {
-			alert(mw.message('please_select_sprite').text());
-			return;
-		}
+		var oldSpriteName = spriteData.name;
+		var newSpriteName = $('#update_sprite_name').val();
 
-		if (!spriteName) {
+		if (!newSpriteName) {
 			alert(mw.message('please_enter_sprite_name').text());
 			return;
 		}
@@ -275,23 +284,51 @@ mw.spriteSheet = {
 		api.post(
 			{
 				action: 'spritesheet',
-				do: 'saveSpriteName',
+				do: 'updateSpriteName',
 				format: 'json',
-				form: $('#spritesheet_editor form fieldset#spritesheet_form').serialize(),
-				type: mw.spriteSheet.selectedType,
-				values: (mw.spriteSheet.selectedType == 'slice' ? JSON.stringify(mw.spriteSheet.selectedSlice) : JSON.stringify(mw.spriteSheet.selectedSprite))
+				spritesheet_id: spriteData.spritesheet_id,
+				spritename_id: spriteData.id,
+				old_sprite_name: spriteData.name,
+				new_sprite_name: newSpriteName
 			}
 		).done(
 			function(result) {
 				if (result.success != true) {
 					alert(result.message);
 				} else {
-					$('#named_sprite_add').hide();
+					$('#named_sprite_editor').hide();
+
+					//No longer editing anything.
+					mw.spriteSheet.currentlyEditing = null;
+
+					//Hide the highlight created under the older name first.
+					mw.spriteSheet.highlightSpriteName(oldSpriteName, false);
+
+					//Reset name on the sprite data.
+					spriteData.name = newSpriteName;
+
+					//Nuke the sprite data from the names list and assign the updated data on to the list.
+					delete mw.spriteSheet.spriteNames[oldSpriteName]
+					mw.spriteSheet.spriteNames[newSpriteName] = spriteData;
+
+					//Update the visual list.
+					$("#named_sprites ul li[data-id='1']").html(newSpriteName).attr('data-name', newSpriteName);
+
+					//Update the preview.
+					mw.spriteSheet.updateSpritePreview(result.tag);
 				}
 				mw.spriteSheet.hideProgressIndicator();
-				$('#sprite_preview').html(result.tag);
 			}
 		);
+	},
+
+	/**
+	 * Update the sprite preview.
+	 *
+	 * @return	void
+	 */
+	updateSpritePreview: function(tag) {
+		$('#sprite_preview').html(tag);
 	},
 
 	/**
@@ -397,7 +434,7 @@ mw.spriteSheet = {
 	highlightSpriteName: function(spriteName, show) {
 		var spriteData = this.spriteNames[spriteName];
 
-		if (show === true && Object.keys(spriteData).length) {
+		if (show === true && Object.keys(spriteData).length && (!this.highlight.hasOwnProperty(spriteName) || !this.highlight[spriteName].isShown)) {
 			switch (spriteData.type) {
 				case 'sprite':
 					inset = this.values.inset * 2;
@@ -408,7 +445,8 @@ mw.spriteSheet = {
 					var x = spriteData.values.xPos * columnWidth;
 					var y = spriteData.values.yPos * rowHeight;
 
-					this.highlight[spriteName] = this.canvas.display.rectangle({
+					this.highlight[spriteName] = {};
+					this.highlight[spriteName].object = this.canvas.display.rectangle({
 						x: x + (Math.floor(inset / 2)),
 						y: y + (Math.floor(inset / 2)),
 						width: columnWidth - inset,
@@ -416,10 +454,12 @@ mw.spriteSheet = {
 						fill: "rgba(26, 114, 193, 0.6)",
 						stroke: "inside 1px rgba(26, 114, 193, 1)"
 					});
-					this.canvas.addChild(this.highlight[spriteName]);
+					this.canvas.addChild(this.highlight[spriteName].object);
+					this.highlight[spriteName].isShown = true;
 					break;
 				case 'slice':
-					this.highlight[spriteName] = this.canvas.display.rectangle({
+					this.highlight[spriteName] = {};
+					this.highlight[spriteName].object = this.canvas.display.rectangle({
 						x: this.canvas.width * (spriteData.values.xPercent / 100),
 						y: this.canvas.height * (spriteData.values.yPercent / 100),
 						origin: {x: "top", y: "left"},
@@ -428,11 +468,13 @@ mw.spriteSheet = {
 						fill: "rgba(26, 114, 193, 0.6)",
 						stroke: "inside 1px rgba(26, 114, 193, 1)"
 					});
-					this.canvas.addChild(this.highlight[spriteName]);
+					this.canvas.addChild(this.highlight[spriteName].object);
+					this.highlight[spriteName].isShown = true;
 					break;
 			}
-		} else if (show === false && this.highlight.hasOwnProperty(spriteName)) {
-			this.canvas.removeChild(this.highlight[spriteName]);
+		} else if (show === false && this.highlight.hasOwnProperty(spriteName) && this.highlight[spriteName].isShown && spriteName != this.currentlyEditing) {
+			this.canvas.removeChild(this.highlight[spriteName].object);
+			this.highlight[spriteName].isShown = false;
 		}
 	},
 
@@ -444,10 +486,17 @@ mw.spriteSheet = {
 	 */
 	showSpriteNameEditor: function(spriteName) {
 		var spriteData = this.spriteNames[spriteName];
+		var oldSpriteName = this.currentlyEditing;
+
+		this.currentlyEditing = spriteName;
+		this.highlightSpriteName(oldSpriteName, false);
 
 		this.highlightSpriteName(spriteName, true);
 
-		$("#named_sprite_editor").css('left', this.highlight[spriteName].x + (this.highlight[spriteName].width / 2) - 35).css('top', this.highlight[spriteName].y + this.highlight[spriteName].height + 19);
+		this.updateSpritePreview(spriteData.tag);
+
+		$("#named_sprite_editor").css('left', this.highlight[spriteName].object.x + (this.highlight[spriteName].object.width / 2) - 35).css('top', this.highlight[spriteName].object.y + this.highlight[spriteName].object.height + 19);
+		$("#named_sprite_editor input[name='update_sprite_name']").val(spriteData.name);
 		$("#named_sprite_editor").show();
 	},
 
@@ -538,7 +587,7 @@ mw.spriteSheet = {
 
 		var example = "{{#sprite:"+title+"|"+xPos+"|"+yPos+"}}";
 
-		$('#sprite_preview').html(example);
+		this.updateSpritePreview(example);
 
 		$('button#save_named_sprite').html(mw.message('save_named_sprite').escaped());
 		this.selectedType = 'sprite';
@@ -586,7 +635,7 @@ mw.spriteSheet = {
 
 		var example = "{{#slice:"+title+"|"+xPercent+"|"+yPercent+"|"+widthPercent+"|"+heightPercent+"}}";
 
-		$('#sprite_preview').html(example);
+		this.updateSpritePreview(example);
 
 		$('button#save_named_sprite').html(mw.message('save_named_slice').escaped());
 		this.selectedType = 'slice';

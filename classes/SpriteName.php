@@ -82,7 +82,7 @@ class SpriteName {
 	 * @param	object	Valid SpriteSheet that exists.
 	 * @return	void
 	 */
-	public function newFromName($name, SpriteSheet $spriteSheet) {
+	static public function newFromName($name, SpriteSheet $spriteSheet) {
 		$spriteName = new SpriteName($spriteSheet);
 
 		$spriteName->newFrom = 'name';
@@ -90,6 +90,24 @@ class SpriteName {
 		$spriteName->setName($name);
 
 		$spriteName->load();
+
+		return $spriteName;
+	}
+
+	/**
+	 * Load a new SpriteName object from a database row.
+	 *
+	 * @access	public
+	 * @param	array	Database Row
+	 * @param	object	Valid SpriteSheet that exists.
+	 * @return	mixed	SpriteName or false on error.
+	 */
+	static public function newFromId($id, SpriteSheet $spriteSheet) {
+		$spriteName = new SpriteName($spriteSheet);
+
+		$spriteName->newFrom = 'id';
+
+		$spriteName->setId($id);
 
 		return $spriteName;
 	}
@@ -135,14 +153,25 @@ class SpriteName {
 
 					$row = $result->fetchRow();
 					break;
+				case 'id':
+					$result = $this->DB->select(
+						['spritename'],
+						['*'],
+						[
+							'spritename_id'		=> $this->getId()
+						],
+						__METHOD__
+					);
+
+					$row = $result->fetchRow();
+					break;
 			}
 
 			if (is_array($row)) {
 				$this->data = $row;
+				$this->isLoaded = true;
 			}
 		}
-
-		$this->isLoaded = true;
 	}
 
 	/**
@@ -199,13 +228,24 @@ class SpriteName {
 	}
 
 	/**
+	 * Set the database identification number for this Sprite Name.
+	 *
+	 * @access	public
+	 * @param	integer	Sprite Name ID
+	 * @return	void
+	 */
+	public function setId($id) {
+		$this->data['spritename_id'] = intval($id);
+	}
+
+	/**
 	 * Return if this sprite name exists.
 	 *
 	 * @access	public
 	 * @return	boolean
 	 */
 	public function exists() {
-		return $this->data['spritename_id'] > 0;
+		return ($this->data['spritename_id'] > 0 && $this->isLoaded);
 	}
 
 	/**
@@ -216,7 +256,7 @@ class SpriteName {
 	 * @return	void
 	 */
 	public function setName($name) {
-		$this->data['name'] = substr($name, 0, 255);
+		$this->data['name'] = substr(trim($name), 0, 255);
 	}
 
 	/**

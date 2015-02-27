@@ -56,6 +56,12 @@ class SpriteSheetAPI extends ApiBase {
 			case 'saveSpriteName':
 				$response = $this->saveSpriteName();
 				break;
+			case 'updateSpriteName':
+				$response = $this->updateSpriteName();
+				break;
+			case 'deleteSpriteName':
+				$response = $this->deleteSpriteName();
+				break;
 			case 'getAllSpriteNames':
 				$response = $this->getAllSpriteNames();
 				break;
@@ -96,6 +102,18 @@ class SpriteSheetAPI extends ApiBase {
 			'spritesheet_id' => [
 				ApiBase::PARAM_TYPE		=> 'integer',
 				ApiBase::PARAM_REQUIRED => false
+			],
+			'spritename_id' => [
+				ApiBase::PARAM_TYPE		=> 'integer',
+				ApiBase::PARAM_REQUIRED => false
+			],
+			'old_sprite_name' => [
+				ApiBase::PARAM_TYPE		=> 'string',
+				ApiBase::PARAM_REQUIRED => false
+			],
+			'new_sprite_name' => [
+				ApiBase::PARAM_TYPE		=> 'string',
+				ApiBase::PARAM_REQUIRED => false
 			]
 		];
 	}
@@ -112,7 +130,10 @@ class SpriteSheetAPI extends ApiBase {
 			'form'				=> 'Form data from a sprite sheet editor form.',
 			'type'				=> 'Sprite or Slice',
 			'values'			=> 'Values for the sprite or slice being saved.',
-			'spritesheet_id'	=> 'SpriteSheet ID of the the SpriteSheet to load.'
+			'spritesheet_id'	=> 'SpriteSheet ID of the the SpriteSheet to load.',
+			'spritename_id'		=> 'SpriteName ID of the the SpriteName to load.',
+			'old_sprite_name'	=> 'Old Sprite Name for the designated SpriteName object.',
+			'new_sprite_name'	=> 'New Sprite Name for the designated SpriteName object.'
 		];
 	}
 
@@ -303,6 +324,71 @@ class SpriteSheetAPI extends ApiBase {
 	}
 
 	/**
+	 * Update a named sprite/slice's name.
+	 *
+	 * @access	private
+	 * @return	array	API Response
+	 */
+	private function updateSpriteName() {
+		$success = false;
+		$message = 'ss_api_unknown_error';
+
+		if (!$this->wgUser->isAllowed('edit_sprites')) {
+			$message = 'ss_api_no_permission';
+			return [
+				'success' => $success,
+				'message' => wfMessage($message)->text()
+			];
+		}
+
+		if ($this->wgRequest->wasPosted()) {
+			$spriteSheetId = intval($this->params['spritesheet_id']);
+			$spriteNameId = intval($this->params['spritename_id']);
+
+			if ($spriteSheetId > 0) {
+				$spriteSheet = SpriteSheet::newFromId($spriteSheetId);
+			}
+
+			if ($spriteSheet !== false) {
+				$spriteName = $spriteSheet->getSpriteName($this->params['old_sprite_name']);
+				$newSpriteName = $spriteSheet->getSpriteName($this->params['new_sprite_name']);
+				$validName = true;
+
+				if ($newSpriteName->exists() || $spriteName->getId() != $spriteNameId) {
+					$message = 'ss_api_sprite_name_in_use';
+					$validName = false;
+				}
+
+				$spriteName->setName($this->params['new_sprite_name']);
+
+				if (!$spriteName->isNameValid()) {
+					$message = 'ss_api_invalid_sprite_name';
+					$validName = false;
+				}
+
+				if ($validName) {
+					$success = $spriteName->save();
+				}
+			} else {
+				$message = 'ss_api_fatal_error_loading';
+			}
+		} else {
+			$message = 'ss_api_must_be_posted';
+		}
+
+		$return = [
+			'success' => $success,
+			'message' => wfMessage($message)->text()
+		];
+
+		if ($success) {
+			$return['tag'] = $spriteName->getParserTag();
+		}
+
+		return $return;
+	}
+
+	/**
 	 * Return all sprite names for the specified sprite sheet.
 	 *
 	 * @access	private
@@ -327,11 +413,12 @@ class SpriteSheetAPI extends ApiBase {
 
 			foreach ($spriteNames as $name => $spriteName) {
 				$data[$spriteName->getName()] = [
-					'id'		=> $spriteName->getId(),
-					'name'		=> $spriteName->getName(),
-					'type'		=> $spriteName->getType(),
-					'values'	=> $spriteName->getValues(),
-					'tag'		=> $spriteName->getParserTag(),
+					'id'				=> $spriteName->getId(),
+					'name'				=> $spriteName->getName(),
+					'type'				=> $spriteName->getType(),
+					'values'			=> $spriteName->getValues(),
+					'tag'				=> $spriteName->getParserTag(),
+					'spritesheet_id'	=> $spriteSheet->getId()
 				];
 			}
 
