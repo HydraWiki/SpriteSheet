@@ -173,6 +173,11 @@ class SpriteSheetHooks {
 
 		self::$spriteSheet = SpriteSheet::newFromTitle($imagePage->getTitle());
 
+		if (!self::$spriteSheet) {
+			//This can occur if the page entry in the database becomes corrupted.  End users will have to reupload the image to fix the page entry before SpriteSheet will work on it.
+			return true;
+		}
+
 		$form = "
 		<div id='spritesheet_editor'>
 			<form>
