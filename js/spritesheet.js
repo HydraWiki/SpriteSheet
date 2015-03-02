@@ -106,6 +106,11 @@ mw.spriteSheet = {
 
 		$('.named_sprite_popup a.close').on('click', function() {
 			$(this).parent().hide();
+			if (mw.spriteSheet.currentlyEditing != null) {
+				mw.spriteSheet.canvas.removeChild(mw.spriteSheet.highlight[mw.spriteSheet.currentlyEditing].object);
+				mw.spriteSheet.highlight[mw.spriteSheet.currentlyEditing].isShown = false;
+				mw.spriteSheet.currentlyEditing = null;
+			}
 		});
 
 		$('#show_named_sprites').on('click tap', function() {
