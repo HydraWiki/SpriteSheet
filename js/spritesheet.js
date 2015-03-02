@@ -8,7 +8,7 @@ mw.spriteSheet = {
 	highlight: {},
 	mouseDrag: false,
 	sheetSaved: false,
-	spriteNames: {},
+	spriteNames: null,
 	namedSpriteEditor: null,
 	currentlyEditing: null,
 
@@ -116,6 +116,8 @@ mw.spriteSheet = {
 		$('#show_named_sprites').on('click tap', function() {
 			mw.spriteSheet.toggleSpriteNameList();
 		});
+
+		$("#named_sprites").hide();
 
 		this.namedSpriteEditor = $("#named_sprite_editor").detach();
 
@@ -397,7 +399,7 @@ mw.spriteSheet = {
 
 		var spriteSheetId = $("input[name='spritesheet_id']").val();
 
-		if (!Object.keys(this.spriteNames).length) {
+		if (this.spriteNames === null) {
 			this.showProgressIndicator();
 			api.get(
 				{
@@ -437,29 +439,31 @@ mw.spriteSheet = {
 	 * @return	void
 	 */
 	toggleSpriteNameList: function() {
-		if (!this.haveAllSpriteNames()) {
-			$("#named_sprites").hide();
-
+		if (this.spriteNames === null) {
 			this.getAllSpriteNames();
 
-			var list;
+			if (!this.haveAllSpriteNames()) {
+				$("#named_sprites").html(mw.message('no_results_named_sprites').escaped());
+			} else {
+				var list;
 
-			list = $("<ul>");
+				list = $("<ul>");
 
-			$.each(this.spriteNames, function(spriteName, data) {
-				$(list).append(mw.spriteSheet.formatSpriteNameListItem(data));
-			});
-			$("#named_sprites").html(list);
+				$.each(this.spriteNames, function(spriteName, data) {
+					$(list).append(mw.spriteSheet.formatSpriteNameListItem(data));
+				});
+				$("#named_sprites").html(list);
 
-			$("#named_sprites ul li").on("click", function() {
-				mw.spriteSheet.showSpriteNameEditor($(this).attr('data-name'));
-			});
-			$("#named_sprites ul li").on("mouseenter", function() {
-				mw.spriteSheet.highlightSpriteName($(this).attr('data-name'), true);
-			});
-			$("#named_sprites ul li").on("mouseleave", function() {
-				mw.spriteSheet.highlightSpriteName($(this).attr('data-name'), false);
-			});
+				$("#named_sprites ul li").on("click", function() {
+					mw.spriteSheet.showSpriteNameEditor($(this).attr('data-name'));
+				});
+				$("#named_sprites ul li").on("mouseenter", function() {
+					mw.spriteSheet.highlightSpriteName($(this).attr('data-name'), true);
+				});
+				$("#named_sprites ul li").on("mouseleave", function() {
+					mw.spriteSheet.highlightSpriteName($(this).attr('data-name'), false);
+				});
+			}
 		}
 
 		if (!$("#named_sprites").is(':visible')) {

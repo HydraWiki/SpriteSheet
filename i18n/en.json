@@ -41,5 +41,6 @@
     "sprite_slice_action": "created a named slice \"$2\" for [[$1]]",
 	"show_named_sprites": "Show Named Sprites/Slices",
 	"hide_named_sprites": "Hide Named Sprites/Slices",
+	"no_results_named_sprites": "No named sprites or slices found.",
 	"click_to_edit": "Click to Edit"
 }
