@@ -13,6 +13,7 @@
 	"ss_api_must_be_posted": "That API call must be done as a POST request.",
 	"ss_api_bad_title": "Could not load Sprite Sheet from the page Title.",
 	"ss_api_fatal_error_loading": "There was a fatal error attempting to load the Sprite Sheet or Title from the database.",
+	"ss_api_fatal_error_sprite_sheet_not_found": "A SpriteSheet could not be found for requested Title.  Please make sure one exists or save the current one first.",
 	"ss_api_fatal_error_deleting_name": "There was a fatal error attempting to delete the named sprite/slice.  Either it does not exist or there was a mismatch.",
 	"ss_api_fatal_error_saving": "There was a fatal error attempting to save the Sprite Sheet to the database.  The transaction has been rolled backed.",
 	"ss_api_invalid_coordinates": "Invalid or out of bounds coordinates.",

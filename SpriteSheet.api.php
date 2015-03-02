@@ -483,7 +483,7 @@ class SpriteSheetAPI extends ApiBase {
 			$message = 'ss_api_okay';
 			$success = true;
 		} else {
-			$message = 'ss_api_fatal_error_loading';
+			$message = 'ss_api_fatal_error_sprite_sheet_not_found';
 		}
 
 		$return = [

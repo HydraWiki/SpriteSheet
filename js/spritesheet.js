@@ -430,7 +430,7 @@ mw.spriteSheet = {
 	 * @return	boolean
 	 */
 	haveAllSpriteNames: function() {
-		return Object.keys(this.spriteNames).length > 0;
+		return this.spriteNames !== null && Object.keys(this.spriteNames).length > 0;
 	},
 
 	/**
@@ -439,7 +439,7 @@ mw.spriteSheet = {
 	 * @return	void
 	 */
 	toggleSpriteNameList: function() {
-		if (this.spriteNames === null) {
+		if (this.spriteNames === null && !$("#named_sprites").is(':visible')) {
 			this.getAllSpriteNames();
 
 			if (!this.haveAllSpriteNames()) {
