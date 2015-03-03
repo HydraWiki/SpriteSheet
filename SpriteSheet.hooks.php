@@ -58,7 +58,7 @@ class SpriteSheetHooks {
 
 		$title = Title::newFromDBKey($file);
 
-		if ($title->exists()) {
+		if ($title->isKnown()) {
 			$spriteSheet = SpriteSheet::newFromTitle($title);
 
 			if (!$spriteSheet->getId() || !$spriteSheet->getColumns() || !$spriteSheet->getRows()) {

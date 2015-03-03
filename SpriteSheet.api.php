@@ -50,6 +50,9 @@ class SpriteSheetAPI extends ApiBase {
 		}
 
 		switch ($this->params['do']) {
+			case 'getSpriteSheet':
+				$response = $this->getSpriteSheet();
+				break;
 			case 'saveSpriteSheet':
 				$response = $this->saveSpriteSheet();
 				break;
@@ -118,6 +121,10 @@ class SpriteSheetAPI extends ApiBase {
 			'sprite_name' => [
 				ApiBase::PARAM_TYPE		=> 'string',
 				ApiBase::PARAM_REQUIRED => false
+			],
+			'title' => [
+				ApiBase::PARAM_TYPE		=> 'string',
+				ApiBase::PARAM_REQUIRED => false
 			]
 		];
 	}
@@ -138,8 +145,52 @@ class SpriteSheetAPI extends ApiBase {
 			'spritename_id'		=> 'SpriteName ID of the the SpriteName to load.',
 			'old_sprite_name'	=> 'Old Sprite Name for the designated SpriteName object.',
 			'new_sprite_name'	=> 'New Sprite Name for the designated SpriteName object.',
-			'sprite_name'		=> 'Sprite Name for the designated SpriteName object.'
+			'sprite_name'		=> 'Sprite Name for the designated SpriteName object.',
+			'title'				=> 'Page Title'
 		];
+	}
+
+	/**
+	 * Get Sprite Sheet information.
+	 *
+	 * @access	private
+	 * @return	array	API Response
+	 */
+	private function getSpriteSheet() {
+		$success = false;
+		$message = 'ss_api_unknown_error';
+
+		$title = Title::newFromDBKey($this->params['title']);
+		if ($title !== null) {
+			$spriteSheet = SpriteSheet::newFromTitle($title);
+
+			if ($spriteSheet !== false) {
+				$data = [
+					'title'		=> $spriteSheet->getTitle()->getDBkey(),
+					'columns'	=> $spriteSheet->getColumns(),
+					'rows'		=> $spriteSheet->getRows(),
+					'inset'		=> $spriteSheet->getInset(),
+				];
+
+				$success = true;
+				$message = 'ss_api_okay';
+			} else {
+				$message = 'ss_api_fatal_error_sprite_sheet_not_found';
+			}
+		} else {
+			$message = 'ss_api_bad_title';
+		}
+
+		$return = [
+			'success' => $success,
+			'message' => wfMessage($message)->text()
+		];
+
+		if (is_array($data)) {
+			$return['data'] = $data;
+		}
+
+		return $return;
 	}
 
 	/**

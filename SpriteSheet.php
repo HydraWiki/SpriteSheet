@@ -37,6 +37,7 @@ $wgMessagesDirs['SpriteSheet']					= "{$extDir}/i18n";
 
 $wgAutoloadClasses['SpriteSheetHooks']			= "{$extDir}/SpriteSheet.hooks.php";
 $wgAutoloadClasses['SpriteSheet']				= "{$extDir}/classes/SpriteSheet.php";
+$wgAutoloadClasses['SpriteSheetRemote']			= "{$extDir}/classes/SpriteSheet.php";
 $wgAutoloadClasses['SpriteName']				= "{$extDir}/classes/SpriteName.php";
 $wgAutoloadClasses['SpriteSheetAPI']			= "{$extDir}/SpriteSheet.api.php";
 

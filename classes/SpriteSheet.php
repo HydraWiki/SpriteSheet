@@ -75,7 +75,7 @@ class SpriteSheet {
 			return false;
 		}
 
-		$spriteSheet = new SpriteSheet();
+		$spriteSheet = new self();
 		$spriteSheet->setId(intval($id));
 
 		$spriteSheet->newFrom = 'id';
@@ -97,12 +97,23 @@ class SpriteSheet {
 			return false;
 		}
 
-		$spriteSheet = new SpriteSheet();
+		$spriteSheet = new self();
 		$spriteSheet->setTitle($title);
 
 		$spriteSheet->newFrom = 'title';
 
 		$success = $spriteSheet->load();
+
+		if (!$spriteSheet->isLoaded && $title->isAlwaysKnown() && !$title->exists()) {
+			//This could be a remote file repository title.
+			$spriteSheetRemote = SpriteSheetRemote::newFromTitle($title);
+			if ($spriteSheetRemote === false) {
+				$success = false;
+			} else {
+				$success = true;
+				$spriteSheet = $spriteSheetRemote;
+			}
+		}
 
 		return ($success ? $spriteSheet : false);
 	}
@@ -123,7 +134,7 @@ class SpriteSheet {
 					break;
 				case 'title':
 					$where = [
-						'title'		=> $this->title->getDBkey()
+						'title' => $this->title->getDBkey()
 					];
 					break;
 			}
@@ -149,10 +160,9 @@ class SpriteSheet {
 						$this->setTitle($title);
 					}
 				}
+				$this->isLoaded = true;
 			}
 		}
-
-		$this->isLoaded = true;
 
 		return true;
 	}
@@ -524,6 +534,111 @@ class SpriteSheet {
 			$values = $sliceName->getValues();
 			return $this->getSlice($values['xPercent'], $values['yPercent'], $values['widthPercent'], $values['heightPercent'], $thumbWidth);
 		}
+		return false;
+	}
+
+	/**
+	 * Return if this is a local SpriteSheet.
+	 *
+	 * @access	public
+	 * @return	boolean	True
+	 */
+	public function isLocal() {
+		return true;
+	}
+}
+
+class SpriteSheetRemote extends SpriteSheet {
+	/**
+	 * Last API Error Message
+	 *
+	 * @var		string
+	 */
+	private $lastApiErrorMessage = false;
+
+	/**
+	 * Create a new instance of this class from a Title object.
+	 *
+	 * @access	public
+	 * @param	object	Title
+	 * @return	mixed	SpriteSheet or false on error.
+	 */
+	static public function newFromTitle(Title $title) {
+		if ($title->getNamespace() != NS_FILE || !$title->getDBkey()) {
+			return false;
+		}
+
+		$spriteSheet = new self();
+		$spriteSheet->setTitle($title);
+
+		$spriteSheet->newFrom = 'remote';
+
+		$success = $spriteSheet->load();
+
+		return ($success ? $spriteSheet : false);
+	}
+
+	/**
+	 * Load from the remote API.
+	 *
+	 * @access	public
+	 * @return	boolean	Success
+	 */
+	public function load() {
+		if (!$this->isLoaded) {
+			$image = wfFindFile($this->getTitle());
+
+			if ($image !== false && $image->exists() && !$image->isLocal()) {
+				$query = [
+					'action'	=> 'spritesheet',
+					'do'		=> 'getSpriteSheet',
+					'title'		=> $this->getTitle()->getDBkey(), //DO NOT MOVE THIS TO THE BOTTOM.  NEVER.  Mediawiki has a dumb as fuck bug called "class IEUrlExtension" which will block all requests if the file name is at the end of the parameter list.
+					'format'	=> 'json'
+				];
+
+				$data = $image->getRepo()->httpGetCached('SpriteSheet', $query);
+
+				if ($data) {
+					$spriteData = FormatJson::decode($data, true);
+					var_dump($spriteData);
+				}
+
+				$this->isLoaded = true;
+			} else {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Return the last error message from the remote API if produced.
+	 *
+	 * @access	public
+	 * @return	mixed	String error message or false if none has been set.
+	 */
+	public function getLastApiErrorMessage() {
+		return $this->lastApiErrorMessage;
+	}
+
+	/**
+	 * Dummy function to prevent attempts to save the remote SpriteSheet locally.
+	 *
+	 * @access	public
+	 * @return	boolean	Success
+	 */
+	public function save() {
+		return true;
+	}
+
+	/**
+	 * Return if this is a local SpriteSheet.
+	 *
+	 * @access	public
+	 * @return	boolean	False
+	 */
+	public function isLocal() {
 		return false;
 	}
 }
