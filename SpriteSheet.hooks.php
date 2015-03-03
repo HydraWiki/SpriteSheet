@@ -193,7 +193,6 @@ class SpriteSheetHooks {
 					<input id='sprite_inset' name='sprite_inset' type='number' min='0' value='".self::$spriteSheet->getInset()."'/>
 
 					<input name='spritesheet_id' type='hidden' value='".self::$spriteSheet->getId()."'/>
-					<input name='page_id' type='hidden' value='".self::$spriteSheet->getTitle()->getArticleId()."'/>
 					<input name='page_title' type='hidden' value='".htmlentities(self::$spriteSheet->getTitle()->getPrefixedDBkey(), ENT_QUOTES)."'/>
 					<button id='save_sheet' name='save_sheet' type='button'>".wfMessage('save_sheet')->escaped()."</button>
 

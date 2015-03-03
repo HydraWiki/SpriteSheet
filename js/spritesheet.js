@@ -64,16 +64,14 @@ mw.spriteSheet = {
 			mw.spriteSheet.mouseDrag = false;
 		});
 
-		$('#sprite_columns').on('change keyup', function() {
-			mw.spriteSheet.updateSpriteSheet();
-		});
-
-		$('#sprite_rows').on('change keyup', function() {
-			mw.spriteSheet.updateSpriteSheet();
-		});
-
-		$('#sprite_inset').on('change keyup', function() {
-			mw.spriteSheet.updateSpriteSheet();
+		$('#sprite_columns, #sprite_rows, #sprite_inset').on('change keyup', function(event) {
+			if (event.type == 'keyup') {
+				if (event.keyCode >= 48 && event.keyCode <= 57) {
+					mw.spriteSheet.updateSpriteSheet();
+				}
+			} else {
+				mw.spriteSheet.updateSpriteSheet();
+			}
 		});
 
 		$('#save_sheet').on('click tap', function() {

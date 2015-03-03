@@ -162,6 +162,7 @@ class SpriteSheetAPI extends ApiBase {
 
 		if ($this->wgRequest->wasPosted()) {
 			parse_str($this->params['form'], $form);
+
 			if ($form['spritesheet_id'] > 0) {
 				$spriteSheet = SpriteSheet::newFromId($form['spritesheet_id']);
 			} else {
@@ -172,6 +173,7 @@ class SpriteSheetAPI extends ApiBase {
 					$message = 'ss_api_bad_title';
 				}
 			}
+
 			if ($spriteSheet !== false) {
 				$spriteSheet->setColumns($form['sprite_columns']);
 				$spriteSheet->setRows($form['sprite_rows']);

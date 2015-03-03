@@ -93,7 +93,7 @@ class SpriteSheet {
 	 * @return	mixed	SpriteSheet or false on error.
 	 */
 	static public function newFromTitle(Title $title) {
-		if (!$title->getArticleID()) {
+		if ($title->getNamespace() != NS_FILE || !$title->getDBkey()) {
 			return false;
 		}
 
@@ -123,7 +123,7 @@ class SpriteSheet {
 					break;
 				case 'title':
 					$where = [
-						'page_id' => $this->title->getArticleID()
+						'title'		=> $this->title->getDBkey()
 					];
 					break;
 			}
@@ -142,9 +142,11 @@ class SpriteSheet {
 
 				//Title was not set beforehand.
 				if ($this->title === false) {
-					$this->title = Title::newFromID($row['page_id']);
-					if (!$this->title) {
+					$title = Title::newFromText($row['title'], NS_FILE);
+					if (!$title) {
 						return false;
+					} else {
+						$this->setTitle($title);
 					}
 				}
 			}
@@ -240,7 +242,7 @@ class SpriteSheet {
 	public function setTitle(Title $title) {
 		$this->title = $title;
 
-		$this->data['page_id'] = $this->title->getArticleID();
+		$this->data['title'] = $this->title->getDBkey();
 	}
 
 	/**
