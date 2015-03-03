@@ -45,10 +45,6 @@ class SpriteSheetAPI extends ApiBase {
 
 		$this->params = $this->extractRequestParams();
 
-		if ($this->wgUser->getId() < 1 || User::isIP($this->wgUser->getName()) || $this->wgUser->curse_id < 1) {
-			$this->dieUsageMsg(['invaliduser', $this->params['do']]);
-		}
-
 		switch ($this->params['do']) {
 			case 'getSpriteSheet':
 				$response = $this->getSpriteSheet();
@@ -169,7 +165,7 @@ class SpriteSheetAPI extends ApiBase {
 					'title'		=> $spriteSheet->getTitle()->getDBkey(),
 					'columns'	=> $spriteSheet->getColumns(),
 					'rows'		=> $spriteSheet->getRows(),
-					'inset'		=> $spriteSheet->getInset(),
+					'inset'		=> $spriteSheet->getInset()
 				];
 
 				$success = true;
