@@ -238,6 +238,24 @@ class SpriteSheetHooks {
 	}
 
 	/**
+	 * Modify the page rendering hash when altering the output.
+	 *
+	 * @access	public
+	 * @param	object	Old Title
+	 * @param	object	New Title
+	 * @param	object	User who performed the move.
+	 * @param	integer	Old/Current ID of the Article/Page
+	 * @param	integer	New(Redirect) ID of redirect page created, if created.
+	 * @param	string	Reason given by the user performing the move.
+	 * @return	boolean True
+	 */
+	static public function onTitleMoveComplete(Title &$oldTitle, Title &$newTitle, User &$user, $oldId, $newId, $reason = null) {
+		
+
+		return true;
+	}
+
+	/**
 	 * Setups and Modifies Database Information
 	 *
 	 * @access	public
@@ -252,6 +270,9 @@ class SpriteSheetHooks {
 
 		//2015-02-23
 		$updater->addExtensionUpdate(['renameIndex', 'spritename', 'name', 'spritesheet_id_name', false, "{$extDir}/upgrade/sql/spritesheet_upgrade_spritesheet_alter_index_name.sql", true]);
+
+		//2015-03-03
+		$updater->addExtensionUpdate(['modifyField', 'spritesheet', 'page_id', "{$extDir}/upgrade/sql/spritesheet_upgrade_spritesheet_alter_page_id.sql", true]);
 
 		return true;
 	}

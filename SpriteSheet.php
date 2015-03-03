@@ -44,6 +44,7 @@ $wgHooks['ParserFirstCallInit'][]				= 'SpriteSheetHooks::onParserFirstCallInit'
 $wgHooks['ImagePageShowTOC'][]					= 'SpriteSheetHooks::onImagePageShowTOC';
 $wgHooks['ImageOpenShowImageInlineBefore'][]	= 'SpriteSheetHooks::onImageOpenShowImageInlineBefore';
 $wgHooks['PageRenderingHash'][]					= 'SpriteSheetHooks::onPageRenderingHash';
+$wgHooks['TitleMoveComplete'][]					= 'SpriteSheetHooks::onTitleMoveComplete';
 $wgHooks['LoadExtensionSchemaUpdates'][]		= 'SpriteSheetHooks::onLoadExtensionSchemaUpdates';
 
 $wgAPIModules['spritesheet']					= 'SpriteSheetAPI';
