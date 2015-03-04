@@ -12,6 +12,7 @@ mw.spriteSheet = {
 	namedSpriteEditor: null,
 	currentlyEditing: null,
 	isRemote: false,
+	remoteApiUrl: null,
 
 	/**
 	 * Initialize the sprite sheet.
@@ -27,6 +28,7 @@ mw.spriteSheet = {
 		var isRemote = parseInt($("input[name='isRemote']").val());
 		if (isRemote === 1) {
 			this.isRemote = true;
+			this.remoteApiUrl = $("input[name='remoteApiUrl']").val();
 		}
 
 		var imageWidth = $('#file > a > img').width();
@@ -418,7 +420,13 @@ mw.spriteSheet = {
 	 * @return	boolean
 	 */
 	getAllSpriteNames: function() {
-		var api = new mw.Api();
+		var options = {};
+		if (this.isRemote === true) {
+			options.ajax = {};
+			options.ajax.url = this.remoteApiUrl;
+		}
+
+		var api = new mw.Api(options);
 
 		var spriteSheetId = $("input[name='spritesheet_id']").val();
 

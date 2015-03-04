@@ -429,10 +429,10 @@ class SpriteSheet {
 	}
 
 	/**
-	 * Function Documentation
+	 * Return all named sprites/slices for thie sprite sheet.
 	 *
 	 * @access	public
-	 * @return	void
+	 * @return	array	Named Sprite Cache
 	 */
 	public function getAllSpriteNames() {
 		$result = $this->DB->select(
@@ -557,6 +557,13 @@ class SpriteSheetRemote extends SpriteSheet {
 	private $lastApiErrorMessage = false;
 
 	/**
+	 * Image storage from the remote repository.
+	 *
+	 * @var		object
+	 */
+	private $image = null;
+
+	/**
 	 * Create a new instance of this class from a Title object.
 	 *
 	 * @access	public
@@ -586,9 +593,9 @@ class SpriteSheetRemote extends SpriteSheet {
 	 */
 	public function load() {
 		if (!$this->isLoaded) {
-			$image = wfFindFile($this->getTitle());
+			$this->image = wfFindFile($this->getTitle());
 
-			if ($image !== false && $image->exists() && !$image->isLocal()) {
+			if ($this->image !== false && $this->image->exists() && !$this->image->isLocal()) {
 				$query = [
 					'action'	=> 'spritesheet',
 					'do'		=> 'getSpriteSheet',
@@ -597,7 +604,7 @@ class SpriteSheetRemote extends SpriteSheet {
 				];
 
 				//Make sure to change this cache piece back to 300 seconds once this extension is out of development.
-				$data = $image->getRepo()->httpGetCached('SpriteSheet', $query, 0);
+				$data = $this->image->getRepo()->httpGetCached('SpriteSheet', $query, 0);
 
 				if ($data) {
 					$spriteData = FormatJson::decode($data, true);
@@ -646,5 +653,47 @@ class SpriteSheetRemote extends SpriteSheet {
 	 */
 	public function isLocal() {
 		return false;
+	}
+
+	/**
+	 * Return all named sprites/slices for thie sprite sheet.
+	 *
+	 * @access	public
+	 * @return	array	Named Sprite Cache
+	 */
+	public function getAllSpriteNames() {
+		if ($this->image !== false && $this->image->exists() && !$this->image->isLocal()) {
+			$query = [
+				'action'	=> 'spritesheet',
+				'do'		=> 'getAllSpriteNames',
+				'title'		=> $this->getTitle()->getDBkey(), //DO NOT MOVE THIS TO THE BOTTOM.  NEVER.  Mediawiki has a dumb as fuck bug called "class IEUrlExtension" which will block all requests if the file name is at the end of the parameter list.
+				'format'	=> 'json'
+			];
+
+			//Make sure to change this cache piece back to 300 seconds once this extension is out of development.
+			$data = $this->image->getRepo()->httpGetCached('SpriteSheet', $query, 0);
+
+			if ($data) {
+				$spriteData = FormatJson::decode($data, true);
+				if ($spriteData['success'] === true && is_array($spriteData['data']) && $spriteData['data']['title'] == $this->getTitle()->getDBkey()) {
+					$this->setColumns($spriteData['data']['columns']);
+					$this->setRows($spriteData['data']['rows']);
+					$this->setInset($spriteData['data']['inset']);
+					$this->setTitle($this->getTitle());
+
+					$this->isLoaded = true;
+
+					return true;
+				}
+			}
+		}
+
+		while ($row = $result->fetchRow()) {
+			$spriteName = SpriteName::newFromRow($row, $this);
+			if ($spriteName->exists()) {
+				$this->spriteNameCache[$spriteName->getName()] = $spriteName;
+			}
+		}
+		return $this->spriteNameCache;
 	}
 }

@@ -209,7 +209,8 @@ class SpriteSheetHooks {
 					</div>";
 		} else {
 			$form .= "
-					<input name='isRemote' type='hidden' value='1'/>";
+					<input name='isRemote' type='hidden' value='1'/>
+					<input name='remoteApiUrl' type='hidden' value='".$imagePage->getDisplayedFile()->getRepo()->getApiUrl()."'/>";
 		}
 		$form .= "
 				</fieldset>
