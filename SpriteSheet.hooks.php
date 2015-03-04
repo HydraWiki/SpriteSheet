@@ -185,6 +185,7 @@ class SpriteSheetHooks {
 			<form>
 				<fieldset id='spritesheet_form'>
 					<legend>".wfMessage('sprite_sheet')->escaped()."</legend>
+					".(!self::$spriteSheet->isLocal() ? "<pre>".wfMessage('visit_remote_repository_to_edit_sprite_sheet', $imagePage->getDisplayedFile()->getDescriptionUrl())."</pre>" : '')."
 					<label for='sprite_columns'>".wfMessage('sprite_columns')->escaped()."</label>
 					<input id='sprite_columns' name='sprite_columns' type='number' min='0'".(!self::$spriteSheet->isLocal() ? " disabled='disabled'" : '')." value='".self::$spriteSheet->getColumns()."'/>
 
