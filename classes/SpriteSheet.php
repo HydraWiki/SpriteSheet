@@ -596,20 +596,26 @@ class SpriteSheetRemote extends SpriteSheet {
 					'format'	=> 'json'
 				];
 
-				$data = $image->getRepo()->httpGetCached('SpriteSheet', $query);
+				//Make sure to change this cache piece back to 300 seconds once this extension is out of development.
+				$data = $image->getRepo()->httpGetCached('SpriteSheet', $query, 0);
 
 				if ($data) {
 					$spriteData = FormatJson::decode($data, true);
-					var_dump($spriteData);
-				}
+					if ($spriteData['success'] === true && is_array($spriteData['data']) && $spriteData['data']['title'] == $this->getTitle()->getDBkey()) {
+						$this->setColumns($spriteData['data']['columns']);
+						$this->setRows($spriteData['data']['rows']);
+						$this->setInset($spriteData['data']['inset']);
+						$this->setTitle($this->getTitle());
 
-				$this->isLoaded = true;
-			} else {
-				return false;
+						$this->isLoaded = true;
+
+						return true;
+					}
+				}
 			}
 		}
 
-		return true;
+		return false;
 	}
 
 	/**

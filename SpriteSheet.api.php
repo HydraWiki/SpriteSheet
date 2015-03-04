@@ -156,7 +156,7 @@ class SpriteSheetAPI extends ApiBase {
 		$success = false;
 		$message = 'ss_api_unknown_error';
 
-		$title = Title::newFromDBKey($this->params['title']);
+		$title = Title::newFromText($this->params['title'], NS_FILE);
 		if ($title !== null) {
 			$spriteSheet = SpriteSheet::newFromTitle($title);
 
