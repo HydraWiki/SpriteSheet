@@ -11,6 +11,7 @@ mw.spriteSheet = {
 	spriteNames: null,
 	namedSpriteEditor: null,
 	currentlyEditing: null,
+	isRemote: false,
 
 	/**
 	 * Initialize the sprite sheet.
@@ -20,6 +21,12 @@ mw.spriteSheet = {
 	initialize: function() {
 		if (this.canvas === null) {
 			$('#spritesheet').remove();
+		}
+
+		//Determine if this is a local or remote sprite sheet first.
+		var isRemote = parseInt($("input[name='isRemote']").val());
+		if (isRemote === 1) {
+			this.isRemote = true;
 		}
 
 		var imageWidth = $('#file > a > img').width();
@@ -74,52 +81,54 @@ mw.spriteSheet = {
 			}
 		});
 
-		$('#save_sheet').on('click tap', function() {
-			mw.spriteSheet.saveSpriteSheet();
-		});
+		//Only set these up if this a local sprite sheet.
+		if (!this.isRemote) {
+			$('#save_sheet').on('click tap', function() {
+				mw.spriteSheet.saveSpriteSheet();
+			});
 
-		$("input[name='sprite_name']").keyup(function(key) {
-			if (key.keyCode == 13) {
+			$("input[name='sprite_name']").keyup(function(key) {
+				if (key.keyCode == 13) {
+					mw.spriteSheet.saveSpriteName();
+				}
+			});
+
+			$("input[name='update_sprite_name']").keyup(function(key) {
+				if (key.keyCode == 13) {
+					mw.spriteSheet.updateSpriteName();
+				}
+			});
+
+			$('#save_named_sprite').on('click tap', function() {
 				mw.spriteSheet.saveSpriteName();
-			}
-		});
+			});
 
-		$("input[name='update_sprite_name']").keyup(function(key) {
-			if (key.keyCode == 13) {
+			$('#update_named_sprite').on('click tap', function() {
 				mw.spriteSheet.updateSpriteName();
-			}
-		});
+			});
 
-		$('#save_named_sprite').on('click tap', function() {
-			mw.spriteSheet.saveSpriteName();
-		});
+			$('#delete_named_sprite').on('click tap', function() {
+				mw.spriteSheet.deleteSpriteName();
+			});
 
-		$('#update_named_sprite').on('click tap', function() {
-			mw.spriteSheet.updateSpriteName();
-		});
+			$('.named_sprite_popup a.close').on('click', function() {
+				$(this).parent().hide();
+				if (mw.spriteSheet.currentlyEditing != null) {
+					mw.spriteSheet.canvas.removeChild(mw.spriteSheet.highlight[mw.spriteSheet.currentlyEditing].object);
+					mw.spriteSheet.highlight[mw.spriteSheet.currentlyEditing].isShown = false;
+					mw.spriteSheet.currentlyEditing = null;
+				}
+			});
 
-		$('#delete_named_sprite').on('click tap', function() {
-			mw.spriteSheet.deleteSpriteName();
-		});
-
-		$('.named_sprite_popup a.close').on('click', function() {
-			$(this).parent().hide();
-			if (mw.spriteSheet.currentlyEditing != null) {
-				mw.spriteSheet.canvas.removeChild(mw.spriteSheet.highlight[mw.spriteSheet.currentlyEditing].object);
-				mw.spriteSheet.highlight[mw.spriteSheet.currentlyEditing].isShown = false;
-				mw.spriteSheet.currentlyEditing = null;
-			}
-		});
+			this.namedSpriteEditor = $("#named_sprite_editor").detach();
+			$("#file").append(this.namedSpriteEditor);
+		}
 
 		$('#show_named_sprites').on('click tap', function() {
 			mw.spriteSheet.toggleSpriteNameList();
 		});
 
 		$("#named_sprites").hide();
-
-		this.namedSpriteEditor = $("#named_sprite_editor").detach();
-
-		$("#file").append(this.namedSpriteEditor);
 
 		this.updateSpriteSheet(true);
 		this.sheetSaved = true;
@@ -196,6 +205,10 @@ mw.spriteSheet = {
 	 * @return	boolean
 	 */
 	saveSpriteSheet: function() {
+		if (this.isRemote === true) {
+			return;
+		}
+
 		var api = new mw.Api();
 
 		this.showProgressIndicator();
@@ -234,6 +247,10 @@ mw.spriteSheet = {
 	 * @return	boolean
 	 */
 	saveSpriteName: function() {
+		if (this.isRemote === true) {
+			return;
+		}
+
 		var api = new mw.Api();
 
 		var spriteName = $('#sprite_name').val();
@@ -277,6 +294,10 @@ mw.spriteSheet = {
 	 * @return	boolean
 	 */
 	updateSpriteName: function() {
+		if (this.isRemote === true) {
+			return;
+		}
+
 		var api = new mw.Api();
 
 		var spriteData = this.spriteNames[this.currentlyEditing];
@@ -337,6 +358,10 @@ mw.spriteSheet = {
 	 * @return	boolean
 	 */
 	deleteSpriteName: function() {
+		if (this.isRemote === true) {
+			return;
+		}
+
 		var api = new mw.Api();
 
 		var spriteData = this.spriteNames[this.currentlyEditing];
