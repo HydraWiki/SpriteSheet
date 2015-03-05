@@ -283,9 +283,15 @@ mw.spriteSheet = {
 					alert(result.message);
 				} else {
 					$('#named_sprite_add').hide();
+
+					//Update the preview.
+					mw.spriteSheet.updateSpritePreview(result.data.tag);
+
+					//Update the list entries.
+					mw.spriteSheet.spriteNames[result.data.name] = result.data;
+					mw.spriteSheet.updateSpriteNameListEntries();
 				}
 				mw.spriteSheet.hideProgressIndicator();
-				mw.spriteSheet.updateSpritePreview(result.tag);
 			}
 		);
 	},
@@ -347,7 +353,11 @@ mw.spriteSheet = {
 					$("#named_sprites ul li[data-id='"+spriteData.id+"']").html(newSpriteName).attr('data-name', newSpriteName);
 
 					//Update the preview.
-					mw.spriteSheet.updateSpritePreview(result.tag);
+					mw.spriteSheet.updateSpritePreview(result.data.tag);
+
+					//Update the list entries.
+					mw.spriteSheet.spriteNames[result.data.name] = result.data;
+					mw.spriteSheet.updateSpriteNameListEntries();
 				}
 				mw.spriteSheet.hideProgressIndicator();
 			}
@@ -399,6 +409,9 @@ mw.spriteSheet = {
 
 					//Reset the preview to default.
 					mw.spriteSheet.updateSpritePreview(mw.message('click_grid_for_preview').escaped());
+
+					//Update the list entries.
+					mw.spriteSheet.updateSpriteNameListEntries();
 				}
 				mw.spriteSheet.hideProgressIndicator();
 			}
@@ -481,24 +494,7 @@ mw.spriteSheet = {
 			if (!this.haveAllSpriteNames()) {
 				$("#named_sprites").html(mw.message('no_results_named_sprites').escaped());
 			} else {
-				var list;
-
-				list = $("<ul>");
-
-				$.each(this.spriteNames, function(spriteName, data) {
-					$(list).append(mw.spriteSheet.formatSpriteNameListItem(data));
-				});
-				$("#named_sprites").html(list);
-
-				$("#named_sprites ul li").on("click", function() {
-					mw.spriteSheet.showSpriteNameEditor($(this).attr('data-name'));
-				});
-				$("#named_sprites ul li").on("mouseenter", function() {
-					mw.spriteSheet.highlightSpriteName($(this).attr('data-name'), true);
-				});
-				$("#named_sprites ul li").on("mouseleave", function() {
-					mw.spriteSheet.highlightSpriteName($(this).attr('data-name'), false);
-				});
+				this.updateSpriteNameListEntries();
 			}
 		}
 
@@ -509,6 +505,32 @@ mw.spriteSheet = {
 			$("#named_sprites").slideUp();
 			$('button#show_named_sprites').html(mw.message('show_named_sprites').escaped());
 		}
+	},
+
+	/**
+	 * Update the list entries for sprite names.
+	 *
+	 * @return	void
+	 */
+	updateSpriteNameListEntries: function() {
+		var list;
+
+		list = $("<ul>");
+
+		$.each(this.spriteNames, function(spriteName, data) {
+			$(list).append(mw.spriteSheet.formatSpriteNameListItem(data));
+		});
+		$("#named_sprites").html(list);
+
+		$("#named_sprites ul li").on("click", function() {
+			mw.spriteSheet.showSpriteNameEditor($(this).attr('data-name'));
+		});
+		$("#named_sprites ul li").on("mouseenter", function() {
+			mw.spriteSheet.highlightSpriteName($(this).attr('data-name'), true);
+		});
+		$("#named_sprites ul li").on("mouseleave", function() {
+			mw.spriteSheet.highlightSpriteName($(this).attr('data-name'), false);
+		});
 	},
 
 	/**

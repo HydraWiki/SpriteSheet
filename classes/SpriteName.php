@@ -211,8 +211,9 @@ class SpriteName {
 
 		if ($result !== false) {
 			$success = true;
+			$this->DB->commit();
+			$this->data['spritename_id'] = $spriteNameId;
 		}
-		$this->DB->commit();
 
 		return $success;
 	}

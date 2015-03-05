@@ -371,7 +371,14 @@ class SpriteSheetAPI extends ApiBase {
 		];
 
 		if ($success) {
-			$return['tag'] = $spriteName->getParserTag();
+			$return['data'] = [
+				'id'				=> $spriteName->getId(),
+				'name'				=> $spriteName->getName(),
+				'type'				=> $spriteName->getType(),
+				'values'			=> $spriteName->getValues(),
+				'tag'				=> $spriteName->getParserTag(),
+				'spritesheet_id'	=> $spriteSheet->getId()
+			];
 		}
 
 		return $return;
@@ -436,7 +443,14 @@ class SpriteSheetAPI extends ApiBase {
 		];
 
 		if ($success) {
-			$return['tag'] = $spriteName->getParserTag();
+			$return['data'] = [
+				'id'				=> $spriteName->getId(),
+				'name'				=> $spriteName->getName(),
+				'type'				=> $spriteName->getType(),
+				'values'			=> $spriteName->getValues(),
+				'tag'				=> $spriteName->getParserTag(),
+				'spritesheet_id'	=> $spriteSheet->getId()
+			];
 		}
 
 		return $return;
