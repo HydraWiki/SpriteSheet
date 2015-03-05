@@ -512,6 +512,17 @@ class SpriteSheetAPI extends ApiBase {
 			$message = 'ss_api_bad_title';
 		}
 
+		if ($spriteSheetId > 0) {
+			$spriteSheet = SpriteSheet::newFromId($spriteSheetId);
+		} else {
+			$title = Title::newFromDBKey($this->params['title']);
+			if ($title !== null) {
+				$spriteSheet = SpriteSheet::newFromTitle($title);
+			} else {
+				$message = 'ss_api_bad_title';
+			}
+		}
+
 		$data = [];
 		if (!empty($spriteSheet) && $spriteSheet->exists()) {
 			$spriteNames = $spriteSheet->getAllSpriteNames();

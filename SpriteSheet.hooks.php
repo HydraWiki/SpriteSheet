@@ -178,6 +178,8 @@ class SpriteSheetHooks {
 			return true;
 		}
 
+		$spriteNames = self::$spriteSheet->getAllSpriteNames();
+
 		$inputType = (self::$spriteSheet->isLocal() ? 'number' : 'hidden');
 
 		$form = "

@@ -672,7 +672,7 @@ class SpriteSheetRemote extends SpriteSheet {
 
 			//Make sure to change this cache piece back to 300 seconds once this extension is out of development.
 			$data = $this->image->getRepo()->httpGetCached('SpriteSheet', $query, 0);
-
+			return;
 			if ($data) {
 				$spriteData = FormatJson::decode($data, true);
 				if ($spriteData['success'] === true && is_array($spriteData['data']) && $spriteData['data']['title'] == $this->getTitle()->getDBkey()) {

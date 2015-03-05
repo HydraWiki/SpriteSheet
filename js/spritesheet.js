@@ -421,24 +421,29 @@ mw.spriteSheet = {
 	 */
 	getAllSpriteNames: function() {
 		var options = {};
+
+		var spriteSheetId = $("input[name='spritesheet_id']").val();
+		var title = $("input[name='page_title']").val();
+
+		var parameters = {
+			action: 'spritesheet',
+			do: 'getAllSpriteNames',
+			format: 'json',
+			spritesheet_id: spriteSheetId,
+			title: title,
+		};
+
 		if (this.isRemote === true) {
 			options.ajax = {};
 			options.ajax.url = this.remoteApiUrl;
+			parameters.origin = mw.config.get('wgServer');
 		}
-
 		var api = new mw.Api(options);
-
-		var spriteSheetId = $("input[name='spritesheet_id']").val();
 
 		if (this.spriteNames === null) {
 			this.showProgressIndicator();
 			api.get(
-				{
-					action: 'spritesheet',
-					do: 'getAllSpriteNames',
-					format: 'json',
-					spritesheet_id: spriteSheetId
-				},
+				parameters,
 				{
 					async: false
 				}
