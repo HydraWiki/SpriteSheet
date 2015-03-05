@@ -266,7 +266,15 @@ class SpriteSheetHooks {
 	 * @return	boolean True
 	 */
 	static public function onTitleMoveComplete(Title &$oldTitle, Title &$newTitle, User &$user, $oldId, $newId, $reason = null) {
-		
+		$spriteSheet = SpriteSheet::newFromTitle($oldTitle);
+
+		if (!$spriteSheet || !$spriteSheet->exists()) {
+			//No sprite sheet to update the Title on so we can safely skip this.
+			return true;
+		}
+
+		$spriteSheet->setTitle($newTitle);
+		$spriteSheet->save();
 
 		return true;
 	}
