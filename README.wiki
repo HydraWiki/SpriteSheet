@@ -38,6 +38,8 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 ===Tags===
 
 ====#sprite - Parser Tag====
+The #sprite tag format accepts X and Y coordinate positions to select a section of the image from a traditional column and row format.
+
 Basic Syntax:
 
 	<code><nowiki>{{#sprite:File:Image_Name.png|xPos|yPos}}</nowiki></code>
@@ -115,6 +117,8 @@ Basic Syntax:
 
 
 ====#slice - Parser Tag====
+The #slice tag takes X and Y percentage positioning along with width and height percentaging sizing to select a section of the image.  This works regardless if the image is manually resized or done through thumbnail sizing.  If pixel perfect accurancy is required the unit of measurement can be manually specified to use pixels for each argument; "10px".  However, using pixels does not guarantee the slice will always contain the same section if the image is edited or resized.
+
 Basic Syntax:
 
 	<code><nowiki>{{#slice:File:Image_Name.png|xPercent|yPercent|widthPercent|heightPercent}}</nowiki></code>
