@@ -39,7 +39,7 @@ With optional thumbnail resize:
 | File                  | **Required**: yes<br/>The file page containing the image to use.                                                                                                                    |
 | X Coordinate Position | **Required**: yes<br/>The X Coordinate Position of the sprite to select.,Coordinates use zero based numbering.                                                                      |
 | Y Coordinate Position | **Required**: yes<br/>The Y Coordinate Position of the sprite to select.,Coordinates use zero based numbering.                                                                      |
-| Thumb Width           | **Required**: no, **Default**: null<br/>Size the thumbnail width of the entire image before selecting,the sprite.,This is the width of the entire image; not the individual,sprite. |
+| Thumb Width           | **Required**: no, **Default**: null<br/>Size the thumbnail width of the entire image before selecting,the sprite.  This is the width of the entire image; not the individual sprite.|
 
 ####Example
 
@@ -62,7 +62,7 @@ Basic Syntax:
 |----------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | File                  | **Required**: yes<br/>The file page containing the image to use.                                                                                                                    |
 | Sprite Name           | **Required**: yes<br/>The named sprite to load.                                                                                                                                     |
-| Thumb Width           | **Required**: no, **Default**: null<br/>Size the thumbnail width of the entire image before selecting,the sprite.,This is the width of the entire image; not the individual,sprite. |
+| Thumb Width           | **Required**: no, **Default**: null<br/>Size the thumbnail width of the entire image before selecting,the sprite.  This is the width of the entire image; not the individual sprite.|
 | Wiki Text             | **Required**: no, **Default**: null<br/>The wiki text to parse and display if the named sprite is not found.  Can be left blank to not display anything.                            |
 
 ####Example
@@ -109,9 +109,9 @@ Basic Syntax:
 |       Attribute       | Description                                                                                                                                                                         |
 |----------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | File                  | **Required**: yes<br/>The file page containing the image to use.                                                                                                                    |
-| Slice Name            | **Required**: yes<br/>The named slice to load.                                                                                                                                     |
-| Thumb Width           | **Required**: no, **Default**: null<br/>Size the thumbnail width of the entire image before selecting,the slice.,This is the width of the entire image; not the individual,slice. |
-| Wiki Text             | **Required**: no, **Default**: null<br/>The wiki text to parse and display if the named slice is not found.  Can be left blank to not display anything.                            |
+| Slice Name            | **Required**: yes<br/>The named slice to load.                                                                                                                                      |
+| Thumb Width           | **Required**: no, **Default**: null<br/>Size the thumbnail width of the entire image before selecting,the slice.  This is the width of the entire image; not the individual slice.  |
+| Wiki Text             | **Required**: no, **Default**: null<br/>The wiki text to parse and display if the named slice is not found.  Can be left blank to not display anything.                             |
 
 ####Example
 
