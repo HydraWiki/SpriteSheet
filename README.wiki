@@ -78,6 +78,42 @@ To display the sprite located at column 4, row 2:
 [[File:SpriteSheet-SpriteUsageExample.png]]
 
 
+====#ifsprite - Parser Tag====
+The #ifsprite tag is used to call into a named sprite.  If the named sprite does not actually exist yet it will instead return the given wiki text fully parsed.
+
+Basic Syntax:
+
+	<code><nowiki>{{#ifsprite:File:Image_Name.png|spriteName|[thumbWidth]|[wikiText]}}</nowiki></code>
+
+===== Attributes for #ifsprite Tag =====
+
+{| class="wikitable"
+|-
+! Attribute
+! Description
+|-
+| <code>File</code>
+| '''Required:''' yes
+:The file page containing the image to use.
+|-
+| <code>Sprite Name</code>
+| '''Required:''' yes
+:The named sprite to load.
+|-
+| <code>Thumb Width</code>
+| '''Required:''' no, '''Default:''' <tt>none</tt>
+:Size the thumbnail width of the entire image before selecting the sprite.  This is the width of the entire image; not the individual sprite.
+|-
+| <code>Wiki Text</code>
+| '''Required:''' no, '''Default:''' <tt>none</tt>
+:The wiki text to parse and display if the named sprite is not found.  Can be left blank to not display anything.
+|}
+
+===== Example =====
+
+<pre>{{#sprite:File:Hanamura-screenshot.jpg|Plaque||[http://www.example.com/ Use This Example]}}</pre>
+
+
 ====#slice - Parser Tag====
 Basic Syntax:
 
@@ -124,6 +160,43 @@ With optional thumbnail resize:
 <pre>{{#slice:File:Hanamura-screenshot.jpg|28.25|32.97|25.12|23.58}}</pre>
 
 [[File:SpriteSheet-SliceUsageExample.png]]
+
+
+====#ifslice - Parser Tag====
+The #ifslice tag is used to call into a named slice.  If the named slice does not actually exist yet it will instead return the given wiki text fully parsed.
+
+Basic Syntax:
+
+	<code><nowiki>{{#ifslice:File:Image_Name.png|sliceName|[thumbWidth]|[wikiText]}}</nowiki></code>
+
+===== Attributes for #ifslice Tag =====
+
+{| class="wikitable"
+|-
+! Attribute
+! Description
+|-
+| <code>File</code>
+| '''Required:''' yes
+:The file page containing the image to use.
+|-
+| <code>Slice Name</code>
+| '''Required:''' yes
+:The named slice to load.
+|-
+| <code>Thumb Width</code>
+| '''Required:''' no, '''Default:''' <tt>none</tt>
+:Size the thumbnail width of the entire image before selecting the sprite.  This is the width of the entire image; not the individual sprite.
+|-
+| <code>Wiki Text</code>
+| '''Required:''' no, '''Default:''' <tt>none</tt>
+:The wiki text to parse and display if the named slice is not found.  Can be left blank to not display anything.
+|}
+
+===== Example =====
+
+<pre>{{#slice:File:Hanamura-screenshot.jpg|Plaque||[http://www.example.com/ Use This Example]}}</pre>
+
 
 ===Naming Sprites/Slices===
 
