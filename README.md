@@ -43,8 +43,8 @@ With optional thumbnail resize:
 
 ####Example
 
-To display the sprite located at column 5, row 5:
-<pre>{{#sprite:File:Hanamura-screenshot-001.20Mxx.jpg|5|5}}</pre>
+To display the sprite located at column 4, row 2:
+<pre>{{#sprite:File:Hanamura-screenshot.jpg|4|2}}</pre>
 
 ![](documentation/SpriteUsageExample.png)
 
@@ -70,7 +70,7 @@ With optional thumbnail resize:
 
 ####Example
 
-<pre>{{#slice:File:Hanamura-screenshot-001.20Mxx.jpg|27.63|32.53|25.62|24.89}}</pre>
+<pre>{{#slice:File:Hanamura-screenshot.jpg|28.25|32.97|25.12|23.58}}</pre>
 
 ![](documentation/SliceUsageExample.png)
 
