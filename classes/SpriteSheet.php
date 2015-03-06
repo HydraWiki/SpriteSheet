@@ -498,21 +498,35 @@ class SpriteSheet {
 	 * @param	integer	Width, percentage
 	 * @param	integer	Height, percentage
 	 * @param	integer	[Optional] Thumbnail Width
+	 * @param	boolean	[Optional] Use pixel positioning instead of percentage.
 	 * @return	mixed	HTML or false on error.
 	 */
-	public function getSlice($xPercent, $yPercent, $widthPrecent, $heightPercent, $thumbWidth = null) {
+	public function getSlice($xPercent, $yPercent, $widthPrecent, $heightPercent, $thumbWidth = null, $pixelMode = false) {
 		$file = wfFindFile($this->getTitle());
 
 		if (is_object($file) && $file->exists()) {
+			$scaling = 1;
 			if ($thumbWidth > 0) {
+				$originalWidth = $file->getWidth();
 				$file = $file->transform(['width' => $thumbWidth, 'height' => $file->getHeight()]);
+				if ($originalWidth != $thumbWidth) {
+					$scaling = $thumbWidth / $originalWidth;
+				}
 			}
 
-			$sliceX = $file->getWidth() * ($xPercent / 100);
-			$sliceY = $file->getHeight() * ($yPercent / 100);
+			if (!$pixelMode) {
+				$sliceX = $file->getWidth() * ($xPercent / 100);
+				$sliceY = $file->getHeight() * ($yPercent / 100);
 
-			$sliceWidth = $file->getWidth() * ($widthPrecent / 100);
-			$sliceHeight = $file->getHeight() * ($heightPercent / 100);
+				$sliceWidth = $file->getWidth() * ($widthPrecent / 100);
+				$sliceHeight = $file->getHeight() * ($heightPercent / 100);
+			} else {
+				$sliceX = $xPercent * $scaling;
+				$sliceY = $yPercent * $scaling;
+
+				$sliceWidth = $widthPrecent * $scaling;
+				$sliceHeight = $heightPercent * $scaling;
+			}
 
 			return "<div class='sprite' style='width: {$sliceWidth}px; height: {$sliceHeight}px; overflow: hidden; position: relative;'><img src='".$file->getUrl()."' style='position: absolute; left: -{$sliceX}px; top: -{$sliceY}px;'/></div>";
 		}
@@ -525,14 +539,15 @@ class SpriteSheet {
 	 * @access	public
 	 * @param	string	Slice Name
 	 * @param	integer	[Optional] Thumbnail Width
+	 * @param	boolean	[Optional] Use pixel positioning instead of percentage.
 	 * @return	mixed	HTML or false on error.
 	 */
-	public function getSliceFromName($name, $thumbWidth = null) {
+	public function getSliceFromName($name, $thumbWidth = null, $pixelMode = false) {
 		$sliceName = $this->getSliceName($name);
 
 		if ($sliceName->exists()) {
 			$values = $sliceName->getValues();
-			return $this->getSlice($values['xPercent'], $values['yPercent'], $values['widthPercent'], $values['heightPercent'], $thumbWidth);
+			return $this->getSlice($values['xPercent'], $values['yPercent'], $values['widthPercent'], $values['heightPercent'], $thumbWidth, $pixelMode);
 		}
 		return false;
 	}
