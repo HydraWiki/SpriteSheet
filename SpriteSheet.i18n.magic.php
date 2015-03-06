@@ -14,5 +14,7 @@ $magicWords = [];
 
 $magicWords['en'] = [
 	'sprite'	=> [0, 'sprite'],
-	'slice'		=> [0, 'slice']
+	'slice'		=> [0, 'slice'],
+	'ifsprite'	=> [0, 'ifsprite'],
+	'ifslice'	=> [0, 'ifslice']
 ];

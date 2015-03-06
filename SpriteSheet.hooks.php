@@ -28,6 +28,8 @@ class SpriteSheetHooks {
 	static public function onParserFirstCallInit(Parser &$parser) {
 		$parser->setFunctionHook("sprite", "SpriteSheetHooks::generateSpriteOutput");
 		$parser->setFunctionHook("slice", "SpriteSheetHooks::generateSliceOutput");
+		$parser->setFunctionHook("ifsprite", "SpriteSheetHooks::generateIfSpriteOutput");
+		$parser->setFunctionHook("ifslice", "SpriteSheetHooks::generateIfSliceOutput");
 
 		return true;
 	}
@@ -38,8 +40,8 @@ class SpriteSheetHooks {
 	 * @access	public
 	 * @param	object	Parser object passed as a reference.
 	 * @param	string	Page title with namespace
-	 * @param	integer Column Position
-	 * @param	integer Row Position
+	 * @param	integer	Column Position
+	 * @param	integer	Row Position
 	 * @param	integer	[Optional] Thumbnail Width
 	 * @return	string	Wiki Text
 	 */
@@ -89,6 +91,27 @@ class SpriteSheetHooks {
 			'isHTML'	=> true
 		];
 	}
+
+	/**
+	 * The #ifsprite parser tag entry point.
+	 *
+	 * @access	public
+	 * @param	object	Parser object passed as a reference.
+	 * @param	string	Page title with namespace
+	 * @param	string	Sprite Name
+	 * @param	integer	[Optional] Thumbnail Width
+	 * @param	string	Wiki Text to render if the sprite is not found.
+	 * @return	string	Wiki Text
+	 */
+	static public function generateIfSpriteOutput(&$parser, $file = null, $name = null, $thumbWidth = 0, $wikiText = null) {
+		$output = self::generateSpriteOutput($parser, $file, $name, $thumbWidth);
+
+		if (!is_array($output)) {
+			return $wikiText;
+		}
+		return $output;
+	}
+
 	/**
 	 * The #slice parser tag entry point.
 	 *
@@ -151,6 +174,26 @@ class SpriteSheetHooks {
 		}
 
 		return "<div class='errorbox'>".wfMessage('could_not_find_title', $file)->text()."</div>";
+	}
+
+	/**
+	 * The #ifslice parser tag entry point.
+	 *
+	 * @access	public
+	 * @param	object	Parser object passed as a reference.
+	 * @param	string	Page title with namespace
+	 * @param	string	Slice Name
+	 * @param	integer	[Optional] Thumbnail Width
+	 * @param	string	Wiki Text to render if the slice is not found.
+	 * @return	string	Wiki Text
+	 */
+	static public function generateIfSliceOutput(&$parser, $file = null, $name = null, $thumbWidth = 0, $wikiText = null) {
+		$output = self::generateSliceOutput($parser, $file, $name, $thumbWidth);
+
+		if (!is_array($output)) {
+			return $wikiText;
+		}
+		return $output;
 	}
 
 	/**
