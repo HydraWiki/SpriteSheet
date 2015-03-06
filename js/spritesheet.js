@@ -62,10 +62,10 @@ mw.spriteSheet = {
 
 		this.canvas.bind('mousedown', function() {
 			mw.spriteSheet.canvas.bind('mousemove', function() {
-				mw.spriteSheet.canvas.addChild(mw.spriteSheet.selector);
 				mw.spriteSheet.mouseDrag = true;
 			});
 			mw.spriteSheet.startSelection();
+			mw.spriteSheet.canvas.addChild(mw.spriteSheet.selector);
 		});
 
 		this.canvas.bind('mouseup', function() {
@@ -288,10 +288,8 @@ mw.spriteSheet = {
 					//Update the preview.
 					mw.spriteSheet.updateSpritePreview(result.data.tag);
 
-					if (mw.spriteSheet.selectedType == 'slice') {
-						//Remove the selector from the sheet.
-						mw.spriteSheet.canvas.removeChild(mw.spriteSheet.selector);
-					}
+					//Remove the selector from the sheet.
+					mw.spriteSheet.canvas.removeChild(mw.spriteSheet.selector);
 
 					//Update the list entries.
 					mw.spriteSheet.spriteNames[result.data.name] = result.data;
@@ -692,9 +690,6 @@ mw.spriteSheet = {
 			return;
 		}
 
-		//Remove slice selector.
-		this.canvas.removeChild(this.selector);
-
 		var columnWidth = this.canvas.width / this.values.columns;
 		var rowHeight = this.canvas.height / this.values.rows;
 
@@ -715,7 +710,18 @@ mw.spriteSheet = {
 
 		var example = "{{#sprite:"+title+"|"+xPos+"|"+yPos+"}}";
 
+		//Update the preview.
 		this.updateSpritePreview(example);
+
+		//Add a selector for this sprite block.
+		/*var spriteXPos = (columnWidth * xPos) + this.values.inset;
+		var spriteYPos = (rowHeight * yPos) + this.values.inset;
+		this.setupSelector(spriteXPos, spriteYPos);*/
+		this.selector.x = (columnWidth * xPos) + this.values.inset;
+		this.selector.y = (rowHeight * yPos) + this.values.inset;
+		this.selector.width = columnWidth - (this.values.inset * 2);
+		this.selector.height = rowHeight - (this.values.inset * 2);
+		this.canvas.redraw();
 
 		$('button#save_named_sprite').html(mw.message('save_named_sprite').escaped());
 		this.selectedType = 'sprite';
@@ -778,26 +784,17 @@ mw.spriteSheet = {
 	 * @return	void
 	 */
 	startSelection: function () {
-		if (this.selector !== null) {
-			this.canvas.removeChild(this.selector);
-		}
-		this.selector = this.canvas.display.rectangle({
-			x: this.canvas.mouse.x,
-			y: this.canvas.mouse.y,
-			origin: {x: "top", y: "left"},
-			width: 0,
-			height: 0,
-			fill: "rgba(195, 223, 253, 0.5)",
-			stroke: "inside 1px rgba(195, 223, 253, 0.5)"
-		});
+		this.setupSelector(this.canvas.mouse.x, this.canvas.mouse.y);
 
 		this.selector.timeline = this.canvas.setLoop(function () {
 			var width = mw.spriteSheet.canvas.mouse.x - mw.spriteSheet.selector.x;
 			var height = mw.spriteSheet.canvas.mouse.y - mw.spriteSheet.selector.y;
 
-			mw.spriteSheet.selector.width = width;
-			mw.spriteSheet.selector.height = height;
-			mw.spriteSheet.canvas.redraw();
+			if (mw.spriteSheet.mouseDrag == true) {
+				mw.spriteSheet.selector.width = width;
+				mw.spriteSheet.selector.height = height;
+				mw.spriteSheet.canvas.redraw();
+			}
 		}).start();
 	},
 
@@ -813,6 +810,28 @@ mw.spriteSheet = {
 		} else {
 			this.updateSpriteTagExample();
 		}
+	},
+
+	/**
+	 * Setup the canvas selector.
+	 *
+	 * @param	integer	X Position
+	 * @param	integer	Y Position
+	 * @return	void
+	 */
+	setupSelector: function (x, y) {
+		if (mw.spriteSheet.selector !== null) {
+			mw.spriteSheet.canvas.removeChild(mw.spriteSheet.selector);
+		}
+		this.selector = this.canvas.display.rectangle({
+			x: x,
+			y: y,
+			origin: {x: "top", y: "left"},
+			width: 0,
+			height: 0,
+			fill: "rgba(195, 223, 253, 0.5)",
+			stroke: "inside 1px rgba(195, 223, 253, 0.5)"
+		});
 	}
 }
 
