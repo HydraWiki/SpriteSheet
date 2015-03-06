@@ -8,7 +8,8 @@ mw.spriteSheet = {
 	highlight: {},
 	mouseDrag: false,
 	sheetSaved: false,
-	spriteNames: null,
+	fetchedSpriteNames: false,
+	spriteNames: {},
 	namedSpriteEditor: null,
 	currentlyEditing: null,
 	isRemote: false,
@@ -287,6 +288,11 @@ mw.spriteSheet = {
 					//Update the preview.
 					mw.spriteSheet.updateSpritePreview(result.data.tag);
 
+					if (mw.spriteSheet.selectedType == 'slice') {
+						//Remove the selector from the sheet.
+						mw.spriteSheet.canvas.removeChild(mw.spriteSheet.selector);
+					}
+
 					//Update the list entries.
 					mw.spriteSheet.spriteNames[result.data.name] = result.data;
 					mw.spriteSheet.updateSpriteNameListEntries();
@@ -453,7 +459,7 @@ mw.spriteSheet = {
 		}
 		var api = new mw.Api(options);
 
-		if (this.spriteNames === null) {
+		if (!this.fetchedSpriteNames) {
 			this.showProgressIndicator();
 			api.get(
 				parameters,
@@ -466,6 +472,7 @@ mw.spriteSheet = {
 						alert(result.message);
 					} else {
 						mw.spriteSheet.spriteNames = result.data;
+						mw.spriteSheet.fetchedSpriteNames = true;
 					}
 					mw.spriteSheet.hideProgressIndicator();
 				}
@@ -479,7 +486,7 @@ mw.spriteSheet = {
 	 * @return	boolean
 	 */
 	haveAllSpriteNames: function() {
-		return this.spriteNames !== null && Object.keys(this.spriteNames).length > 0;
+		return this.fetchedSpriteNames && Object.keys(this.spriteNames).length > 0;
 	},
 
 	/**
@@ -488,14 +495,10 @@ mw.spriteSheet = {
 	 * @return	void
 	 */
 	toggleSpriteNameList: function() {
-		if (this.spriteNames === null && !$("#named_sprites").is(':visible')) {
+		if (!this.haveAllSpriteNames() && !$("#named_sprites").is(':visible')) {
 			this.getAllSpriteNames();
 
-			if (!this.haveAllSpriteNames()) {
-				$("#named_sprites").html(mw.message('no_results_named_sprites').escaped());
-			} else {
-				this.updateSpriteNameListEntries();
-			}
+			this.updateSpriteNameListEntries();
 		}
 
 		if (!$("#named_sprites").is(':visible')) {
@@ -515,22 +518,26 @@ mw.spriteSheet = {
 	updateSpriteNameListEntries: function() {
 		var list;
 
-		list = $("<ul>");
+		if (!this.haveAllSpriteNames()) {
+			$("#named_sprites").html(mw.message('no_results_named_sprites').escaped());
+		} else {
+			list = $("<ul>");
 
-		$.each(this.spriteNames, function(spriteName, data) {
-			$(list).append(mw.spriteSheet.formatSpriteNameListItem(data));
-		});
-		$("#named_sprites").html(list);
+			$.each(this.spriteNames, function(spriteName, data) {
+				$(list).append(mw.spriteSheet.formatSpriteNameListItem(data));
+			});
+			$("#named_sprites").html(list);
 
-		$("#named_sprites ul li").on("click", function() {
-			mw.spriteSheet.showSpriteNameEditor($(this).attr('data-name'));
-		});
-		$("#named_sprites ul li").on("mouseenter", function() {
-			mw.spriteSheet.highlightSpriteName($(this).attr('data-name'), true);
-		});
-		$("#named_sprites ul li").on("mouseleave", function() {
-			mw.spriteSheet.highlightSpriteName($(this).attr('data-name'), false);
-		});
+			$("#named_sprites ul li").on("click", function() {
+				mw.spriteSheet.showSpriteNameEditor($(this).attr('data-name'));
+			});
+			$("#named_sprites ul li").on("mouseenter", function() {
+				mw.spriteSheet.highlightSpriteName($(this).attr('data-name'), true);
+			});
+			$("#named_sprites ul li").on("mouseleave", function() {
+				mw.spriteSheet.highlightSpriteName($(this).attr('data-name'), false);
+			});
+		}
 	},
 
 	/**
@@ -684,6 +691,9 @@ mw.spriteSheet = {
 		if (isNaN(this.values.columns) || isNaN(this.values.rows) || this.values.columns < 1 || this.values.rows < 1) {
 			return;
 		}
+
+		//Remove slice selector.
+		this.canvas.removeChild(this.selector);
 
 		var columnWidth = this.canvas.width / this.values.columns;
 		var rowHeight = this.canvas.height / this.values.rows;
