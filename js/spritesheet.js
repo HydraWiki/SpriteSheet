@@ -714,9 +714,6 @@ mw.spriteSheet = {
 		this.updateSpritePreview(example);
 
 		//Add a selector for this sprite block.
-		/*var spriteXPos = (columnWidth * xPos) + this.values.inset;
-		var spriteYPos = (rowHeight * yPos) + this.values.inset;
-		this.setupSelector(spriteXPos, spriteYPos);*/
 		this.selector.x = (columnWidth * xPos) + this.values.inset;
 		this.selector.y = (rowHeight * yPos) + this.values.inset;
 		this.selector.width = columnWidth - (this.values.inset * 2);
