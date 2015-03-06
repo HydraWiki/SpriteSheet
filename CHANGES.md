@@ -7,6 +7,7 @@
 * Naming standards applied to sprite/slice names.
 * New list of named sprites/slices and an editing interface for existing ones.
 * Now uses the DB key of the Title instead of the article/page ID for reference.  This is to support images stored in remote repositories.
+* New #ifsprite and #ifslice parser functions to give alternative output if either is not found.
 
 ##0.9
 * Initial Release for internal QA
