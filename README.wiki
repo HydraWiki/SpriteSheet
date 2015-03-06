@@ -79,7 +79,7 @@ To display the sprite located at column 4, row 2:
 
 
 ====#ifsprite - Parser Tag====
-The #ifsprite tag is used to call into a named sprite.  If the named sprite does not actually exist yet it will instead return the given wiki text fully parsed.
+The #ifsprite tag is used to display a named sprite if it exists.  If the named sprite does not actually exist yet it will instead return the given wiki text.
 
 Basic Syntax:
 
@@ -163,7 +163,7 @@ With optional thumbnail resize:
 
 
 ====#ifslice - Parser Tag====
-The #ifslice tag is used to call into a named slice.  If the named slice does not actually exist yet it will instead return the given wiki text fully parsed.
+The #ifslice tag is used to display a named slice if it exists.  If the named slice does not actually exist yet it will instead return the given wiki text.
 
 Basic Syntax:
 
