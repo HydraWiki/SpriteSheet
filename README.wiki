@@ -4,8 +4,8 @@
 |status      = stable
 |type        = parser function
 |author      = Curse Inc. Wiki Platform Team, Alexia E. Smith ([[User:Alexia E. Smith|Alexia E. Smith]])
-|version     = 0.9.0
-|update      = 2015-02-13
+|version     = 1.0.0
+|update      = 2015-03-06
 |mediawiki   = 1.23+
 |php         = 5.4+
 |download    = {{ {{TNTN|GithubDownload}} |CurseStaff|SpriteSheet}}
@@ -29,7 +29,7 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 
 ==Installation==
 
-{{ {{TNTN|ExtensionInstall}} |download-link=[https://github.com/CurseStaff/SpriteSheet/archive/v0.9.0.zip Download]}}
+{{ {{TNTN|ExtensionInstall}} |download-link=[https://github.com/CurseStaff/SpriteSheet/archive/v1.0.0.zip Download]}}
 
 ==Usage==
 
@@ -72,8 +72,8 @@ With optional thumbnail resize:
 
 ===== Example =====
 
-To display the sprite located at column 5, row 5:
-<pre>{{#sprite:File:Hanamura-screenshot-001.20Mxx.jpg|5|5}}</pre>
+To display the sprite located at column 4, row 2:
+<pre>{{#sprite:File:Hanamura-screenshot.jpg|4|2}}</pre>
 
 [[File:SpriteSheet-SpriteUsageExample.png]]
 
@@ -121,7 +121,7 @@ With optional thumbnail resize:
 
 ===== Example =====
 
-<pre>{{#slice:File:Hanamura-screenshot-001.20Mxx.jpg|27.63|32.53|25.62|24.89}}</pre>
+<pre>{{#slice:File:Hanamura-screenshot.jpg|28.25|32.97|25.12|23.58}}</pre>
 
 [[File:SpriteSheet-SliceUsageExample.png]]
 
@@ -131,7 +131,7 @@ With optional thumbnail resize:
 
 After a sprite or slice has been selected a pop up will open under the tag preview.  This allows a custom name to be set for the selection that can be recalled later.  It uses the same #sprite and #slice parser tags with only the name as the first argument after the file name.  Adding the optional thumb width is still supported.
 
-<pre>{{#sprite:File:Hanamura-screenshot-001.20Mxx.jpg|Plaque}}</pre>
-<pre>{{#sprite:File:Hanamura-screenshot-001.20Mxx.jpg|Plaque|800}}</pre>
-<pre>{{#slice:File:Hanamura-screenshot-001.20Mxx.jpg|Plaque}}</pre>
-<pre>{{#slice:File:Hanamura-screenshot-001.20Mxx.jpg|Plaque|500}}</pre>
+<pre>{{#sprite:File:Hanamura-screenshot.jpg|Plaque}}</pre>
+<pre>{{#sprite:File:Hanamura-screenshot.jpg|Plaque|800}}</pre>
+<pre>{{#slice:File:Hanamura-screenshot.jpg|Plaque}}</pre>
+<pre>{{#slice:File:Hanamura-screenshot.jpg|Plaque|500}}</pre>
