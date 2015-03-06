@@ -48,6 +48,28 @@ To display the sprite located at column 4, row 2:
 
 ![](documentation/SpriteUsageExample.png)
 
+
+###\#ifsprite - Parser Tag
+The #ifsprite tag is used to call into a named sprite.  If the named sprite does not actually exist yet it will instead return the given wiki text fully parsed.
+
+Basic Syntax:
+
+	{{#ifsprite:File:Image_Name.png|spriteName|[thumbWidth]|[wikiText]}}
+
+####Attributes for #ifsprite Tag
+
+|       Attribute       | Description                                                                                                                                                                         |
+|----------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| File                  | **Required**: yes<br/>The file page containing the image to use.                                                                                                                    |
+| Sprite Name           | **Required**: yes<br/>The named sprite to load.                                                                                                                                     |
+| Thumb Width           | **Required**: no, **Default**: null<br/>Size the thumbnail width of the entire image before selecting,the sprite.,This is the width of the entire image; not the individual,sprite. |
+| Wiki Text             | **Required**: no, **Default**: null<br/>The wiki text to parse and display if the named sprite is not found.  Can be left blank to not display anything.                            |
+
+####Example
+
+<pre>{{#ifsprite:File:Hanamura-screenshot.jpg|Plaque||[http://www.example.com/ Use This Example]}}</pre>
+
+
 ###\#slice - Parser Tag
 Basic Syntax:
 
@@ -64,7 +86,7 @@ With optional thumbnail resize:
 | File                  | **Required**: yes<br/>The file page containing the image to use.                                                                                                                     |
 | X Percentage Position | **Required**: yes<br/>The X Percentage Position of the slice to cut.                                                                                                                 |
 | Y Percentage Position | **Required**: yes<br/>The Y Percentage Position of the slice to cut.                                                                                                                 |
-| Width, in Percentage | **Required**: yes<br/>Width in percentage starting from the Y position.                                                                                                               |
+| Width, in Percentage  | **Required**: yes<br/>Width in percentage starting from the Y position.                                                                                                              |
 | Height, in Percentage | **Required**: yes<br/>Height in percentage starting from the Y position.                                                                                                             |
 | Thumb Width           | **Required**: no, **Default**: none<br/>Size the thumbnail width of the entire image before selecting the sprite.  This is the width of the entire image; not the individual sprite. |
 
@@ -73,6 +95,28 @@ With optional thumbnail resize:
 <pre>{{#slice:File:Hanamura-screenshot.jpg|28.25|32.97|25.12|23.58}}</pre>
 
 ![](documentation/SliceUsageExample.png)
+
+
+###\#ifslice - Parser Tag
+The #ifslice tag is used to call into a named slice.  If the named slice does not actually exist yet it will instead return the given wiki text fully parsed.
+
+Basic Syntax:
+
+	{{#ifslice:File:Image_Name.png|sliceName|[thumbWidth]|[wikiText]}}
+
+####Attributes for #ifslice Tag
+
+|       Attribute       | Description                                                                                                                                                                         |
+|----------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| File                  | **Required**: yes<br/>The file page containing the image to use.                                                                                                                    |
+| Slice Name            | **Required**: yes<br/>The named slice to load.                                                                                                                                     |
+| Thumb Width           | **Required**: no, **Default**: null<br/>Size the thumbnail width of the entire image before selecting,the slice.,This is the width of the entire image; not the individual,slice. |
+| Wiki Text             | **Required**: no, **Default**: null<br/>The wiki text to parse and display if the named slice is not found.  Can be left blank to not display anything.                            |
+
+####Example
+
+<pre>{{#ifslice:File:Hanamura-screenshot.jpg|Plaque||[http://www.example.com/ Use This Example]}}</pre>
+
 
 ##Naming Sprites/Slices
 

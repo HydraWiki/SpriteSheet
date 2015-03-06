@@ -111,7 +111,7 @@ Basic Syntax:
 
 ===== Example =====
 
-<pre>{{#sprite:File:Hanamura-screenshot.jpg|Plaque||[http://www.example.com/ Use This Example]}}</pre>
+<pre>{{#ifsprite:File:Hanamura-screenshot.jpg|Plaque||[http://www.example.com/ Use This Example]}}</pre>
 
 
 ====#slice - Parser Tag====
@@ -195,7 +195,7 @@ Basic Syntax:
 
 ===== Example =====
 
-<pre>{{#slice:File:Hanamura-screenshot.jpg|Plaque||[http://www.example.com/ Use This Example]}}</pre>
+<pre>{{#ifslice:File:Hanamura-screenshot.jpg|Plaque||[http://www.example.com/ Use This Example]}}</pre>
 
 
 ===Naming Sprites/Slices===
