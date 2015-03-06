@@ -37,8 +37,8 @@ With optional thumbnail resize:
 |       Attribute       | Description                                                                                                                                                                         |
 |----------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | File                  | **Required**: yes<br/>The file page containing the image to use.                                                                                                                    |
-| X Coordinate Position | **Required**: yes<br/>The X Coordinate Position of the sprite to select.,Coordinates use zero based numbering.                                                                      |
-| Y Coordinate Position | **Required**: yes<br/>The Y Coordinate Position of the sprite to select.,Coordinates use zero based numbering.                                                                      |
+| X Coordinate Position | **Required**: yes<br/>The X Coordinate Position of the sprite to select.  Coordinates use zero based numbering.                                                                     |
+| Y Coordinate Position | **Required**: yes<br/>The Y Coordinate Position of the sprite to select.  Coordinates use zero based numbering.                                                                     |
 | Thumb Width           | **Required**: no, **Default**: null<br/>Size the thumbnail width of the entire image before selecting,the sprite.  This is the width of the entire image; not the individual sprite.|
 
 ####Example
