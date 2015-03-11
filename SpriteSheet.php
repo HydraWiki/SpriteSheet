@@ -16,7 +16,7 @@
 $credits = [
 	'path'				=> __FILE__,
 	'name'				=> 'SpriteSheet',
-	'author'			=> ['Curse Inc', 'Wiki Platform Team'],
+	'author'			=> ['Curse Inc. Wiki Platform Team'],
 	'descriptionmsg'	=> 'spritesheet_description',
 	'version'			=> '1.0'
 ];
