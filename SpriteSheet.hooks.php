@@ -205,6 +205,11 @@ class SpriteSheetHooks {
 	 * @return	boolean True
 	 */
 	static public function onImagePageShowTOC(ImagePage $imagePage, &$toc) {
+		if (strpos($imagePage->getDisplayedFile()->getMimeType(), 'image/') === false) {
+			//Can not sprite sheet non-images.
+			return true;
+		}
+
 		$toc[] = '<li><a href="#spritesheet">'.wfMessage('sprite_sheet')->escaped().'</a></li>';
 
 		return true;
@@ -220,6 +225,11 @@ class SpriteSheetHooks {
 	 */
 	static public function onImageOpenShowImageInlineBefore(ImagePage $imagePage, OutputPage $output) {
 		$output->addModules('ext.spriteSheet');
+
+		if (strpos($imagePage->getDisplayedFile()->getMimeType(), 'image/') === false) {
+			//Can not sprite sheet non-images.
+			return true;
+		}
 
 		self::$spriteSheet = SpriteSheet::newFromTitle($imagePage->getTitle());
 
