@@ -12,7 +12,7 @@
 
 class SpriteName {
 	/**
-	 * Title Object
+	 * Mediawiki Database Object
 	 *
 	 * @var		object
 	 */

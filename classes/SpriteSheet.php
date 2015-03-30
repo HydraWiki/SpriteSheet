@@ -12,7 +12,7 @@
 
 class SpriteSheet {
 	/**
-	 * Title Object
+	 * Mediawiki Database Object
 	 *
 	 * @var		object
 	 */
