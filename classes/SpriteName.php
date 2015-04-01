@@ -240,8 +240,11 @@ class SpriteName {
 
 		if ($result !== false) {
 			$success = true;
+			$this->DB->commit();
+			unset($this->data['spritename_id']);
+		} else {
+			$this->DB->rollback();
 		}
-		$this->DB->commit();
 
 		return $success;
 	}
