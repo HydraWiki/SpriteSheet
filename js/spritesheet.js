@@ -16,14 +16,29 @@ mw.spriteSheet = {
 	remoteApiUrl: null,
 
 	/**
+	 * Automatically construct/deconstruct the object.
+	 *
+	 * @return	void
+	 */
+	toggleEditor: function() {
+		if (this.canvas === null) {
+			this.initialize();
+		} else {
+			this.uninitialize();
+		}
+	},
+
+	/**
 	 * Initialize the sprite sheet.
 	 *
 	 * @return	void
 	 */
 	initialize: function() {
-		if (this.canvas === null) {
+		if (this.canvas !== null) {
 			$('#spritesheet').remove();
 		}
+
+		$("#spritesheet_editor").slideDown();
 
 		//Determine if this is a local or remote sprite sheet first.
 		var isRemote = parseInt($("input[name='isRemote']").val());
@@ -135,6 +150,33 @@ mw.spriteSheet = {
 
 		this.updateSpriteSheet(true);
 		this.sheetSaved = true;
+	},
+
+	/**
+	 * Uninitialize the sprite sheet.
+	 *
+	 * @return	void
+	 */
+	uninitialize: function() {
+		$('#spritesheet').remove();
+
+		$("#spritesheet_editor").slideUp();
+
+		this.canvas = null;
+		this.values = {};
+		this.selectedSprite = {};
+		this.selectedSlice = {};
+		this.selectedType = null;
+		this.selector = null;
+		this.highlight = {};
+		this.mouseDrag = false;
+		this.sheetSaved = false;
+		this.fetchedSpriteNames = false;
+		this.spriteNames = {};
+		this.namedSpriteEditor = null;
+		this.currentlyEditing = null;
+		this.isRemote = false;
+		this.remoteApiUrl = null;
 	},
 
 	/**
@@ -833,5 +875,7 @@ mw.spriteSheet = {
 }
 
 $(document).ready(function() {
-	mw.spriteSheet.initialize();
+	$("#spritesheet_toc").on('click tap', function () {
+		mw.spriteSheet.toggleEditor();
+	});
 });

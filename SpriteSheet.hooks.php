@@ -210,7 +210,7 @@ class SpriteSheetHooks {
 			return true;
 		}
 
-		$toc[] = '<li><a href="#spritesheet">'.wfMessage('sprite_sheet')->escaped().'</a></li>';
+		$toc[] = '<li><a id="spritesheet_toc" href="#">'.wfMessage('sprite_sheet')->escaped().'</a></li>';
 
 		return true;
 	}
@@ -243,7 +243,7 @@ class SpriteSheetHooks {
 		$inputType = (self::$spriteSheet->isLocal() ? 'number' : 'hidden');
 
 		$form = "
-		<div id='spritesheet_editor'>
+		<div id='spritesheet_editor' style='display: none;'>
 			<form>
 				<fieldset id='spritesheet_form'>
 					<legend>".wfMessage('sprite_sheet')->escaped()."</legend>
