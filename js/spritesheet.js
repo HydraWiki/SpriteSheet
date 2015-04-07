@@ -97,6 +97,8 @@ mw.spriteSheet = {
 			} else {
 				mw.spriteSheet.updateSpriteSheet();
 			}
+			$('#save_sheet').attr('disabled', false);
+			$('#save_sheet').addClass('pulse');
 		});
 
 		//Only set these up if this a local sprite sheet.
@@ -142,13 +144,15 @@ mw.spriteSheet = {
 			$("#file").append(this.namedSpriteEditor);
 		}
 
+		$('#save_sheet').attr('disabled', true);
+
 		$('#show_named_sprites').on('click tap', function() {
 			mw.spriteSheet.toggleSpriteNameList();
 		});
 
 		$("#named_sprites").hide();
 
-		this.updateSpriteSheet(true);
+		this.updateSpriteSheet();
 		this.sheetSaved = true;
 	},
 
@@ -182,10 +186,9 @@ mw.spriteSheet = {
 	/**
 	 * Update the canvas object containing the sprite sheet.
 	 *
-	 * @param	boolean	Skip saving
 	 * @return	void
 	 */
-	updateSpriteSheet: function(skipSave) {
+	updateSpriteSheet: function() {
 		this.canvas.reset();
 
 		this.parseValues();
@@ -232,16 +235,6 @@ mw.spriteSheet = {
 			this.canvas.addChild(rectangle);
 		}
 		this.sheetSaved = false;
-
-		if (skipSave !== true) {
-			clearTimeout(this.saveTimeout);
-			this.saveTimeout = setTimeout(
-				function() {
-					mw.spriteSheet.saveSpriteSheet();
-				},
-				1000
-			);
-		}
 	},
 
 	/**
@@ -268,12 +261,14 @@ mw.spriteSheet = {
 		).done(
 			function(result) {
 				mw.spriteSheet.hideProgressIndicator();
-				$('#save_sheet').attr('disabled', false);
 
 				if (result.success != true) {
+					$('#save_sheet').attr('disabled', false);
 					alert(result.message);
 					return;
 				}
+
+				$('#save_sheet').removeClass('pulse');
 
 				var spriteSheetId = $("input[name='spritesheet_id']").val();
 
