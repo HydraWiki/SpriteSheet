@@ -180,18 +180,36 @@ class SpriteSheet {
 		$spriteSheetId = $this->data['spritesheet_id'];
 		unset($this->data['spritesheet_id']);
 
+		$save = $this->data;
+		$save['edited'] = time();
+
 		$this->DB->begin();
 		if ($spriteSheetId > 0) {
+			$oldResult = $this->DB->select(
+				['spritesheet'],
+				['*'],
+				['spritesheet_id' => $spriteSheetId],
+				__METHOD__
+			);
+			$oldRow = $oldResult->fetchRow();
+			if (is_array($oldRow)) {
+				$this->DB->insert(
+					'spritesheet_old',
+					$oldRow,
+					__METHOD__
+				);
+			}
+
 			$result = $this->DB->update(
 				'spritesheet',
-				$this->data,
+				$save,
 				['spritesheet_id' => $spriteSheetId],
 				__METHOD__
 			);
 		} else {
 			$result = $this->DB->insert(
 				'spritesheet',
-				$this->data,
+				$save,
 				__METHOD__
 			);
 			$spriteSheetId = $this->DB->insertId();
