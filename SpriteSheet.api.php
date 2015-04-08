@@ -234,7 +234,7 @@ class SpriteSheetAPI extends ApiBase {
 						'sheet',
 						$spriteSheet->getTitle(),
 						$comment,
-						[],
+						implode(" | ", $spriteSheet->getRevisionLinks()),
 						$this->wgUser
 					);
 

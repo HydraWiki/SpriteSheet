@@ -75,7 +75,7 @@ class SpriteSheet {
 			return false;
 		}
 
-		$spriteSheet = new self();
+		$spriteSheet = new self;
 		$spriteSheet->setId(intval($id));
 
 		$spriteSheet->newFrom = 'id';
@@ -97,7 +97,7 @@ class SpriteSheet {
 			return false;
 		}
 
-		$spriteSheet = new self();
+		$spriteSheet = new self;
 		$spriteSheet->setTitle($title);
 
 		$spriteSheet->newFrom = 'title';
@@ -119,34 +119,59 @@ class SpriteSheet {
 	}
 
 	/**
+	 * Load a new SpriteSheet object from a database row.
+	 *
+	 * @access	public
+	 * @param	array	Database Row
+	 * @param	object	Valid SpriteSheet that exists.
+	 * @return	mixed	$spriteSheet or false on error.
+	 */
+	static public function newFromRow($row) {
+		$spriteSheet = new self;
+
+		$spriteSheet->newFrom = 'row';
+
+		$spriteSheet->load($row);
+
+		if (!$spriteSheet->getId()) {
+			return false;
+		}
+
+		return $spriteSheet;
+	}
+
+	/**
 	 * Load from the database.
 	 *
 	 * @access	public
+	 * @param	array	[Optional] Database row to load from.
 	 * @return	boolean	Success
 	 */
-	public function load() {
+	public function load($row = null) {
 		if (!$this->isLoaded) {
-			switch ($this->newFrom) {
-				case 'id':
-					$where = [
-						'spritesheet_id' => $this->getId()
-					];
-					break;
-				case 'title':
-					$where = [
-						'title' => $this->title->getDBkey()
-					];
-					break;
+			if ($this->newFrom != 'row') {
+				switch ($this->newFrom) {
+					case 'id':
+						$where = [
+							'spritesheet_id' => $this->getId()
+						];
+						break;
+					case 'title':
+						$where = [
+							'title' => $this->title->getDBkey()
+						];
+						break;
+				}
+
+				$result = $this->DB->select(
+					['spritesheet'],
+					['*'],
+					$where,
+					__METHOD__
+				);
+
+				$row = $result->fetchRow();
 			}
-
-			$result = $this->DB->select(
-				['spritesheet'],
-				['*'],
-				$where,
-				__METHOD__
-			);
-
-			$row = $result->fetchRow();
 
 			if (is_array($row)) {
 				$this->data = $row;
@@ -571,6 +596,66 @@ class SpriteSheet {
 	}
 
 	/**
+	 * Is this an old revision?
+	 *
+	 * @access	public
+	 * @return	boolean	Is Old Revision
+	 */
+	public function isOldRevision() {
+		return (bool) $this->data['spritesheet_old_id'];
+	}
+
+	/**
+	 * Get the previous revision for this spritesheet.
+	 *
+	 * @access	public
+	 * @return	mixed	SpriteSheet or false for no previous revision.
+	 */
+	public function getPreviousRevision() {
+		$where['spritesheet_id'] = $this->getId();
+		if ($this->isOldRevision()) {
+			$where[] = "spritesheet_old_id < ".intval($this->data['spritesheet_old_id']);
+		}
+
+		$oldResult = $this->DB->select(
+			['spritesheet_old'],
+			['*'],
+			$where,
+			__METHOD__,
+			[
+				'ORDER BY'	=> 'spritesheet_old_id DESC'
+			]
+		);
+
+		$oldRow = $oldResult->fetchRow();
+
+		$spriteSheet = false;
+		if (is_array($oldRow)) {
+			$spriteSheet = SpriteSheet::newFromRow($oldRow);
+		}
+
+		return $spriteSheet;
+	}
+
+	/**
+	 * Return a set of revision links(diff, revert) for the change log.
+	 *
+	 * @access	public
+	 * @return	array	Links for performing actions against revisions.
+	 */
+	public function getRevisionLinks() {
+		$previousRevision = $this->getPreviousRevision();
+
+		$links['diff'] = Linker::link($this->getTitle(), wfMessage('diff')->escaped(), [], ['previousId' => $previousRevision->getId(), 'nextId' => $this->getId()]);
+
+		if (!$this->isOldRevision()) {
+			$links['rollback'] = Linker::link($this->getTitle(), wfMessage('rollbacklink')->escaped(), [], ['previousId' => $previousRevision->getId(), 'nextId' => $this->getId()]);
+		}
+
+		return $links;
+	}
+
+	/**
 	 * Return if this is a local SpriteSheet.
 	 *
 	 * @access	public
@@ -622,9 +707,10 @@ class SpriteSheetRemote extends SpriteSheet {
 	 * Load from the remote API.
 	 *
 	 * @access	public
+	 * @param	array	[Unused]
 	 * @return	boolean	Success
 	 */
-	public function load() {
+	public function load($row = null) {
 		if (!$this->isLoaded) {
 			$this->image = wfFindFile($this->getTitle());
 

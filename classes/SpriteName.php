@@ -83,7 +83,7 @@ class SpriteName {
 	 * @return	void
 	 */
 	static public function newFromName($name, SpriteSheet $spriteSheet) {
-		$spriteName = new SpriteName($spriteSheet);
+		$spriteName = new self($spriteSheet);
 
 		$spriteName->newFrom = 'name';
 
@@ -103,7 +103,7 @@ class SpriteName {
 	 * @return	mixed	SpriteName or false on error.
 	 */
 	static public function newFromId($id, SpriteSheet $spriteSheet) {
-		$spriteName = new SpriteName($spriteSheet);
+		$spriteName = new self($spriteSheet);
 
 		$spriteName->newFrom = 'id';
 
@@ -121,7 +121,7 @@ class SpriteName {
 	 * @return	mixed	SpriteName or false on error.
 	 */
 	static public function newFromRow($row, SpriteSheet $spriteSheet) {
-		$spriteName = new SpriteName($spriteSheet);
+		$spriteName = new self($spriteSheet);
 
 		$spriteName->newFrom = 'row';
 
