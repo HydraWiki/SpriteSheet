@@ -54,6 +54,13 @@ class SpriteSheet {
 	private $spriteNameCache = [];
 
 	/**
+	 * Memory Cache for already loaded SpriteSheet objects.  This is mainly used by the LogFormatter and parser tag to prevent reloading from the database for each entry.  It is recommended to not use the cache when in the editor interface.
+	 *
+	 * @var		array
+	 */
+	static private $spriteSheets = [];
+
+	/**
 	 * Main Constructor
 	 *
 	 * @access	public
@@ -90,11 +97,16 @@ class SpriteSheet {
 	 *
 	 * @access	public
 	 * @param	object	Title
+	 * @param	boolean	[Optional] Stash the object to quick retrieval.
 	 * @return	mixed	SpriteSheet or false on error.
 	 */
-	static public function newFromTitle(Title $title) {
+	static public function newFromTitle(Title $title, $useMemoryCache = false) {
 		if ($title->getNamespace() != NS_FILE || !$title->getDBkey()) {
 			return false;
+		}
+
+		if ($useMemoryCache && isset(self::$spriteSheets[$title->getDBkey()])) {
+			return self::$spriteSheets[$title->getDBkey()];
 		}
 
 		$spriteSheet = new self;
@@ -115,7 +127,12 @@ class SpriteSheet {
 			}
 		}
 
-		return ($success ? $spriteSheet : false);
+		if ($success) {
+			self::$spriteSheets[$title->getDBkey()] = $spriteSheet;
+
+			return $spriteSheet;
+		}
+		return false;
 	}
 
 	/**
@@ -638,19 +655,67 @@ class SpriteSheet {
 	}
 
 	/**
+	 * Return the old revision ID if this is an old revision.
+	 *
+	 * @access	public
+	 * @return	mixed	Old Revision ID or false if this is the current revision.
+	 */
+	public function getOldId() {
+		if ($this->isOldRevision()) {
+			return $this->data['spritesheet_old_id'];
+		}
+		return false;
+	}
+
+	/**
+	 * Return the old ID that comes after the supplied old ID.
+	 *
+	 * @access	public
+	 * @param	integer	Old ID
+	 * @return	mixed	Next old ID or false if it is the most current.
+	 */
+	static public function getNextOldId($oldId) {
+		$DB = wfGetDB(DB_MASTER);
+
+		$oldResult = $DB->select(
+			['spritesheet_old'],
+			['*'],
+			["spritesheet_old_id > ".intval($oldId)],
+			__METHOD__,
+			[
+				'ORDER BY'	=> 'spritesheet_old_id ASC'
+			]
+		);
+
+		$oldRow = $oldResult->fetchRow();
+		if (is_array($oldRow)) {
+			return intval($oldRow['spritesheet_old_id']);
+		}
+		return false;
+	}
+
+	/**
 	 * Return a set of revision links(diff, revert) for the change log.
 	 *
 	 * @access	public
+	 * @param	integer	[Optional] The previous ID to use.  This will automatically populate if not provided.
+	 * @param	integer	[Optional] The next ID to use.
 	 * @return	array	Links for performing actions against revisions.
 	 */
-	public function getRevisionLinks() {
-		$previousRevision = $this->getPreviousRevision();
-
-		$links['diff'] = Linker::link($this->getTitle(), wfMessage('diff')->escaped(), [], ['previousId' => $previousRevision->getId(), 'nextId' => $this->getId()]);
-
-		if (!$this->isOldRevision()) {
-			$links['rollback'] = Linker::link($this->getTitle(), wfMessage('rollbacklink')->escaped(), [], ['previousId' => $previousRevision->getId(), 'nextId' => $this->getId()]);
+	public function getRevisionLinks($previousId = false, $nextId = false) {
+		if ($previousId === false) {
+			$previousRevision = $this->getPreviousRevision();
+			$arguments['previousId'] = $previousRevision->getId();
+		} else {
+			$arguments['previousId'] = intval($previousId);
 		}
+		if ($nextId !== false) {
+			$arguments['nextId'] = intval($nextId);
+		}
+
+		$links['diff'] = Linker::link($this->getTitle(), wfMessage('diff')->escaped(), [], array_merge($arguments, ['action' => 'diff']));
+
+		$links['rollback'] = Linker::link($this->getTitle(), wfMessage('rollbacklink')->escaped(), [], array_merge($arguments, ['action' => 'rollback']));
 
 		return $links;
 	}
@@ -686,11 +751,16 @@ class SpriteSheetRemote extends SpriteSheet {
 	 *
 	 * @access	public
 	 * @param	object	Title
+	 * @param	boolean	[Optional] Stash the object to quick retrieval.
 	 * @return	mixed	SpriteSheet or false on error.
 	 */
-	static public function newFromTitle(Title $title) {
+	static public function newFromTitle(Title $title, $useMemoryCache = false) {
 		if ($title->getNamespace() != NS_FILE || !$title->getDBkey()) {
 			return false;
+		}
+
+		if ($useMemoryCache && isset(self::$spriteSheets[$title->getDBkey()])) {
+			return self::$spriteSheets[$title->getDBkey()];
 		}
 
 		$spriteSheet = new self();
@@ -700,7 +770,12 @@ class SpriteSheetRemote extends SpriteSheet {
 
 		$success = $spriteSheet->load();
 
-		return ($success ? $spriteSheet : false);
+		if ($success) {
+			self::$spriteSheets[$title->getDBkey()] = $spriteSheet;
+
+			return $spriteSheet;
+		}
+		return false;
 	}
 
 	/**

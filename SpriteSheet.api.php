@@ -229,12 +229,18 @@ class SpriteSheetAPI extends ApiBase {
 				$success = $spriteSheet->save();
 
 				if ($success) {
+					$extra = [];
+					$oldSpriteSheet = $spriteSheet->getPreviousRevision();
+					if ($oldSpriteSheet instanceOf SpriteSheet && $oldSpriteSheet->getOldId() !== false) {
+						$extra['spritesheet_old_id'] = $oldSpriteSheet->getOldId();
+					}
+
 					$log = new LogPage('sprite');
 					$log->addEntry(
 						'sheet',
 						$spriteSheet->getTitle(),
 						$comment,
-						implode(" | ", $spriteSheet->getRevisionLinks()),
+						$extra,
 						$this->wgUser
 					);
 
