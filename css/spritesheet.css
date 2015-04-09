@@ -187,3 +187,9 @@ pre#sprite_preview {
     animation: 2s ease 0s normal none infinite running saveSheetPulse;
     box-shadow: 0 0 5px 5px rgba(97, 166, 235, 1);
 }
+
+#spritesheet_editor .previous_revision, #spritesheet_editor .current_revision {
+	display: inline-block;
+	font-weight: bold;
+	margin-top: 6px;
+}

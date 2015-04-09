@@ -655,6 +655,33 @@ class SpriteSheet {
 	}
 
 	/**
+	 * Get a previous revision for this spritesheet by its old ID.
+	 *
+	 * @access	public
+	 * @return	mixed	SpriteSheet or false for no previous revision.
+	 */
+	public function getRevisionByOldId($oldId) {
+		$oldResult = $this->DB->select(
+			['spritesheet_old'],
+			['*'],
+			[
+				'spritesheet_old_id'	=> $oldId,
+				'spritesheet_id'		=> $this->getId()
+			],
+			__METHOD__
+		);
+
+		$oldRow = $oldResult->fetchRow();
+
+		$spriteSheet = false;
+		if (is_array($oldRow)) {
+			$spriteSheet = SpriteSheet::newFromRow($oldRow);
+		}
+
+		return $spriteSheet;
+	}
+
+	/**
 	 * Return the old revision ID if this is an old revision.
 	 *
 	 * @access	public
@@ -699,23 +726,19 @@ class SpriteSheet {
 	 *
 	 * @access	public
 	 * @param	integer	[Optional] The previous ID to use.  This will automatically populate if not provided.
-	 * @param	integer	[Optional] The next ID to use.
 	 * @return	array	Links for performing actions against revisions.
 	 */
-	public function getRevisionLinks($previousId = false, $nextId = false) {
+	public function getRevisionLinks($previousId = false) {
 		if ($previousId === false) {
 			$previousRevision = $this->getPreviousRevision();
-			$arguments['previousId'] = $previousRevision->getId();
+			$arguments['sheetPreviousId'] = $previousRevision->getId();
 		} else {
-			$arguments['previousId'] = intval($previousId);
-		}
-		if ($nextId !== false) {
-			$arguments['nextId'] = intval($nextId);
+			$arguments['sheetPreviousId'] = intval($previousId);
 		}
 
-		$links['diff'] = Linker::link($this->getTitle(), wfMessage('diff')->escaped(), [], array_merge($arguments, ['action' => 'diff']));
+		$links['diff'] = Linker::link($this->getTitle(), wfMessage('diff')->escaped(), [], array_merge($arguments, ['sheetAction' => 'diff']));
 
-		$links['rollback'] = Linker::link($this->getTitle(), wfMessage('rollbacklink')->escaped(), [], array_merge($arguments, ['action' => 'rollback']));
+		$links['rollback'] = Linker::link($this->getTitle(), wfMessage('rollbacklink')->escaped(), [], array_merge($arguments, ['sheetAction' => 'rollback']));
 
 		return $links;
 	}

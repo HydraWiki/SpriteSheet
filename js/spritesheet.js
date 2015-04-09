@@ -1,6 +1,7 @@
 mw.spriteSheet = {
 	canvas: null,
 	values: {},
+	oldValues: {},
 	selectedSprite: {},
 	selectedSlice: {},
 	selectedType: null,
@@ -168,6 +169,7 @@ mw.spriteSheet = {
 
 		this.canvas = null;
 		this.values = {};
+		this.oldValues = {};
 		this.selectedSprite = {};
 		this.selectedSlice = {};
 		this.selectedType = null;
@@ -193,21 +195,48 @@ mw.spriteSheet = {
 
 		this.parseValues();
 
-		//This changing of an inset of 0 to 1 is just for pixel display purposes and has no bearing on positional data.
-		if (!this.values.inset) {
-			inset = 1;
-		} else {
-			inset = this.values.inset * 2;
+		var stroke = "inside 1px rgba(215, 215, 215, 1)";
+
+		if ($("input[name='old_spritesheet_id']").length && !isNaN(this.oldValues.columns) && !isNaN(this.oldValues.rows) && this.oldValues.columns > 0 && this.oldValues.rows > 0) {
+			if (!this.oldValues.inset) {
+				var inset = 1;
+			} else {
+				var inset = this.oldValues.inset * 2;
+			}
+
+			this.makeGridLines(this.oldValues.columns, this.oldValues.rows, this.oldValues.inset, "inside 1px rgba(237, 102, 102, 1)");
+
+			stroke = "inside 1px rgba(78, 245, 117, 1)";
 		}
 
-		if (isNaN(this.values.columns) || isNaN(this.values.rows) || this.values.columns < 1 || this.values.rows < 1) {
-			return;
+		if (!isNaN(this.values.columns) && !isNaN(this.values.rows) && this.values.columns > 0 && this.values.rows > 0) {
+			//This changing of an inset of 0 to 1 is just for pixel display purposes and has no bearing on positional data.
+			if (!this.values.inset) {
+				var inset = 1;
+			} else {
+				var inset = this.values.inset * 2;
+			}
+
+			this.makeGridLines(this.values.columns, this.values.rows, inset, stroke);
 		}
 
-		var columnWidth = this.canvas.width / this.values.columns;
-		var rowHeight = this.canvas.height / this.values.rows;
+		this.sheetSaved = false;
+	},
 
-		for (var i = 0; i <= this.values.columns; i++) {
+	/**
+	 * Make grid lines on the canvas.
+	 *
+	 * @param	integer Columns
+	 * @param	integer Rows
+	 * @param	integer Inset
+	 * @param	string	Stroke
+	 * @return	void
+	 */
+	makeGridLines: function(columns, rows, inset, stroke) {
+		var columnWidth = this.canvas.width / columns;
+		var rowHeight = this.canvas.height / rows;
+
+		for (var i = 0; i <= columns; i++) {
 			var x = i * columnWidth;
 
 			var rectangle = this.canvas.display.rectangle({
@@ -216,12 +245,12 @@ mw.spriteSheet = {
 				width: inset,
 				height: this.canvas.height,
 				fill: "rgba(215, 0, 0, 0.5)",
-				stroke: "inside 1px rgba(215, 215, 215, 1)"
+				stroke: stroke
 			});
 			this.canvas.addChild(rectangle);
 		}
 
-		for (var i = 0; i <= this.values.rows; i++) {
+		for (var i = 0; i <= rows; i++) {
 			var y = i * rowHeight;
 
 			var rectangle = this.canvas.display.rectangle({
@@ -230,11 +259,10 @@ mw.spriteSheet = {
 				width: this.canvas.width,
 				height: inset,
 				fill: "rgba(215, 0, 0, 0.5)",
-				stroke: "inside 1px rgba(215, 215, 215, 1)"
+				stroke: stroke
 			});
 			this.canvas.addChild(rectangle);
 		}
-		this.sheetSaved = false;
 	},
 
 	/**
@@ -675,6 +703,18 @@ mw.spriteSheet = {
 			rows: rows,
 			inset: inset
 		};
+
+		if ($("input[name='old_spritesheet_id']").length) {
+			var oldColumns = Math.abs(parseInt($('#old_sprite_columns').val()));
+			var oldRows = Math.abs(parseInt($('#old_sprite_rows').val()));
+			var oldInset = Math.abs(parseInt($('#old_sprite_inset').val()));
+
+			this.oldValues = {
+				columns: oldColumns,
+				rows: oldRows,
+				inset: oldInset
+			};
+		}
 	},
 
 	/**
@@ -870,6 +910,10 @@ mw.spriteSheet = {
 }
 
 $(document).ready(function() {
+	if ($("input[name='old_spritesheet_id']").length) {
+		mw.spriteSheet.toggleEditor();
+	}
+
 	$("#spritesheet_toc").on('click tap', function () {
 		mw.spriteSheet.toggleEditor();
 	});

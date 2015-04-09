@@ -224,6 +224,8 @@ class SpriteSheetHooks {
 	 * @return	boolean True
 	 */
 	static public function onImageOpenShowImageInlineBefore(ImagePage $imagePage, OutputPage $output) {
+		global $wgRequest;
+
 		$output->addModules('ext.spriteSheet');
 
 		if (strpos($imagePage->getDisplayedFile()->getMimeType(), 'image/') === false) {
@@ -244,12 +246,37 @@ class SpriteSheetHooks {
 
 		$logLink = Linker::link(SpecialPage::getTitleFor('Log'), wfMessage('sprite_sheet_log')->escaped(), [], ['page' => self::$spriteSheet->getTitle()->getPrefixedText()]);
 
+		$action = $wgRequest->getVal('sheetAction', false);
+
 		$form = "
 		<div id='spritesheet_editor' style='display: none;'>
 			<form>
 				<fieldset id='spritesheet_form'>
 					<legend>".wfMessage('sprite_sheet')->escaped()." [{$logLink}]</legend>
-					".(!self::$spriteSheet->isLocal() ? "<pre>".wfMessage('visit_remote_repository_to_edit_sprite_sheet', $imagePage->getDisplayedFile()->getDescriptionUrl())."</pre>" : '')."
+					".(!self::$spriteSheet->isLocal() ? "<pre>".wfMessage('visit_remote_repository_to_edit_sprite_sheet', $imagePage->getDisplayedFile()->getDescriptionUrl())."</pre>" : '');
+		if ($action && $wgRequest->getInt('sheetPreviousId') > 0) {
+			$oldSpriteSheet = self::$spriteSheet->getRevisionByOldId($wgRequest->getInt('sheetPreviousId'));
+			if ($action == 'diff' && $oldSpriteSheet !== false) {
+				$form .= "
+					<fieldset id='old_spritesheet_form'>
+						<span class='previous_revision'>".wfMessage('previous_values')->escaped()."</span><br/>
+						<label for='old_sprite_columns'>".wfMessage('sprite_columns')->escaped()."</label>
+						<input id='old_sprite_columns' name='old_sprite_columns' type='number' min='0' disabled='disabled' value='".$oldSpriteSheet->getColumns()."'/>
+
+						<label for='old_sprite_rows'>".wfMessage('sprite_rows')->escaped()."</label>
+						<input id='old_sprite_rows' name='old_sprite_rows' type='number' min='0' disabled='disabled' value='".$oldSpriteSheet->getRows()."'/>
+
+						<label for='old_sprite_inset'>".wfMessage('sprite_inset')->escaped()."</label>
+						<input id='old_sprite_inset' name='old_sprite_inset' type='number' min='0' disabled='disabled' value='".$oldSpriteSheet->getInset()."'/>
+
+						<input name='old_spritesheet_id' type='hidden' disabled='disabled' value='".$oldSpriteSheet->getOldId()."'/>
+					</fieldset>
+
+					<span class='current_revision'>".wfMessage('current_values')->escaped()."</span><br/>";
+			}
+		}
+
+		$form .= "
 					<label for='sprite_columns'>".wfMessage('sprite_columns')->escaped()."</label>
 					<input id='sprite_columns' name='sprite_columns' type='number' min='0'".(!self::$spriteSheet->isLocal() ? " disabled='disabled'" : '')." value='".self::$spriteSheet->getColumns()."'/>
 

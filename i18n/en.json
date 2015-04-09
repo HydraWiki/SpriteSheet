@@ -45,5 +45,7 @@
 	"hide_named_sprites": "Hide Named Sprites/Slices",
 	"no_results_named_sprites": "No named sprites or slices found.",
 	"click_to_edit": "Click to Edit",
-	"visit_remote_repository_to_edit_sprite_sheet": "This sprite sheet was loaded from the remote repository where this image is located.\nTo edit the sprite sheet please [$1 visit the file page on the remote repository]."
+	"visit_remote_repository_to_edit_sprite_sheet": "This sprite sheet was loaded from the remote repository where this image is located.\nTo edit the sprite sheet please [$1 visit the file page on the remote repository].",
+	"previous_values": "Previous",
+	"current_values": "Current"
 }
