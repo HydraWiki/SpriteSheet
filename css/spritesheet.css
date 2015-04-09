@@ -193,3 +193,11 @@ pre#sprite_preview {
 	font-weight: bold;
 	margin-top: 6px;
 }
+
+#spritesheet_editor .previous_revision {
+	color: rgba(237, 102, 102, 1);
+}
+
+#spritesheet_editor .current_revision {
+	color: rgba(78, 245, 117, 1);
+}
