@@ -58,7 +58,7 @@ class SpriteSheet {
 	 *
 	 * @var		array
 	 */
-	static private $spriteSheets = [];
+	static protected $spriteSheets = [];
 
 	/**
 	 * Main Constructor
