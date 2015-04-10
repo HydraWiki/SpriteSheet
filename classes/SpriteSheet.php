@@ -257,6 +257,7 @@ class SpriteSheet {
 			);
 			$spriteSheetId = $this->DB->insertId();
 		}
+
 		if ($result !== false) {
 			global $wgUser;
 

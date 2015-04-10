@@ -210,9 +210,24 @@ class SpriteName {
 		}
 
 		if ($result !== false) {
-			$success = true;
+			global $wgUser;
+
 			$this->DB->commit();
+
 			$this->data['spritename_id'] = $spriteNameId;
+
+			$log = new LogPage('sprite');
+			$log->addEntry(
+				'sprite',
+				$this->getSpriteSheet()->getTitle(),
+				null,
+				[$this->getName()],
+				$wgUser
+			);
+
+			$success = true;
+		} else {
+			$this->DB->rollback();
 		}
 
 		return $success;
