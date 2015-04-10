@@ -199,14 +199,6 @@ class SpriteSheetAPI extends ApiBase {
 		$success = false;
 		$message = 'ss_api_unknown_error';
 
-		if (!$this->wgUser->isAllowed('edit_sprites')) {
-			$message = 'ss_api_no_permission';
-			return [
-				'success' => $success,
-				'message' => wfMessage($message)->text()
-			];
-		}
-
 		if ($this->wgRequest->wasPosted()) {
 			parse_str($this->params['form'], $form);
 
@@ -217,8 +209,18 @@ class SpriteSheetAPI extends ApiBase {
 				if ($title !== null) {
 					$spriteSheet = SpriteSheet::newFromTitle($title);
 				} else {
-					$message = 'ss_api_bad_title';
+					return [
+						'success' => $success,
+						'message' => wfMessage('ss_api_bad_title')->text()
+					];
 				}
+			}
+
+			if (!$this->wgUser->isAllowed('edit_sprites') || !$title->userCan('edit')) {
+				return [
+					'success' => $success,
+					'message' => wfMessage('ss_api_no_permission')->text()
+				];
 			}
 
 			if ($spriteSheet !== false) {
