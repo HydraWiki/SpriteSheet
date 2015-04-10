@@ -218,12 +218,11 @@ class SpriteSheet {
 	public function save() {
 		$success = false;
 
-		//Temporarily store and unset the spritesheet ID.
-		$spriteSheetId = $this->data['spritesheet_id'];
-		unset($this->data['spritesheet_id']);
-
 		$save = $this->data;
+		unset($save['spritesheet_id']);
 		$save['edited'] = time();
+
+		$spriteSheetId = $this->getId();
 
 		$this->DB->begin();
 		if ($spriteSheetId > 0) {
@@ -242,6 +241,7 @@ class SpriteSheet {
 				);
 			}
 
+			//Do the update.
 			$result = $this->DB->update(
 				'spritesheet',
 				$save,
@@ -249,6 +249,7 @@ class SpriteSheet {
 				__METHOD__
 			);
 		} else {
+			//Do the insert.
 			$result = $this->DB->insert(
 				'spritesheet',
 				$save,
@@ -257,11 +258,34 @@ class SpriteSheet {
 			$spriteSheetId = $this->DB->insertId();
 		}
 		if ($result !== false) {
-			$success = true;
-		}
-		$this->DB->commit();
+			global $wgUser;
 
-		$this->data['spritesheet_id'] = $spriteSheetId;
+			$this->DB->commit();
+
+			//Enforce sanity on data.
+			$this->data['spritesheet_id']	= $spriteSheetId;
+			$this->data['edited']			= $save['edited'];
+
+			$extra = [];
+			$oldSpriteSheet = $this->getPreviousRevision();
+
+			if ($oldSpriteSheet instanceOf SpriteSheet && $oldSpriteSheet->getOldId() !== false) {
+				$extra['spritesheet_old_id'] = $oldSpriteSheet->getOldId();
+			}
+
+			$log = new LogPage('sprite');
+			$log->addEntry(
+				'sheet',
+				$this->getTitle(),
+				null,
+				$extra,
+				$wgUser
+			);
+
+			$success = true;
+		} else {
+			$this->DB->rollback();
+		}
 
 		return $success;
 	}
@@ -729,6 +753,8 @@ class SpriteSheet {
 	 * @return	array	Links for performing actions against revisions.
 	 */
 	public function getRevisionLinks($previousId = false) {
+		global $wgUser;
+
 		if ($previousId === false) {
 			$previousRevision = $this->getPreviousRevision();
 			$arguments['sheetPreviousId'] = $previousRevision->getId();
@@ -738,7 +764,9 @@ class SpriteSheet {
 
 		$links['diff'] = Linker::link($this->getTitle(), wfMessage('diff')->escaped(), [], array_merge($arguments, ['sheetAction' => 'diff']));
 
-		$links['rollback'] = Linker::link($this->getTitle(), wfMessage('rollbacklink')->escaped(), [], array_merge($arguments, ['sheetAction' => 'rollback']));
+		if ($wgUser->isAllowed('spritesheet_rollback')) {
+			$links['rollback'] = Linker::link($this->getTitle(), wfMessage('rollbacklink')->escaped(), [], array_merge($arguments, ['sheetAction' => 'rollback']));
+		}
 
 		return $links;
 	}

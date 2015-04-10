@@ -229,21 +229,6 @@ class SpriteSheetAPI extends ApiBase {
 				$success = $spriteSheet->save();
 
 				if ($success) {
-					$extra = [];
-					$oldSpriteSheet = $spriteSheet->getPreviousRevision();
-					if ($oldSpriteSheet instanceOf SpriteSheet && $oldSpriteSheet->getOldId() !== false) {
-						$extra['spritesheet_old_id'] = $oldSpriteSheet->getOldId();
-					}
-
-					$log = new LogPage('sprite');
-					$log->addEntry(
-						'sheet',
-						$spriteSheet->getTitle(),
-						$comment,
-						$extra,
-						$this->wgUser
-					);
-
 					$message = 'ss_api_okay';
 				} else {
 					$message = 'ss_api_fatal_error_saving';

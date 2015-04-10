@@ -29,7 +29,9 @@ $wgExtensionCredits['other'][] = $credits;
 $extDir = __DIR__;
 
 $wgAvailableRights[] = 'edit_sprites';
+$wgAvailableRights[] = 'spritesheet_rollback';
 $wgGroupPermissions['autoconfirmed']['edit_sprites'] = true;
+$wgGroupPermissions['sysop']['spritesheet_rollback'] = true;
 
 $wgExtensionMessagesFiles['SpriteSheet']		= "{$extDir}/SpriteSheet.i18n.php";
 $wgExtensionMessagesFiles['SpriteSheetMagic']	= "{$extDir}/SpriteSheet.i18n.magic.php";

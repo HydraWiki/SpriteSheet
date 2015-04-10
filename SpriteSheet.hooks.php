@@ -224,7 +224,12 @@ class SpriteSheetHooks {
 	 * @return	boolean True
 	 */
 	static public function onImageOpenShowImageInlineBefore(ImagePage $imagePage, OutputPage $output) {
-		global $wgRequest;
+		global $wgRequest, $wgUser;
+
+		//Permission checks.
+		if (!$wgUser->isAllowed('edit_sprites')) {
+			return true;
+		}
 
 		$output->addModules('ext.spriteSheet');
 
@@ -240,13 +245,28 @@ class SpriteSheetHooks {
 			return true;
 		}
 
+		$action = $wgRequest->getVal('sheetAction', false);
+
+		if ($action && $wgRequest->getInt('sheetPreviousId') > 0) {
+			$oldSpriteSheet = self::$spriteSheet->getRevisionByOldId($wgRequest->getInt('sheetPreviousId'));
+		}
+
+		if ($action == 'rollback' && $wgUser->isAllowed('spritesheet_rollback') && $oldSpriteSheet !== false) {
+			//Perform the rollback then redirect to this page with a success message and the editor opened.
+			self::$spriteSheet->setColumns($oldSpriteSheet->getColumns());
+			self::$spriteSheet->setRows($oldSpriteSheet->getRows());
+			self::$spriteSheet->setInset($oldSpriteSheet->getInset());
+			self::$spriteSheet->save();
+
+			$output->redirect(self::$spriteSheet->getTitle()->getFullURL());
+			return true;
+		}
+
 		$spriteNames = self::$spriteSheet->getAllSpriteNames();
 
 		$inputType = (self::$spriteSheet->isLocal() ? 'number' : 'hidden');
 
 		$logLink = Linker::link(SpecialPage::getTitleFor('Log'), wfMessage('sprite_sheet_log')->escaped(), [], ['page' => self::$spriteSheet->getTitle()->getPrefixedText()]);
-
-		$action = $wgRequest->getVal('sheetAction', false);
 
 		$form = "
 		<div id='spritesheet_editor' style='display: none;'>
@@ -254,10 +274,8 @@ class SpriteSheetHooks {
 				<fieldset id='spritesheet_form'>
 					<legend>".wfMessage('sprite_sheet')->escaped()." [{$logLink}]</legend>
 					".(!self::$spriteSheet->isLocal() ? "<pre>".wfMessage('visit_remote_repository_to_edit_sprite_sheet', $imagePage->getDisplayedFile()->getDescriptionUrl())."</pre>" : '');
-		if ($action && $wgRequest->getInt('sheetPreviousId') > 0) {
-			$oldSpriteSheet = self::$spriteSheet->getRevisionByOldId($wgRequest->getInt('sheetPreviousId'));
-			if ($action == 'diff' && $oldSpriteSheet !== false) {
-				$form .= "
+		if ($action == 'diff' && $oldSpriteSheet !== false) {
+			$form .= "
 					<fieldset id='old_spritesheet_form'>
 						<span class='previous_revision'>".wfMessage('previous_values')->escaped()."</span><br/>
 						<label for='old_sprite_columns'>".wfMessage('sprite_columns')->escaped()."</label>
@@ -273,7 +291,6 @@ class SpriteSheetHooks {
 					</fieldset>
 
 					<span class='current_revision'>".wfMessage('current_values')->escaped()."</span><br/>";
-			}
 		}
 
 		$form .= "
