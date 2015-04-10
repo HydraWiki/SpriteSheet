@@ -91,6 +91,9 @@ mw.spriteSheet = {
 		});
 
 		$('#sprite_columns, #sprite_rows, #sprite_inset').on('change keyup', function(event) {
+			if ($(this).attr('readonly')) {
+				return;
+			}
 			if (event.type == 'keyup') {
 				if (event.keyCode >= 48 && event.keyCode <= 57) {
 					mw.spriteSheet.updateSpriteSheet();
@@ -393,7 +396,7 @@ mw.spriteSheet = {
 				action: 'spritesheet',
 				do: 'updateSpriteName',
 				format: 'json',
-				spritesheet_id: spriteData.spritesheet_id,
+				form: $('#spritesheet_editor form fieldset#spritesheet_form').serialize(),
 				spritename_id: spriteData.id,
 				old_sprite_name: spriteData.name,
 				new_sprite_name: newSpriteName
@@ -453,7 +456,7 @@ mw.spriteSheet = {
 				action: 'spritesheet',
 				do: 'deleteSpriteName',
 				format: 'json',
-				spritesheet_id: spriteData.spritesheet_id,
+				form: $('#spritesheet_editor form fieldset#spritesheet_form').serialize(),
 				spritename_id: spriteData.id,
 				sprite_name: spriteData.name
 			}
@@ -511,7 +514,7 @@ mw.spriteSheet = {
 			action: 'spritesheet',
 			do: 'getAllSpriteNames',
 			format: 'json',
-			spritesheet_id: spriteSheetId,
+			form: $('#spritesheet_editor form fieldset#spritesheet_form').serialize(),
 			title: title,
 		};
 

@@ -270,6 +270,7 @@ class SpriteSheetHooks {
 		}
 
 		$disabled = (!self::$spriteSheet->isLocal() || !$canEdit ? " disabled='disabled'" : '');
+		$readOnly = (!self::$spriteSheet->isLocal() || !$canEdit ? " readonly='readonly'" : '');
 
 		$form = "
 		<div id='spritesheet_editor' style='display: none;'>
@@ -298,23 +299,23 @@ class SpriteSheetHooks {
 
 		$form .= "
 					<label for='sprite_columns'>".wfMessage('sprite_columns')->escaped()."</label>
-					<input id='sprite_columns' name='sprite_columns' type='number' min='0'{$disabled} value='".self::$spriteSheet->getColumns()."'/>
+					<input id='sprite_columns' name='sprite_columns' type='number' min='0'{$readOnly} value='".self::$spriteSheet->getColumns()."'/>
 
 					<label for='sprite_rows'>".wfMessage('sprite_rows')->escaped()."</label>
-					<input id='sprite_rows' name='sprite_rows' type='number' min='0'{$disabled} value='".self::$spriteSheet->getRows()."'/>
+					<input id='sprite_rows' name='sprite_rows' type='number' min='0'{$readOnly} value='".self::$spriteSheet->getRows()."'/>
 
 					<label for='sprite_inset'>".wfMessage('sprite_inset')->escaped()."</label>
-					<input id='sprite_inset' name='sprite_inset' type='number' min='0'{$disabled} value='".self::$spriteSheet->getInset()."'/>
+					<input id='sprite_inset' name='sprite_inset' type='number' min='0'{$readOnly} value='".self::$spriteSheet->getInset()."'/>
 
-					<input name='spritesheet_id' type='hidden'{$disabled} value='".self::$spriteSheet->getId()."'/>
-					<input name='page_title' type='hidden'{$disabled} value='".htmlentities(self::$spriteSheet->getTitle()->getPrefixedDBkey(), ENT_QUOTES)."'/>
-					".(self::$spriteSheet->isLocal() ? "<button id='save_sheet' name='save_sheet' type='button'>".wfMessage('save_sheet')->escaped()."</button>" : '')."
+					<input name='spritesheet_id' type='hidden'{$readOnly} value='".self::$spriteSheet->getId()."'/>
+					<input name='page_title' type='hidden'{$readOnly} value='".htmlentities(self::$spriteSheet->getTitle()->getPrefixedDBkey(), ENT_QUOTES)."'/>
+					".(self::$spriteSheet->isLocal() ? "<button id='save_sheet' name='save_sheet'{$disabled} type='button'>".wfMessage('save_sheet')->escaped()."</button>" : '')."
 
 					<pre id='sprite_preview'>".wfMessage('click_grid_for_preview')->escaped()."</pre>";
 		if (self::$spriteSheet->isLocal()) {
 			$form .= "
 					<div id='named_sprite_add' class='named_sprite_popup'>
-						<input id='sprite_name' name='sprite_name'{$disabled} type='text' value=''/>
+						<input id='sprite_name' name='sprite_name'{$readOnly} type='text' value=''/>
 						<button id='save_named_sprite' name='save_named_sprite'{$disabled} type='button'>".wfMessage('save_named_sprite')->escaped()."</button>
 						<a class='close'>&nbsp;</a>
 					</div>";
@@ -331,7 +332,7 @@ class SpriteSheetHooks {
 		if (self::$spriteSheet->isLocal()) {
 			$form .= "
 			<div id='named_sprite_editor' class='named_sprite_popup'>
-				<input id='update_sprite_name' name='update_sprite_name'{$disabled} type='text' value=''/>
+				<input id='update_sprite_name' name='update_sprite_name'{$readOnly} type='text' value=''/>
 				<button id='update_named_sprite' name='update_named_sprite'{$disabled} type='button'>".wfMessage('update_name')->escaped()."</button>
 				<button id='delete_named_sprite' name='delete_named_sprite'{$disabled} type='button'>".wfMessage('delete_name')->escaped()."</button>
 				<a class='close'>&nbsp;</a>

@@ -27,6 +27,7 @@ class SpriteSheetAPI extends ApiBase {
 	private function init() {
 		if (!$this->initialized) {
 			global $wgUser, $wgRequest;
+
 			$this->wgUser		= $wgUser;
 			$this->wgRequest	= $wgRequest;
 
@@ -45,33 +46,71 @@ class SpriteSheetAPI extends ApiBase {
 
 		$this->params = $this->extractRequestParams();
 
-		switch ($this->params['do']) {
-			case 'getSpriteSheet':
-				$response = $this->getSpriteSheet();
-				break;
-			case 'saveSpriteSheet':
-				$response = $this->saveSpriteSheet();
-				break;
-			case 'saveSpriteName':
-				$response = $this->saveSpriteName();
-				break;
-			case 'updateSpriteName':
-				$response = $this->updateSpriteName();
-				break;
-			case 'deleteSpriteName':
-				$response = $this->deleteSpriteName();
-				break;
-			case 'getAllSpriteNames':
-				$response = $this->getAllSpriteNames();
-				break;
-			default:
-				$this->dieUsageMsg(['invaliddo', $this->params['do']]);
-				break;
+		parse_str($this->params['form'], $this->form);
+
+		$this->title = Title::newFromText($this->form['page_title'], NS_FILE);
+		if ($this->title !== null) {
+			$this->spriteSheet = SpriteSheet::newFromTitle($this->title);
+		}
+
+		if (!$this->title || ($this->form['spritesheet_id'] > 0 && $this->spriteSheet !== false && $this->spriteSheet->getId() != $this->form['spritesheet_id'])) {
+			$response = [
+				'success' => false,
+				'message' => wfMessage('ss_api_bad_title')->text()
+			];
+		} else {
+			//These do not require permission checks.
+			switch ($this->params['do']) {
+				case 'getSpriteSheet':
+					$response = $this->getSpriteSheet();
+					break;
+				case 'getAllSpriteNames':
+					$response = $this->getAllSpriteNames();
+					break;
+			}
+
+			if (!$response) {
+				//The following do require permission checks.
+				if (!$this->canEditSprites()) {
+					$response = [
+						'success' => false,
+						'message' => wfMessage('ss_api_no_permission')->text()
+					];
+				} else {
+					switch ($this->params['do']) {
+						case 'saveSpriteSheet':
+							$response = $this->saveSpriteSheet();
+							break;
+						case 'saveSpriteName':
+							$response = $this->saveSpriteName();
+							break;
+						case 'updateSpriteName':
+							$response = $this->updateSpriteName();
+							break;
+						case 'deleteSpriteName':
+							$response = $this->deleteSpriteName();
+							break;
+						default:
+							$this->dieUsageMsg(['invaliddo', $this->params['do']]);
+							break;
+					}
+				}
+			}
 		}
 
 		foreach ($response as $key => $value) {
 			$this->getResult()->addValue(null, $key, $value);
 		}
+	}
+
+	/**
+	 * Can this user edit sprites?
+	 *
+	 * @access	private
+	 * @return	boolean	Can Edit Sprites
+	 */
+	private function canEditSprites() {
+		return $this->wgUser->isAllowed('edit_sprites') && $this->spriteSheet->getTitle()->userCan('edit');
 	}
 
 	/**
@@ -156,25 +195,18 @@ class SpriteSheetAPI extends ApiBase {
 		$success = false;
 		$message = 'ss_api_unknown_error';
 
-		$title = Title::newFromText($this->params['title'], NS_FILE);
-		if ($title !== null) {
-			$spriteSheet = SpriteSheet::newFromTitle($title);
+		if ($this->spriteSheet !== false) {
+			$data = [
+				'title'		=> $this->spriteSheet->getTitle()->getDBkey(),
+				'columns'	=> $this->spriteSheet->getColumns(),
+				'rows'		=> $this->spriteSheet->getRows(),
+				'inset'		=> $this->spriteSheet->getInset()
+			];
 
-			if ($spriteSheet !== false) {
-				$data = [
-					'title'		=> $spriteSheet->getTitle()->getDBkey(),
-					'columns'	=> $spriteSheet->getColumns(),
-					'rows'		=> $spriteSheet->getRows(),
-					'inset'		=> $spriteSheet->getInset()
-				];
-
-				$success = true;
-				$message = 'ss_api_okay';
-			} else {
-				$message = 'ss_api_fatal_error_sprite_sheet_not_found';
-			}
+			$success = true;
+			$message = 'ss_api_okay';
 		} else {
-			$message = 'ss_api_bad_title';
+			$message = 'ss_api_fatal_error_sprite_sheet_not_found';
 		}
 
 		$return = [
@@ -200,35 +232,12 @@ class SpriteSheetAPI extends ApiBase {
 		$message = 'ss_api_unknown_error';
 
 		if ($this->wgRequest->wasPosted()) {
-			parse_str($this->params['form'], $form);
+			if ($this->spriteSheet !== false) {
+				$this->spriteSheet->setColumns($this->form['sprite_columns']);
+				$this->spriteSheet->setRows($this->form['sprite_rows']);
+				$this->spriteSheet->setInset($this->form['sprite_inset']);
 
-			if ($form['spritesheet_id'] > 0) {
-				$spriteSheet = SpriteSheet::newFromId($form['spritesheet_id']);
-			} else {
-				$title = Title::newFromDBKey($form['page_title']);
-				if ($title !== null) {
-					$spriteSheet = SpriteSheet::newFromTitle($title);
-				} else {
-					return [
-						'success' => $success,
-						'message' => wfMessage('ss_api_bad_title')->text()
-					];
-				}
-			}
-
-			if (!$this->wgUser->isAllowed('edit_sprites') || !$title->userCan('edit')) {
-				return [
-					'success' => $success,
-					'message' => wfMessage('ss_api_no_permission')->text()
-				];
-			}
-
-			if ($spriteSheet !== false) {
-				$spriteSheet->setColumns($form['sprite_columns']);
-				$spriteSheet->setRows($form['sprite_rows']);
-				$spriteSheet->setInset($form['sprite_inset']);
-
-				$success = $spriteSheet->save();
+				$success = $this->spriteSheet->save();
 
 				if ($success) {
 					$message = 'ss_api_okay';
@@ -236,7 +245,7 @@ class SpriteSheetAPI extends ApiBase {
 					$message = 'ss_api_fatal_error_saving';
 				}
 			} else {
-				$message = 'ss_api_fatal_error_loading';
+				$message = 'ss_api_fatal_error_sprite_sheet_not_found';
 			}
 		} else {
 			$message = 'ss_api_must_be_posted';
@@ -248,7 +257,7 @@ class SpriteSheetAPI extends ApiBase {
 		];
 
 		if ($success) {
-			$return['spriteSheetId'] = $spriteSheet->getId();
+			$return['spriteSheetId'] = $this->spriteSheet->getId();
 		}
 
 		return $return;
@@ -264,30 +273,11 @@ class SpriteSheetAPI extends ApiBase {
 		$success = false;
 		$message = 'ss_api_unknown_error';
 
-		if (!$this->wgUser->isAllowed('edit_sprites')) {
-			$message = 'ss_api_no_permission';
-			return [
-				'success' => $success,
-				'message' => wfMessage($message)->text()
-			];
-		}
-
 		if ($this->wgRequest->wasPosted()) {
 			$values = @json_decode($this->params['values'], true);
-			parse_str($this->params['form'], $form);
 
-			if ($form['spritesheet_id'] > 0) {
-				$spriteSheet = SpriteSheet::newFromId($form['spritesheet_id']);
-			} else {
-				$title = Title::newFromDBKey($form['page_title']);
-				if ($title !== null) {
-					$spriteSheet = SpriteSheet::newFromTitle($title);
-				} else {
-					$message = 'ss_api_bad_title';
-				}
-			}
-			if ($spriteSheet !== false) {
-				$spriteName = $spriteSheet->getSpriteName($form['sprite_name']);
+			if ($this->spriteSheet !== false) {
+				$spriteName = $this->spriteSheet->getSpriteName($this->form['sprite_name']);
 				$validName = true;
 
 				if (!$spriteName->isNameValid()) {
@@ -298,7 +288,7 @@ class SpriteSheetAPI extends ApiBase {
 				if ($validName) {
 					switch ($this->params['type']) {
 						case 'sprite':
-							if ($spriteSheet->validateSpriteCoordindates($values['xPos'], $values['yPos'])) {
+							if ($this->spriteSheet->validateSpriteCoordindates($values['xPos'], $values['yPos'])) {
 								$spriteName->setValues($values);
 								$spriteName->setType('sprite');
 
@@ -308,7 +298,7 @@ class SpriteSheetAPI extends ApiBase {
 									$log = new LogPage('sprite');
 									$log->addEntry(
 										'sprite',
-										$spriteSheet->getTitle(),
+										$this->spriteSheet->getTitle(),
 										$comment,
 										[$spriteName->getName()],
 										$this->wgUser
@@ -323,7 +313,7 @@ class SpriteSheetAPI extends ApiBase {
 							}
 							break;
 						case 'slice':
-							if ($spriteSheet->validateSlicePercentages($values['xPercent'], $values['yPercent'], $values['widthPercent'], $values['heightPercent'])) {
+							if ($this->spriteSheet->validateSlicePercentages($values['xPercent'], $values['yPercent'], $values['widthPercent'], $values['heightPercent'])) {
 								$spriteName->setValues($values);
 								$spriteName->setType('slice');
 
@@ -333,7 +323,7 @@ class SpriteSheetAPI extends ApiBase {
 									$log = new LogPage('sprite');
 									$log->addEntry(
 										'slice',
-										$spriteSheet->getTitle(),
+										$this->spriteSheet->getTitle(),
 										$comment,
 										[$spriteName->getName()],
 										$this->wgUser
@@ -352,7 +342,7 @@ class SpriteSheetAPI extends ApiBase {
 					}
 				}
 			} else {
-				$message = 'ss_api_fatal_error_loading';
+				$message = 'ss_api_fatal_error_sprite_sheet_not_found';
 			}
 		} else {
 			$message = 'ss_api_must_be_posted';
@@ -370,7 +360,7 @@ class SpriteSheetAPI extends ApiBase {
 				'type'				=> $spriteName->getType(),
 				'values'			=> $spriteName->getValues(),
 				'tag'				=> $spriteName->getParserTag(),
-				'spritesheet_id'	=> $spriteSheet->getId()
+				'spritesheet_id'	=> $this->spriteSheet->getId()
 			];
 		}
 
@@ -387,25 +377,12 @@ class SpriteSheetAPI extends ApiBase {
 		$success = false;
 		$message = 'ss_api_unknown_error';
 
-		if (!$this->wgUser->isAllowed('edit_sprites')) {
-			$message = 'ss_api_no_permission';
-			return [
-				'success' => $success,
-				'message' => wfMessage($message)->text()
-			];
-		}
-
 		if ($this->wgRequest->wasPosted()) {
-			$spriteSheetId = intval($this->params['spritesheet_id']);
 			$spriteNameId = intval($this->params['spritename_id']);
 
-			if ($spriteSheetId > 0) {
-				$spriteSheet = SpriteSheet::newFromId($spriteSheetId);
-			}
-
-			if ($spriteSheet !== false) {
-				$spriteName = $spriteSheet->getSpriteName($this->params['old_sprite_name']);
-				$newSpriteName = $spriteSheet->getSpriteName($this->params['new_sprite_name']);
+			if ($this->spriteSheet !== false) {
+				$spriteName = $this->spriteSheet->getSpriteName($this->params['old_sprite_name']);
+				$newSpriteName = $this->spriteSheet->getSpriteName($this->params['new_sprite_name']);
 				$validName = true;
 
 				if ($newSpriteName->exists() || $spriteName->getId() != $spriteNameId) {
@@ -424,7 +401,7 @@ class SpriteSheetAPI extends ApiBase {
 					$success = $spriteName->save();
 				}
 			} else {
-				$message = 'ss_api_fatal_error_loading';
+				$message = 'ss_api_fatal_error_sprite_sheet_not_found';
 			}
 		} else {
 			$message = 'ss_api_must_be_posted';
@@ -442,7 +419,7 @@ class SpriteSheetAPI extends ApiBase {
 				'type'				=> $spriteName->getType(),
 				'values'			=> $spriteName->getValues(),
 				'tag'				=> $spriteName->getParserTag(),
-				'spritesheet_id'	=> $spriteSheet->getId()
+				'spritesheet_id'	=> $this->spriteSheet->getId()
 			];
 		}
 
@@ -459,24 +436,11 @@ class SpriteSheetAPI extends ApiBase {
 		$success = false;
 		$message = 'ss_api_unknown_error';
 
-		if (!$this->wgUser->isAllowed('edit_sprites')) {
-			$message = 'ss_api_no_permission';
-			return [
-				'success' => $success,
-				'message' => wfMessage($message)->text()
-			];
-		}
-
 		if ($this->wgRequest->wasPosted()) {
-			$spriteSheetId = intval($this->params['spritesheet_id']);
 			$spriteNameId = intval($this->params['spritename_id']);
 
-			if ($spriteSheetId > 0) {
-				$spriteSheet = SpriteSheet::newFromId($spriteSheetId);
-			}
-
-			if ($spriteSheet !== false) {
-				$spriteName = $spriteSheet->getSpriteName($this->params['sprite_name']);
+			if ($this->spriteSheet !== false) {
+				$spriteName = $this->spriteSheet->getSpriteName($this->params['sprite_name']);
 
 				if (!$spriteName->exists() || $spriteName->getId() != $spriteNameId) {
 					$message = 'ss_api_fatal_error_deleting_name';
@@ -488,7 +452,7 @@ class SpriteSheetAPI extends ApiBase {
 					$message = 'ss_api_okay';
 				}
 			} else {
-				$message = 'ss_api_fatal_error_loading';
+				$message = 'ss_api_fatal_error_sprite_sheet_not_found';
 			}
 		} else {
 			$message = 'ss_api_must_be_posted';
@@ -512,27 +476,9 @@ class SpriteSheetAPI extends ApiBase {
 		$success = false;
 		$message = 'ss_api_unknown_error';
 
-		$spriteSheetId = intval($this->params['spritesheet_id']);
-		if ($spriteSheetId > 0) {
-			$spriteSheet = SpriteSheet::newFromId($spriteSheetId);
-		} else {
-			$message = 'ss_api_bad_title';
-		}
-
-		if ($spriteSheetId > 0) {
-			$spriteSheet = SpriteSheet::newFromId($spriteSheetId);
-		} else {
-			$title = Title::newFromDBKey($this->params['title']);
-			if ($title !== null) {
-				$spriteSheet = SpriteSheet::newFromTitle($title);
-			} else {
-				$message = 'ss_api_bad_title';
-			}
-		}
-
 		$data = [];
-		if (!empty($spriteSheet) && $spriteSheet->exists()) {
-			$spriteNames = $spriteSheet->getAllSpriteNames();
+		if ($this->spriteSheet !== false && $this->spriteSheet->exists()) {
+			$spriteNames = $this->spriteSheet->getAllSpriteNames();
 
 			asort($spriteNames);
 
@@ -543,7 +489,7 @@ class SpriteSheetAPI extends ApiBase {
 					'type'				=> $spriteName->getType(),
 					'values'			=> $spriteName->getValues(),
 					'tag'				=> $spriteName->getParserTag(),
-					'spritesheet_id'	=> $spriteSheet->getId()
+					'spritesheet_id'	=> $this->spriteSheet->getId()
 				];
 			}
 
@@ -555,9 +501,12 @@ class SpriteSheetAPI extends ApiBase {
 
 		$return = [
 			'success'	=> $success,
-			'data'		=> $data,
 			'message'	=> wfMessage($message)->text()
 		];
+
+		if ($success) {
+			$return['data'] = $data;
+		}
 
 		return $return;
 	}
