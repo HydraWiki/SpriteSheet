@@ -402,6 +402,7 @@ class SpriteSheetHooks {
 		$updater->addExtensionUpdate(['addTable', 'spritesheet', "{$extDir}/install/sql/spritesheet_table_spritesheet.sql", true]);
 		$updater->addExtensionUpdate(['addTable', 'spritesheet_old', "{$extDir}/install/sql/spritesheet_table_spritesheet_old.sql", true]);
 		$updater->addExtensionUpdate(['addTable', 'spritename', "{$extDir}/install/sql/spritesheet_table_spritename.sql", true]);
+		$updater->addExtensionUpdate(['addTable', 'spritename_old', "{$extDir}/install/sql/spritesheet_table_spritename_old.sql", true]);
 
 		//2015-02-23
 		$updater->addExtensionUpdate(['renameIndex', 'spritename', 'name', 'spritesheet_id_name', false, "{$extDir}/upgrade/sql/spritesheet_upgrade_spritesheet_alter_index_name.sql", true]);
@@ -411,6 +412,9 @@ class SpriteSheetHooks {
 
 		//2015-04-07
 		$updater->addExtensionUpdate(['addField', 'spritesheet', 'edited', "{$extDir}/upgrade/sql/spritesheet_upgrade_spritesheet_add_edited.sql", true]);
+
+		//2015-04-13
+		$updater->addExtensionUpdate(['addField', 'spritename', 'edited', "{$extDir}/upgrade/sql/spritesheet_upgrade_spritename_add_edited.sql", true]);
 
 		return true;
 	}
