@@ -1,1 +1,1 @@
-ALTER TABLE `spritesheet` ADD `edited` INT( 14 ) NOT NULL DEFAULT '0', ADD INDEX ( `edited` );
+ALTER TABLE /*_*/spritesheet ADD `edited` INT( 14 ) NOT NULL DEFAULT '0', ADD INDEX ( `edited` );

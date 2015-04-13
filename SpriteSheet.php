@@ -42,6 +42,7 @@ $wgAutoloadClasses['SpriteSheet']				= "{$extDir}/classes/SpriteSheet.php";
 $wgAutoloadClasses['SpriteSheetRemote']			= "{$extDir}/classes/SpriteSheet.php";
 $wgAutoloadClasses['SpriteName']				= "{$extDir}/classes/SpriteName.php";
 $wgAutoloadClasses['SpriteSheetLogFormatter']	= "{$extDir}/classes/SpriteSheetLogFormatter.php";
+$wgAutoloadClasses['SpriteNameLogFormatter']	= "{$extDir}/classes/SpriteNameLogFormatter.php";
 $wgAutoloadClasses['SpriteSheetAPI']			= "{$extDir}/SpriteSheet.api.php";
 
 $wgHooks['ParserFirstCallInit'][]				= 'SpriteSheetHooks::onParserFirstCallInit';
@@ -57,8 +58,10 @@ $wgLogTypes['sprite']							= 'sprite';
 $wgLogNames['sprite']							= 'sprite_log_name';
 $wgLogHeaders['sprite']							= 'sprite_log_description';
 $wgLogActionsHandlers['sprite/sheet']			= 'SpriteSheetLogFormatter';
-$wgLogActions['sprite/sprite']					= 'sprite_sprite_action';
-$wgLogActions['sprite/slice']					= 'sprite_slice_action';
+$wgLogActionsHandlers['sprite/sprite']			= 'SpriteNameLogFormatter';
+$wgLogActionsHandlers['sprite/sprite-rename']	= 'SpriteNameLogFormatter';
+$wgLogActionsHandlers['sprite/slice']			= 'SpriteNameLogFormatter';
+$wgLogActionsHandlers['sprite/slice-rename']	= 'SpriteNameLogFormatter';
 
 $wgResourceModules['ext.spriteSheet'] = [
 	'localBasePath'	=> __DIR__,

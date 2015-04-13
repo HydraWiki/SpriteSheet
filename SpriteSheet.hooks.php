@@ -415,6 +415,8 @@ class SpriteSheetHooks {
 
 		//2015-04-13
 		$updater->addExtensionUpdate(['addField', 'spritename', 'edited', "{$extDir}/upgrade/sql/spritesheet_upgrade_spritename_add_edited.sql", true]);
+		$updater->addExtensionUpdate(['addField', 'spritename', 'deleted', "{$extDir}/upgrade/sql/spritesheet_upgrade_spritename_add_deleted.sql", true]);
+		$updater->addExtensionUpdate(['addField', 'spritename_old', 'deleted', "{$extDir}/upgrade/sql/spritesheet_upgrade_spritename_old_add_deleted.sql", true]);
 
 		return true;
 	}

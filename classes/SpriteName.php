@@ -145,7 +145,7 @@ class SpriteName {
 						['spritename'],
 						['*'],
 						[
-							'spritesheet_id'	=> $this->spriteSheet->getId(),
+							'spritesheet_id'	=> $this->getSpriteSheet()->getId(),
 							'name' 				=> $this->getName()
 						],
 						__METHOD__
@@ -195,24 +195,10 @@ class SpriteName {
 
 		$this->DB->begin();
 		if ($spriteNameId > 0) {
-			$oldResult = $this->DB->select(
-				['spritename'],
-				['*'],
-				['spritename_id' => $spriteNameId],
-				__METHOD__
-			);
-			$oldRow = $oldResult->fetchRow();
-			if (is_array($oldRow)) {
-				//Sorry.
-				$oldValues = $oldRow['values'];
-				unset($oldRow['values']);
-				$oldRow['`values`'] = $oldValues;
-
-				$this->DB->insert(
-					'spritename_old',
-					$oldRow,
-					__METHOD__
-				);
+			if (!$this->saveOldVersion()) {
+				$this->DB->rollback();
+				throw new MWException(__METHOD__.': Could not save an old version while attempting to save.');
+				return false;
 			}
 
 			//Do the update.
@@ -243,14 +229,20 @@ class SpriteName {
 
 			$extra = [$this->getName()];
 			$oldSpriteName = $this->getPreviousRevision();
+			$type = $this->getType();
 
 			if ($oldSpriteName instanceOf SpriteName && $oldSpriteName->getOldId() !== false) {
 				$extra['spritename_old_id'] = $oldSpriteName->getOldId();
+				if ($oldSpriteName->getName() != $this->getName()) {
+					$type .= "-rename";
+					$extra['old_name'] = $oldSpriteName->getName();
+					$extra['new_name'] = $this->getName();
+				}
 			}
 
 			$log = new LogPage('sprite');
 			$log->addEntry(
-				'sprite',
+				$type,
 				$this->getSpriteSheet()->getTitle(),
 				null,
 				$extra,
@@ -278,22 +270,124 @@ class SpriteName {
 
 		$this->DB->begin();
 		if ($spriteNameId > 0) {
-			$result = $this->DB->delete(
+			if (!$this->saveOldVersion()) {
+				$this->DB->rollback();
+				throw new MWException(__METHOD__.': Could not save an old version while attempting to delete.');
+				return false;
+			}
+
+			//Do the delete.
+			$result = $this->DB->update(
 				'spritename',
+				['deleted' => 1],
 				['spritename_id' => $spriteNameId],
 				__METHOD__
 			);
 		}
 
 		if ($result !== false) {
-			$success = true;
+			global $wgUser;
+
 			$this->DB->commit();
-			unset($this->data['spritename_id']);
+
+			//Enforce sanity on data.
+			$this->data['spritename_id']	= $spriteNameId;
+			$this->data['edited']			= $save['edited'];
+
+			$extra = [$this->getName()];
+			$oldSpriteName = $this->getPreviousRevision();
+			$type = $this->getType();
+
+			if ($oldSpriteName instanceOf SpriteName && $oldSpriteName->getOldId() !== false) {
+				$extra['spritename_old_id'] = $oldSpriteName->getOldId();
+				if ($oldSpriteName->getName() != $this->getName()) {
+					$type .= "-rename";
+					$extra['old_name'] = $oldSpriteName->getName();
+					$extra['new_name'] = $this->getName();
+				}
+			}
+
+			$log = new LogPage('sprite');
+			$log->addEntry(
+				$type,
+				$this->getSpriteSheet()->getTitle(),
+				null,
+				$extra,
+				$wgUser
+			);
+
+			$success = true;
 		} else {
 			$this->DB->rollback();
 		}
 
 		return $success;
+	}
+
+	/**
+	 * Save an old version of this sprite name.
+	 *
+	 * @access	private
+	 * @return	boolean	Success
+	 */
+	private function saveOldVersion() {
+		$success = false;
+
+		$oldResult = $this->DB->select(
+			['spritename'],
+			['*'],
+			['spritename_id' => $this->getId()],
+			__METHOD__
+		);
+		$oldRow = $oldResult->fetchRow();
+		if (is_array($oldRow)) {
+			//Sorry.
+			$oldValues = $oldRow['values'];
+			unset($oldRow['values']);
+			$oldRow['`values`'] = $oldValues;
+
+			$result = $this->DB->insert(
+				'spritename_old',
+				$oldRow,
+				__METHOD__
+			);
+		}
+
+		if ($result !== false) {
+			$success = true;
+		}
+
+		return $success;
+	}
+
+	/**
+	 * Log changes in the logging table.
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function logChanges() {
+		$extra = [$this->getName()];
+		$oldSpriteName = $this->getPreviousRevision();
+		$type = $this->getType();
+
+		if ($oldSpriteName instanceOf SpriteName && $oldSpriteName->getOldId() !== false) {
+			$extra['spritename_old_id'] = $oldSpriteName->getOldId();
+			if ($oldSpriteName->getName() != $this->getName()) {
+				$type .= "-rename";
+				$extra['old_name'] = $oldSpriteName->getName();
+				$extra['new_name'] = $this->getName();
+			}
+		}
+
+		$log = new LogPage('sprite');
+		$log->addEntry(
+			$type,
+			$this->getSpriteSheet()->getTitle(),
+			null,
+			$extra,
+			$wgUser
+		);
 	}
 
 	/**
@@ -558,15 +652,15 @@ class SpriteName {
 
 		if ($previousId === false) {
 			$previousRevision = $this->getPreviousRevision();
-			$arguments['sheetPreviousId'] = $previousRevision->getId();
+			$arguments['spritePreviousId'] = $previousRevision->getId();
 		} else {
-			$arguments['sheetPreviousId'] = intval($previousId);
+			$arguments['spritePreviousId'] = intval($previousId);
 		}
 
-		$links['diff'] = Linker::link($this->getTitle(), wfMessage('diff')->escaped(), [], array_merge($arguments, ['sheetAction' => 'diff']));
+		$links['diff'] = Linker::link($this->getSpriteSheet()->getTitle(), wfMessage('diff')->escaped(), [], array_merge($arguments, ['spriteAction' => 'diff']));
 
 		if ($wgUser->isAllowed('spritesheet_rollback')) {
-			$links['rollback'] = Linker::link($this->getTitle(), wfMessage('rollbacklink')->escaped(), [], array_merge($arguments, ['sheetAction' => 'rollback']));
+			$links['rollback'] = Linker::link($this->getSpriteSheet()->getTitle(), wfMessage('rollbacklink')->escaped(), [], array_merge($arguments, ['spriteAction' => 'rollback']));
 		}
 
 		return $links;

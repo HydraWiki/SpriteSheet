@@ -6,6 +6,7 @@ CREATE TABLE /*_*/spritename_old (
   `type` enum('sprite','slice') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'sprite',
   `values` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `edited` int(14) NOT NULL DEFAULT '0',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`spritename_old_id`),
   KEY `spritename_id` (`spritename_id`),
   KEY `spritesheet_id_name` (`spritesheet_id`,`name`),

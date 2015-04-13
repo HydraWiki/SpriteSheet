@@ -1,7 +1,7 @@
 <?php
 /**
  * SpriteSheet
- * SpriteSheet Log Formatter
+ * SpriteName Log Formatter
  *
  * @author		Alexia E. Smith
  * @license		LGPL v3.0
@@ -10,9 +10,9 @@
  *
  **/
 
-class SpriteSheetLogFormatter extends LogFormatter {
+class SpriteNameLogFormatter extends LogFormatter {
 	/**
-	 * Handle custom log parameters for SpriteSheet class.
+	 * Handle custom log parameters for SpriteName class.
 	 *
 	 * @access	public
 	 * @return	array	Extract and parsed parameters.
@@ -21,14 +21,17 @@ class SpriteSheetLogFormatter extends LogFormatter {
 		$parameters = parent::getMessageParameters();
 
 		$title = $this->entry->getTarget();
+		$type = $this->entry->getSubtype();
 		$spriteSheet = SpriteSheet::newFromTitle($title, true);
 
 		if ($spriteSheet !== false) {
-			$lastRevision = $spriteSheet->getPreviousRevision();
-			//Handle old revision ID.
-			if ($parameters[3] > 0) {
-				$links = $spriteSheet->getRevisionLinks($parameters[3]);
-				$parameters[3] = ['raw' => implode(" | ", $links)];
+			if (!empty($parameters[3])) {
+				$spriteName = $spriteSheet->getSpriteName($parameters[3]);
+
+				if ($spriteName != false && $parameters[4] > 0) {
+					$links = $spriteName->getRevisionLinks($parameters[4]);
+					$parameters[4] = ['raw' => implode(" | ", $links)];
+				}
 			}
 		}
 
