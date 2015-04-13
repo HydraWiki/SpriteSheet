@@ -381,6 +381,12 @@ class SpriteSheetAPI extends ApiBase {
 
 				if ($validName) {
 					$success = $spriteName->save();
+
+					if ($success) {
+						$message = 'ss_api_okay';
+					} else {
+						$message = 'ss_api_fatal_error_saving';
+					}
 				}
 			} else {
 				$message = 'ss_api_fatal_error_sprite_sheet_not_found';

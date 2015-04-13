@@ -189,11 +189,33 @@ class SpriteName {
 			'`spritesheet_id`'	=> $this->getSpriteSheet()->getId(),
 			'`name`'			=> $this->getName(),
 			'`type`'			=> $this->getType(),
-			'`values`'			=> $this->getValues(false)
+			'`values`'			=> $this->getValues(false),
+			'`edited`'			=> time()
 		];
 
 		$this->DB->begin();
 		if ($spriteNameId > 0) {
+			$oldResult = $this->DB->select(
+				['spritename'],
+				['*'],
+				['spritename_id' => $spriteNameId],
+				__METHOD__
+			);
+			$oldRow = $oldResult->fetchRow();
+			if (is_array($oldRow)) {
+				//Sorry.
+				$oldValues = $oldRow['values'];
+				unset($oldRow['values']);
+				$oldRow['`values`'] = $oldValues;
+
+				$this->DB->insert(
+					'spritename_old',
+					$oldRow,
+					__METHOD__
+				);
+			}
+
+			//Do the update.
 			$result = $this->DB->update(
 				'spritename',
 				$save,
@@ -201,6 +223,7 @@ class SpriteName {
 				__METHOD__
 			);
 		} else {
+			//Do the insert.
 			$result = $this->DB->insert(
 				'spritename',
 				$save,
@@ -214,14 +237,23 @@ class SpriteName {
 
 			$this->DB->commit();
 
-			$this->data['spritename_id'] = $spriteNameId;
+			//Enforce sanity on data.
+			$this->data['spritename_id']	= $spriteNameId;
+			$this->data['edited']			= $save['edited'];
+
+			$extra = [$this->getName()];
+			$oldSpriteName = $this->getPreviousRevision();
+
+			if ($oldSpriteName instanceOf SpriteName && $oldSpriteName->getOldId() !== false) {
+				$extra['spritename_old_id'] = $oldSpriteName->getOldId();
+			}
 
 			$log = new LogPage('sprite');
 			$log->addEntry(
 				'sprite',
 				$this->getSpriteSheet()->getTitle(),
 				null,
-				[$this->getName()],
+				$extra,
 				$wgUser
 			);
 
@@ -403,5 +435,140 @@ class SpriteName {
 	 */
 	public function getParserTag() {
 		return "{{#".$this->getType().":".$this->getSpriteSheet()->getTitle()->getPrefixedDBkey()."|".$this->getName()."}}";
+	}
+
+	/**
+	 * Is this an old revision?
+	 *
+	 * @access	public
+	 * @return	boolean	Is Old Revision
+	 */
+	public function isOldRevision() {
+		return (bool) $this->data['spritename_old_id'];
+	}
+
+	/**
+	 * Get the previous revision for this spritename.
+	 *
+	 * @access	public
+	 * @return	mixed	SpriteName or false for no previous revision.
+	 */
+	public function getPreviousRevision() {
+		$where['spritename_id'] = $this->getId();
+		if ($this->isOldRevision()) {
+			$where[] = "spritename_old_id < ".intval($this->data['spritename_old_id']);
+		}
+
+		$oldResult = $this->DB->select(
+			['spritename_old'],
+			['*'],
+			$where,
+			__METHOD__,
+			[
+				'ORDER BY'	=> 'spritename_old_id DESC'
+			]
+		);
+
+		$oldRow = $oldResult->fetchRow();
+
+		$spriteName = false;
+		if (is_array($oldRow)) {
+			$spriteName = SpriteName::newFromRow($oldRow, $this->spriteSheet);
+		}
+
+		return $spriteName;
+	}
+
+	/**
+	 * Get a previous revision for this spritename by its old ID.
+	 *
+	 * @access	public
+	 * @return	mixed	SpriteName or false for no previous revision.
+	 */
+	public function getRevisionByOldId($oldId) {
+		$oldResult = $this->DB->select(
+			['spritename_old'],
+			['*'],
+			[
+				'spritename_old_id'	=> $oldId,
+				'spritename_id'		=> $this->getId()
+			],
+			__METHOD__
+		);
+
+		$oldRow = $oldResult->fetchRow();
+
+		$spriteName = false;
+		if (is_array($oldRow)) {
+			$spriteName = SpriteName::newFromRow($oldRow, $this->spriteSheet);
+		}
+
+		return $spriteName;
+	}
+
+	/**
+	 * Return the old revision ID if this is an old revision.
+	 *
+	 * @access	public
+	 * @return	mixed	Old Revision ID or false if this is the current revision.
+	 */
+	public function getOldId() {
+		if ($this->isOldRevision()) {
+			return $this->data['spritename_old_id'];
+		}
+		return false;
+	}
+
+	/**
+	 * Return the old ID that comes after the supplied old ID.
+	 *
+	 * @access	public
+	 * @param	integer	Old ID
+	 * @return	mixed	Next old ID or false if it is the most current.
+	 */
+	static public function getNextOldId($oldId) {
+		$DB = wfGetDB(DB_MASTER);
+
+		$oldResult = $DB->select(
+			['spritename_old'],
+			['*'],
+			["spritename_old_id > ".intval($oldId)],
+			__METHOD__,
+			[
+				'ORDER BY'	=> 'spritename_old_id ASC'
+			]
+		);
+
+		$oldRow = $oldResult->fetchRow();
+		if (is_array($oldRow)) {
+			return intval($oldRow['spritename_old_id']);
+		}
+		return false;
+	}
+
+	/**
+	 * Return a set of revision links(diff, revert) for the change log.
+	 *
+	 * @access	public
+	 * @param	integer	[Optional] The previous ID to use.  This will automatically populate if not provided.
+	 * @return	array	Links for performing actions against revisions.
+	 */
+	public function getRevisionLinks($previousId = false) {
+		global $wgUser;
+
+		if ($previousId === false) {
+			$previousRevision = $this->getPreviousRevision();
+			$arguments['sheetPreviousId'] = $previousRevision->getId();
+		} else {
+			$arguments['sheetPreviousId'] = intval($previousId);
+		}
+
+		$links['diff'] = Linker::link($this->getTitle(), wfMessage('diff')->escaped(), [], array_merge($arguments, ['sheetAction' => 'diff']));
+
+		if ($wgUser->isAllowed('spritesheet_rollback')) {
+			$links['rollback'] = Linker::link($this->getTitle(), wfMessage('rollbacklink')->escaped(), [], array_merge($arguments, ['sheetAction' => 'rollback']));
+		}
+
+		return $links;
 	}
 }
