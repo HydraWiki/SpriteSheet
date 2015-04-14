@@ -59,8 +59,10 @@ $wgLogNames['sprite']							= 'sprite_log_name';
 $wgLogHeaders['sprite']							= 'sprite_log_description';
 $wgLogActionsHandlers['sprite/sheet']			= 'SpriteSheetLogFormatter';
 $wgLogActionsHandlers['sprite/sprite']			= 'SpriteNameLogFormatter';
+$wgLogActionsHandlers['sprite/sprite-deleted']	= 'SpriteNameLogFormatter';
 $wgLogActionsHandlers['sprite/sprite-rename']	= 'SpriteNameLogFormatter';
 $wgLogActionsHandlers['sprite/slice']			= 'SpriteNameLogFormatter';
+$wgLogActionsHandlers['sprite/slice-deleted']	= 'SpriteNameLogFormatter';
 $wgLogActionsHandlers['sprite/slice-rename']	= 'SpriteNameLogFormatter';
 
 $wgResourceModules['ext.spriteSheet'] = [

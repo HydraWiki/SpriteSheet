@@ -227,27 +227,7 @@ class SpriteName {
 			$this->data['spritename_id']	= $spriteNameId;
 			$this->data['edited']			= $save['edited'];
 
-			$extra = [$this->getName()];
-			$oldSpriteName = $this->getPreviousRevision();
-			$type = $this->getType();
-
-			if ($oldSpriteName instanceOf SpriteName && $oldSpriteName->getOldId() !== false) {
-				$extra['spritename_old_id'] = $oldSpriteName->getOldId();
-				if ($oldSpriteName->getName() != $this->getName()) {
-					$type .= "-rename";
-					$extra['old_name'] = $oldSpriteName->getName();
-					$extra['new_name'] = $this->getName();
-				}
-			}
-
-			$log = new LogPage('sprite');
-			$log->addEntry(
-				$type,
-				$this->getSpriteSheet()->getTitle(),
-				null,
-				$extra,
-				$wgUser
-			);
+			$this->logChanges();
 
 			$success = true;
 		} else {
@@ -270,6 +250,8 @@ class SpriteName {
 
 		$this->DB->begin();
 		if ($spriteNameId > 0) {
+			$this->data['deleted'] = 1;
+
 			if (!$this->saveOldVersion()) {
 				$this->DB->rollback();
 				throw new MWException(__METHOD__.': Could not save an old version while attempting to delete.');
@@ -294,30 +276,11 @@ class SpriteName {
 			$this->data['spritename_id']	= $spriteNameId;
 			$this->data['edited']			= $save['edited'];
 
-			$extra = [$this->getName()];
-			$oldSpriteName = $this->getPreviousRevision();
-			$type = $this->getType();
-
-			if ($oldSpriteName instanceOf SpriteName && $oldSpriteName->getOldId() !== false) {
-				$extra['spritename_old_id'] = $oldSpriteName->getOldId();
-				if ($oldSpriteName->getName() != $this->getName()) {
-					$type .= "-rename";
-					$extra['old_name'] = $oldSpriteName->getName();
-					$extra['new_name'] = $this->getName();
-				}
-			}
-
-			$log = new LogPage('sprite');
-			$log->addEntry(
-				$type,
-				$this->getSpriteSheet()->getTitle(),
-				null,
-				$extra,
-				$wgUser
-			);
+			$this->logChanges();
 
 			$success = true;
 		} else {
+			$this->data['deleted'] = 0;
 			$this->DB->rollback();
 		}
 
@@ -378,6 +341,10 @@ class SpriteName {
 				$extra['old_name'] = $oldSpriteName->getName();
 				$extra['new_name'] = $this->getName();
 			}
+		}
+
+		if ($this->isDeleted()) {
+			$type = $this->getType().'-deleted';
 		}
 
 		$log = new LogPage('sprite');
@@ -532,6 +499,16 @@ class SpriteName {
 	}
 
 	/**
+	 * Is thie sprite name deleted?
+	 *
+	 * @access	public
+	 * @return	boolean	Deleted
+	 */
+	public function isDeleted() {
+		return (bool) $this->data['deleted'];
+	}
+
+	/**
 	 * Is this an old revision?
 	 *
 	 * @access	public
@@ -645,21 +622,20 @@ class SpriteName {
 	 *
 	 * @access	public
 	 * @param	integer	[Optional] The previous ID to use.  This will automatically populate if not provided.
-	 * @return	array	Links for performing actions against revisions.
+	 * @return	mixed	Array of links for performing actions against revisions.  Returns false if none are created.
 	 */
 	public function getRevisionLinks($previousId = false) {
 		global $wgUser;
 
-		if ($previousId === false) {
-			$previousRevision = $this->getPreviousRevision();
-			$arguments['spritePreviousId'] = $previousRevision->getId();
-		} else {
-			$arguments['spritePreviousId'] = intval($previousId);
-		}
-
-		$links['diff'] = Linker::link($this->getSpriteSheet()->getTitle(), wfMessage('diff')->escaped(), [], array_merge($arguments, ['spriteAction' => 'diff']));
-
+		$links = false;
 		if ($wgUser->isAllowed('spritesheet_rollback')) {
+			if ($previousId === false) {
+				$previousRevision = $this->getPreviousRevision();
+				$arguments['spritePreviousId'] = $previousRevision->getId();
+			} else {
+				$arguments['spritePreviousId'] = intval($previousId);
+			}
+
 			$links['rollback'] = Linker::link($this->getSpriteSheet()->getTitle(), wfMessage('rollbacklink')->escaped(), [], array_merge($arguments, ['spriteAction' => 'rollback']));
 		}
 

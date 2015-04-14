@@ -30,7 +30,14 @@ class SpriteNameLogFormatter extends LogFormatter {
 
 				if ($spriteName != false && $parameters[4] > 0) {
 					$links = $spriteName->getRevisionLinks($parameters[4]);
-					$parameters[4] = ['raw' => implode(" | ", $links)];
+					if ($links !== false) {
+						$parameters[4] = ['raw' => " (".implode(" | ", $links).")"];
+					} else {
+						//Set this to blank because otherwise sprintf() will later just use the last item in the array anyway.
+						$parameters[4] = '';
+					}
+				} else {
+					$parameters[4] = '';
 				}
 			}
 		}
