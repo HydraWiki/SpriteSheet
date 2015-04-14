@@ -13,12 +13,13 @@
 /******************************************/
 /* Credits								  */
 /******************************************/
+define('SPRITESHEET_VERSION', '1.1.0');
 $credits = [
 	'path'				=> __FILE__,
 	'name'				=> 'SpriteSheet',
 	'author'			=> ['Curse Inc. Wiki Platform Team', 'Alexia E. Smith'],
 	'descriptionmsg'	=> 'spritesheet_description',
-	'version'			=> '1.1'
+	'version'			=> SPRITESHEET_VERSION
 ];
 $wgExtensionCredits['other'][] = $credits;
 

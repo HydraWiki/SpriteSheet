@@ -39,12 +39,13 @@ pre#sprite_preview {
 	min-height: 1em;
 }
 
-.sprite {
+div.sprite {
+	display: inline-block;
 	overflow: hidden;
 	position: relative;
 }
 
-	.sprite > img {
+	div.sprite > img {
 		position: absolute;
 	}
 

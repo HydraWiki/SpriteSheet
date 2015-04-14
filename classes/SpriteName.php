@@ -385,7 +385,7 @@ class SpriteName {
 	 * @return	boolean
 	 */
 	public function exists() {
-		return ($this->data['spritename_id'] > 0 && $this->isLoaded);
+		return ($this->data['spritename_id'] > 0 && !$this->isDeleted() && $this->isLoaded);
 	}
 
 	/**

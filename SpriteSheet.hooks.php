@@ -72,16 +72,16 @@ class SpriteSheetHooks {
 
 			if (!$spriteSheet->getId() || !$spriteSheet->getColumns() || !$spriteSheet->getRows()) {
 				//Either a sprite sheet does not exist or has invalid values.
-				return "<div class='errorbox'>".wfMessage('no_sprite_sheet_defined', $title->getPrefixedText())->text()."</div>";
+				return self::makeError('no_sprite_sheet_defined', [$title->getPrefixedText()]);
 			}
 
 			if ($namedMode) {
 				$spriteName = $spriteSheet->getSpriteName($rawSpriteName);
 				if (!$spriteName->exists()) {
-					return "<div class='errorbox'>".wfMessage('could_not_find_named_sprite', $file, $rawSpriteName)->text()."</div>";
+					return self::makeError('could_not_find_named_sprite', [$file, $rawSpriteName]);
 				}
 				if ($spriteName->getType() != 'sprite') {
-					return "<div class='errorbox'>".wfMessage('wrong_named_sprite_slice')->text()."</div>";
+					return self::makeError('wrong_named_sprite_slice');
 				}
 
 				$html = $spriteSheet->getSpriteFromName($spriteName->getName(), $thumbWidth);
@@ -89,8 +89,10 @@ class SpriteSheetHooks {
 				$html = $spriteSheet->getSpriteAtCoordinates($column, $row, $thumbWidth);
 			}
 		} else {
-			return "<div class='errorbox'>".wfMessage('could_not_find_title', $file)->text()."</div>";
+			return self::makeError('could_not_find_title', [$file]);
 		}
+
+		$parser->getOutput()->addModules('ext.spriteSheet');
 
 		return [
 			$html,
@@ -161,16 +163,18 @@ class SpriteSheetHooks {
 				if ($namedMode) {
 					$sliceName = $spriteSheet->getSpriteName($rawSliceName);
 					if (!$sliceName->exists()) {
-						return "<div class='errorbox'>".wfMessage('could_not_find_named_slice', $file, $rawSliceName)->text()."</div>";
+						return self::makeError('could_not_find_named_slice', [$file, $rawSliceName]);
 					}
 					if ($sliceName->getType() != 'slice') {
-						return "<div class='errorbox'>".wfMessage('wrong_named_sprite_slice')->text()."</div>";
+						return self::makeError('wrong_named_sprite_slice');
 					}
 
 					$html = $spriteSheet->getSliceFromName($sliceName->getName(), $thumbWidth, $pixelMode);
 				} else {
 					$html = $spriteSheet->getSlice($xPercent, $yPercent, $widthPercent, $heightPercent, $thumbWidth, $pixelMode);
 				}
+
+				$parser->getOutput()->addModules('ext.spriteSheet');
 
 				return [
 					$html,
@@ -180,7 +184,7 @@ class SpriteSheetHooks {
 			}
 		}
 
-		return "<div class='errorbox'>".wfMessage('could_not_find_title', $file)->text()."</div>";
+		return self::makeError('could_not_find_title', [$file]);
 	}
 
 	/**
@@ -201,6 +205,22 @@ class SpriteSheetHooks {
 			return $wikiText;
 		}
 		return $output;
+	}
+
+	/**
+	 * Make a standard error box.
+	 *
+	 * @access	private
+	 * @param	string	Language String Message
+	 * @param	array	[Optional] Array of extra parameters.
+	 * @return	string	HTML Error
+	 */
+	static private function makeError($message, $parameters = []) {
+		return "
+		<div class='errorbox'>
+			<strong>SpriteSheet ".SPRITESHEET_VERSION."</strong><br/>
+			".wfMessage($message, $parameters)->text()."
+		</div>";
 	}
 
 	/**
