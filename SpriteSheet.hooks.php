@@ -19,6 +19,13 @@ class SpriteSheetHooks {
 	static private $spriteSheet = null;
 
 	/**
+	 * Old SpriteSheet Object
+	 *
+	 * @var		object
+	 */
+	static private $oldSpriteSheet = null;
+
+	/**
 	 * Sets up this extension's parser functions.
 	 *
 	 * @access	public
@@ -242,24 +249,20 @@ class SpriteSheetHooks {
 
 		$action = $wgRequest->getVal('sheetAction', false);
 
-		if ($action && $wgRequest->getInt('sheetPreviousId') > 0) {
-			$oldSpriteSheet = self::$spriteSheet->getRevisionByOldId($wgRequest->getInt('sheetPreviousId'));
+		if (($action == 'diff' || $action == 'rollback') && $wgRequest->getInt('sheetPreviousId') > 0) {
+			self::$oldSpriteSheet = self::$spriteSheet->getRevisionByOldId($wgRequest->getInt('sheetPreviousId'));
 		}
 
-		if ($action == 'rollback' && $wgUser->isAllowed('spritesheet_rollback') && $oldSpriteSheet !== false) {
+		if ($action == 'rollback' && $wgUser->isAllowed('spritesheet_rollback') && self::$oldSpriteSheet !== false) {
 			//Perform the rollback then redirect to this page with a success message and the editor opened.
-			self::$spriteSheet->setColumns($oldSpriteSheet->getColumns());
-			self::$spriteSheet->setRows($oldSpriteSheet->getRows());
-			self::$spriteSheet->setInset($oldSpriteSheet->getInset());
+			self::$spriteSheet->setColumns(self::$oldSpriteSheet->getColumns());
+			self::$spriteSheet->setRows(self::$oldSpriteSheet->getRows());
+			self::$spriteSheet->setInset(self::$oldSpriteSheet->getInset());
 			self::$spriteSheet->save();
 
 			$output->redirect(self::$spriteSheet->getTitle()->getFullURL());
 			return true;
 		}
-
-		$spriteNames = self::$spriteSheet->getAllSpriteNames();
-
-		$inputType = (self::$spriteSheet->isLocal() ? 'number' : 'hidden');
 
 		$logLink = Linker::link(SpecialPage::getTitleFor('Log'), wfMessage('sprite_sheet_log')->escaped(), [], ['page' => self::$spriteSheet->getTitle()->getPrefixedText()]);
 
@@ -272,74 +275,8 @@ class SpriteSheetHooks {
 		$disabled = (!self::$spriteSheet->isLocal() || !$canEdit ? " disabled='disabled'" : '');
 		$readOnly = (!self::$spriteSheet->isLocal() || !$canEdit ? " readonly='readonly'" : '');
 
-		$form = "
-		<div id='spritesheet_editor' style='display: none;'>
-			<form>
-				<fieldset id='spritesheet_form'>
-					<legend>".wfMessage('sprite_sheet')->escaped()." [{$logLink}]</legend>
-					".(!self::$spriteSheet->isLocal() ? "<pre>".wfMessage('visit_remote_repository_to_edit_sprite_sheet', $imagePage->getDisplayedFile()->getDescriptionUrl())."</pre>" : '');
-		if ($action == 'diff' && $oldSpriteSheet !== false) {
-			$form .= "
-					<fieldset id='old_spritesheet_form'>
-						<span class='previous_revision'>".wfMessage('previous_values')->escaped()."</span><br/>
-						<label for='old_sprite_columns'>".wfMessage('sprite_columns')->escaped()."</label>
-						<input id='old_sprite_columns' name='old_sprite_columns' type='number' min='0' disabled='disabled' value='".$oldSpriteSheet->getColumns()."'/>
-
-						<label for='old_sprite_rows'>".wfMessage('sprite_rows')->escaped()."</label>
-						<input id='old_sprite_rows' name='old_sprite_rows' type='number' min='0' disabled='disabled' value='".$oldSpriteSheet->getRows()."'/>
-
-						<label for='old_sprite_inset'>".wfMessage('sprite_inset')->escaped()."</label>
-						<input id='old_sprite_inset' name='old_sprite_inset' type='number' min='0' disabled='disabled' value='".$oldSpriteSheet->getInset()."'/>
-
-						<input name='old_spritesheet_id' type='hidden' disabled='disabled' value='".$oldSpriteSheet->getOldId()."'/>
-					</fieldset>
-
-					<span class='current_revision'>".wfMessage('current_values')->escaped()."</span><br/>";
-		}
-
-		$form .= "
-					<label for='sprite_columns'>".wfMessage('sprite_columns')->escaped()."</label>
-					<input id='sprite_columns' name='sprite_columns' type='number' min='0'{$readOnly} value='".self::$spriteSheet->getColumns()."'/>
-
-					<label for='sprite_rows'>".wfMessage('sprite_rows')->escaped()."</label>
-					<input id='sprite_rows' name='sprite_rows' type='number' min='0'{$readOnly} value='".self::$spriteSheet->getRows()."'/>
-
-					<label for='sprite_inset'>".wfMessage('sprite_inset')->escaped()."</label>
-					<input id='sprite_inset' name='sprite_inset' type='number' min='0'{$readOnly} value='".self::$spriteSheet->getInset()."'/>
-
-					<input name='spritesheet_id' type='hidden'{$readOnly} value='".self::$spriteSheet->getId()."'/>
-					<input name='page_title' type='hidden'{$readOnly} value='".htmlentities(self::$spriteSheet->getTitle()->getPrefixedDBkey(), ENT_QUOTES)."'/>
-					".(self::$spriteSheet->isLocal() ? "<button id='save_sheet' name='save_sheet'{$disabled} type='button'>".wfMessage('save_sheet')->escaped()."</button>" : '')."
-
-					<pre id='sprite_preview'>".wfMessage('click_grid_for_preview')->escaped()."</pre>";
-		if (self::$spriteSheet->isLocal()) {
-			$form .= "
-					<div id='named_sprite_add' class='named_sprite_popup'>
-						<input id='sprite_name' name='sprite_name'{$readOnly} type='text' value=''/>
-						<button id='save_named_sprite' name='save_named_sprite'{$disabled} type='button'>".wfMessage('save_named_sprite')->escaped()."</button>
-						<a class='close'>&nbsp;</a>
-					</div>";
-		} else {
-			$form .= "
-					<input name='isRemote' type='hidden' value='1'/>
-					<input name='remoteApiUrl' type='hidden' value='".$imagePage->getDisplayedFile()->getRepo()->getApiUrl()."'/>";
-		}
-		$form .= "
-				</fieldset>
-			</form>
-			<button id='show_named_sprites' name='show_named_sprites' type='button'>".wfMessage('show_named_sprites')->escaped()."</button>
-			<div id='named_sprites'></div>";
-		if (self::$spriteSheet->isLocal()) {
-			$form .= "
-			<div id='named_sprite_editor' class='named_sprite_popup'>
-				<input id='update_sprite_name' name='update_sprite_name'{$readOnly} type='text' value=''/>
-				<button id='update_named_sprite' name='update_named_sprite'{$disabled} type='button'>".wfMessage('update_name')->escaped()."</button>
-				<button id='delete_named_sprite' name='delete_named_sprite'{$disabled} type='button'>".wfMessage('delete_name')->escaped()."</button>
-				<a class='close'>&nbsp;</a>
-			</div>";
-		}
-		$form .= "
-		</div>";
+		$templates = new TemplateSpriteSheetEditor();
+		$form = $templates->spriteSheetForm($imagePage, self::$spriteSheet, self::$oldSpriteSheet, $logLink, $disabled, $readOnly);
 
 		$output->addHtml($form);
 

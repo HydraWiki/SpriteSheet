@@ -44,6 +44,7 @@ $wgAutoloadClasses['SpriteName']				= "{$extDir}/classes/SpriteName.php";
 $wgAutoloadClasses['SpriteSheetLogFormatter']	= "{$extDir}/classes/SpriteSheetLogFormatter.php";
 $wgAutoloadClasses['SpriteNameLogFormatter']	= "{$extDir}/classes/SpriteNameLogFormatter.php";
 $wgAutoloadClasses['SpriteSheetAPI']			= "{$extDir}/SpriteSheet.api.php";
+$wgAutoloadClasses['TemplateSpriteSheetEditor']	= "{$extDir}/templates/TemplateSpriteSheetEditor.php";
 
 $wgHooks['ParserFirstCallInit'][]				= 'SpriteSheetHooks::onParserFirstCallInit';
 $wgHooks['ImagePageShowTOC'][]					= 'SpriteSheetHooks::onImagePageShowTOC';

@@ -590,7 +590,9 @@ mw.spriteSheet = {
 			list = $("<ul>");
 
 			$.each(this.spriteNames, function(spriteName, data) {
-				$(list).append(mw.spriteSheet.formatSpriteNameListItem(data));
+				if (data.deleted != true) {
+					$(list).append(mw.spriteSheet.formatSpriteNameListItem(data));
+				}
 			});
 			$("#named_sprites").html(list);
 

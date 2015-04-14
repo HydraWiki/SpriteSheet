@@ -524,7 +524,7 @@ class SpriteSheet {
 			['spritename'],
 			['*'],
 			[
-				'spritesheet_id'	=> $this->getId(),
+				'spritesheet_id'	=> $this->getId()
 			],
 			__METHOD__
 		);

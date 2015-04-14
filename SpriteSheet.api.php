@@ -477,7 +477,8 @@ class SpriteSheetAPI extends ApiBase {
 					'type'				=> $spriteName->getType(),
 					'values'			=> $spriteName->getValues(),
 					'tag'				=> $spriteName->getParserTag(),
-					'spritesheet_id'	=> $this->spriteSheet->getId()
+					'spritesheet_id'	=> $this->spriteSheet->getId(),
+					'deleted'			=> $spriteName->isDeleted()
 				];
 			}
 
