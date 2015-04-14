@@ -334,8 +334,8 @@ class SpriteName {
 		$oldSpriteName = $this->getPreviousRevision();
 		$type = $this->getType();
 
-		if ($oldSpriteName instanceOf SpriteName && $oldSpriteName->getOldId() !== false) {
-			$extra['spritename_rev_id'] = $oldSpriteName->getOldId();
+		if ($oldSpriteName instanceOf SpriteName && $oldSpriteName->getRevisionId() !== false) {
+			$extra['spritename_rev_id'] = $oldSpriteName->getRevisionId();
 			if ($oldSpriteName->getName() != $this->getName()) {
 				$type .= "-rename";
 				$extra['old_name'] = $oldSpriteName->getName();
@@ -526,7 +526,7 @@ class SpriteName {
 	 */
 	public function getPreviousRevision() {
 		$where['spritename_id'] = $this->getId();
-		if ($this->isOldRevision()) {
+		if ($this->isRevision()) {
 			$where[] = "spritename_rev_id < ".intval($this->data['spritename_rev_id']);
 		}
 
