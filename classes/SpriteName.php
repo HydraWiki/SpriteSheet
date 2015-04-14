@@ -296,22 +296,22 @@ class SpriteName {
 	private function saveOldVersion() {
 		$success = false;
 
-		$oldResult = $this->DB->select(
+		$revResult = $this->DB->select(
 			['spritename'],
 			['*'],
 			['spritename_id' => $this->getId()],
 			__METHOD__
 		);
-		$oldRow = $oldResult->fetchRow();
-		if (is_array($oldRow)) {
+		$revRow = $revResult->fetchRow();
+		if (is_array($revRow)) {
 			//Sorry.
-			$oldValues = $oldRow['values'];
-			unset($oldRow['values']);
-			$oldRow['`values`'] = $oldValues;
+			$oldValues = $revRow['values'];
+			unset($revRow['values']);
+			$revRow['`values`'] = $oldValues;
 
 			$result = $this->DB->insert(
-				'spritename_old',
-				$oldRow,
+				'spritename_rev',
+				$revRow,
 				__METHOD__
 			);
 		}
@@ -335,7 +335,7 @@ class SpriteName {
 		$type = $this->getType();
 
 		if ($oldSpriteName instanceOf SpriteName && $oldSpriteName->getOldId() !== false) {
-			$extra['spritename_old_id'] = $oldSpriteName->getOldId();
+			$extra['spritename_rev_id'] = $oldSpriteName->getOldId();
 			if ($oldSpriteName->getName() != $this->getName()) {
 				$type .= "-rename";
 				$extra['old_name'] = $oldSpriteName->getName();
@@ -512,10 +512,10 @@ class SpriteName {
 	 * Is this an old revision?
 	 *
 	 * @access	public
-	 * @return	boolean	Is Old Revision
+	 * @return	boolean	Is an old revision.
 	 */
-	public function isOldRevision() {
-		return (bool) $this->data['spritename_old_id'];
+	public function isRevision() {
+		return (bool) $this->data['spritename_rev_id'];
 	}
 
 	/**
@@ -527,51 +527,51 @@ class SpriteName {
 	public function getPreviousRevision() {
 		$where['spritename_id'] = $this->getId();
 		if ($this->isOldRevision()) {
-			$where[] = "spritename_old_id < ".intval($this->data['spritename_old_id']);
+			$where[] = "spritename_rev_id < ".intval($this->data['spritename_rev_id']);
 		}
 
-		$oldResult = $this->DB->select(
-			['spritename_old'],
+		$revResult = $this->DB->select(
+			['spritename_rev'],
 			['*'],
 			$where,
 			__METHOD__,
 			[
-				'ORDER BY'	=> 'spritename_old_id DESC'
+				'ORDER BY'	=> 'spritename_rev_id DESC'
 			]
 		);
 
-		$oldRow = $oldResult->fetchRow();
+		$revRow = $revResult->fetchRow();
 
 		$spriteName = false;
-		if (is_array($oldRow)) {
-			$spriteName = SpriteName::newFromRow($oldRow, $this->spriteSheet);
+		if (is_array($revRow)) {
+			$spriteName = SpriteName::newFromRow($revRow, $this->spriteSheet);
 		}
 
 		return $spriteName;
 	}
 
 	/**
-	 * Get a previous revision for this spritename by its old ID.
+	 * Get a previous revision for this spritename by its revision ID.
 	 *
 	 * @access	public
 	 * @return	mixed	SpriteName or false for no previous revision.
 	 */
-	public function getRevisionByOldId($oldId) {
-		$oldResult = $this->DB->select(
-			['spritename_old'],
+	static public function loadFromRevisionId($revisionId) {
+		$revResult = $this->DB->select(
+			['spritename_rev'],
 			['*'],
 			[
-				'spritename_old_id'	=> $oldId,
+				'spritename_rev_id'	=> $revisionId,
 				'spritename_id'		=> $this->getId()
 			],
 			__METHOD__
 		);
 
-		$oldRow = $oldResult->fetchRow();
+		$revRow = $revResult->fetchRow();
 
 		$spriteName = false;
-		if (is_array($oldRow)) {
-			$spriteName = SpriteName::newFromRow($oldRow, $this->spriteSheet);
+		if (is_array($revRow)) {
+			$spriteName = SpriteName::newFromRow($revRow, $this->spriteSheet);
 		}
 
 		return $spriteName;
@@ -581,38 +581,38 @@ class SpriteName {
 	 * Return the old revision ID if this is an old revision.
 	 *
 	 * @access	public
-	 * @return	mixed	Old Revision ID or false if this is the current revision.
+	 * @return	mixed	Revision ID or false if this is the current revision.
 	 */
-	public function getOldId() {
-		if ($this->isOldRevision()) {
-			return $this->data['spritename_old_id'];
+	public function getRevisionId() {
+		if ($this->isRevision()) {
+			return $this->data['spritename_rev_id'];
 		}
 		return false;
 	}
 
 	/**
-	 * Return the old ID that comes after the supplied old ID.
+	 * Return the revision ID that comes after the supplied revision ID.
 	 *
 	 * @access	public
 	 * @param	integer	Old ID
-	 * @return	mixed	Next old ID or false if it is the most current.
+	 * @return	mixed	Next revision ID or false if it is not an old revision.
 	 */
-	static public function getNextOldId($oldId) {
+	static public function getNextRevisionId($revisionId) {
 		$DB = wfGetDB(DB_MASTER);
 
-		$oldResult = $DB->select(
-			['spritename_old'],
+		$revResult = $DB->select(
+			['spritename_rev'],
 			['*'],
-			["spritename_old_id > ".intval($oldId)],
+			["spritename_rev_id > ".intval($revisionId)],
 			__METHOD__,
 			[
-				'ORDER BY'	=> 'spritename_old_id ASC'
+				'ORDER BY'	=> 'spritename_rev_id ASC'
 			]
 		);
 
-		$oldRow = $oldResult->fetchRow();
-		if (is_array($oldRow)) {
-			return intval($oldRow['spritename_old_id']);
+		$revRow = $revResult->fetchRow();
+		if (is_array($revRow)) {
+			return intval($revRow['spritename_rev_id']);
 		}
 		return false;
 	}
@@ -636,7 +636,7 @@ class SpriteName {
 				$arguments['spritePreviousId'] = intval($previousId);
 			}
 
-			$links['rollback'] = Linker::link($this->getSpriteSheet()->getTitle(), wfMessage('rollbacklink')->escaped(), [], array_merge($arguments, ['spriteAction' => 'rollback']));
+			$links['rollback'] = Linker::link($this->getSpriteSheet()->getTitle(), wfMessage('rollbacklink')->escaped(), [], array_merge($arguments, ['sheetAction' => 'rollback']));
 		}
 
 		return $links;

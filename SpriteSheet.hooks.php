@@ -267,23 +267,6 @@ class SpriteSheetHooks {
 			return true;
 		}
 
-		$action = $wgRequest->getVal('sheetAction', false);
-
-		if (($action == 'diff' || $action == 'rollback') && $wgRequest->getInt('sheetPreviousId') > 0) {
-			self::$oldSpriteSheet = self::$spriteSheet->getRevisionByOldId($wgRequest->getInt('sheetPreviousId'));
-		}
-
-		if ($action == 'rollback' && $wgUser->isAllowed('spritesheet_rollback') && self::$oldSpriteSheet !== false) {
-			//Perform the rollback then redirect to this page with a success message and the editor opened.
-			self::$spriteSheet->setColumns(self::$oldSpriteSheet->getColumns());
-			self::$spriteSheet->setRows(self::$oldSpriteSheet->getRows());
-			self::$spriteSheet->setInset(self::$oldSpriteSheet->getInset());
-			self::$spriteSheet->save();
-
-			$output->redirect(self::$spriteSheet->getTitle()->getFullURL());
-			return true;
-		}
-
 		$logLink = Linker::link(SpecialPage::getTitleFor('Log'), wfMessage('sprite_sheet_log')->escaped(), [], ['page' => self::$spriteSheet->getTitle()->getPrefixedText()]);
 
 		//Permission checks.
@@ -301,6 +284,36 @@ class SpriteSheetHooks {
 		$output->addHtml($form);
 
 		return true;
+	}
+
+	/**
+	 * Function Documentation
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function checkAndDoRollbacks() {
+		$action = $wgRequest->getVal('sheetAction', false);
+
+		if (($action == 'diff' || $action == 'rollback')) {
+			if ($wgRequest->getInt('sheetPreviousId') > 0) {
+				self::$oldSpriteSheet = self::$spriteSheet->getRevisionByOldId($wgRequest->getInt('sheetPreviousId'));
+			}
+			if ($wgRequest->getInt('spritePreviousId') > 0) {
+				self::$oldSpriteSheet = self::$spriteSheet->getRevisionByOldId($wgRequest->getInt('sheetPreviousId'));
+			}
+		}
+
+		if ($action == 'rollback' && $wgUser->isAllowed('spritesheet_rollback') && self::$oldSpriteSheet !== false) {
+			//Perform the rollback then redirect to this page with a success message and the editor opened.
+			self::$spriteSheet->setColumns(self::$oldSpriteSheet->getColumns());
+			self::$spriteSheet->setRows(self::$oldSpriteSheet->getRows());
+			self::$spriteSheet->setInset(self::$oldSpriteSheet->getInset());
+			self::$spriteSheet->save();
+
+			$output->redirect(self::$spriteSheet->getTitle()->getFullURL());
+			return true;
+		}
 	}
 
 	/**
@@ -359,7 +372,7 @@ class SpriteSheetHooks {
 		$updater->addExtensionUpdate(['addTable', 'spritesheet', "{$extDir}/install/sql/spritesheet_table_spritesheet.sql", true]);
 		$updater->addExtensionUpdate(['addTable', 'spritesheet_old', "{$extDir}/install/sql/spritesheet_table_spritesheet_old.sql", true]);
 		$updater->addExtensionUpdate(['addTable', 'spritename', "{$extDir}/install/sql/spritesheet_table_spritename.sql", true]);
-		$updater->addExtensionUpdate(['addTable', 'spritename_old', "{$extDir}/install/sql/spritesheet_table_spritename_old.sql", true]);
+		$updater->addExtensionUpdate(['addTable', 'spritename_rev', "{$extDir}/install/sql/spritesheet_table_spritename_rev.sql", true]);
 
 		//2015-02-23
 		$updater->addExtensionUpdate(['renameIndex', 'spritename', 'name', 'spritesheet_id_name', false, "{$extDir}/upgrade/sql/spritesheet_upgrade_spritesheet_alter_index_name.sql", true]);
@@ -373,7 +386,7 @@ class SpriteSheetHooks {
 		//2015-04-13
 		$updater->addExtensionUpdate(['addField', 'spritename', 'edited', "{$extDir}/upgrade/sql/spritesheet_upgrade_spritename_add_edited.sql", true]);
 		$updater->addExtensionUpdate(['addField', 'spritename', 'deleted', "{$extDir}/upgrade/sql/spritesheet_upgrade_spritename_add_deleted.sql", true]);
-		$updater->addExtensionUpdate(['addField', 'spritename_old', 'deleted', "{$extDir}/upgrade/sql/spritesheet_upgrade_spritename_old_add_deleted.sql", true]);
+		$updater->addExtensionUpdate(['addField', 'spritename_rev', 'deleted', "{$extDir}/upgrade/sql/spritesheet_upgrade_spritename_rev_add_deleted.sql", true]);
 
 		return true;
 	}
