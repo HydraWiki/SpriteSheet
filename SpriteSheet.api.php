@@ -433,7 +433,8 @@ class SpriteSheetAPI extends ApiBase {
 				if (!$spriteName->exists() || $spriteName->getId() != $spriteNameId) {
 					$message = 'ss_api_fatal_error_deleting_name';
 				} else {
-					$success = $spriteName->delete();
+					$spriteName->setDeleted();
+					$success = $spriteName->save();
 				}
 
 				if ($success) {

@@ -251,7 +251,7 @@ class SpriteSheetHooks {
 	 * @return	boolean True
 	 */
 	static public function onImageOpenShowImageInlineBefore(ImagePage $imagePage, OutputPage $output) {
-		global $wgRequest, $wgUser;
+		global $wgUser;
 
 		$output->addModules('ext.spriteSheet');
 
@@ -267,7 +267,7 @@ class SpriteSheetHooks {
 			return true;
 		}
 
-		if ($this->checkAndDoRollbacks()) {
+		if (self::checkAndDoRollbacks()) {
 			$output->redirect(self::$spriteSheet->getTitle()->getFullURL());
 			return true;
 		}
@@ -297,7 +297,9 @@ class SpriteSheetHooks {
 	 * @access	private
 	 * @return	boolean	If rollbacks were performed.
 	 */
-	private function checkAndDoRollbacks() {
+	static private function checkAndDoRollbacks() {
+		global $wgRequest, $wgUser;
+
 		$action = $wgRequest->getVal('sheetAction', false);
 
 		if (($action == 'diff' || $action == 'rollback')) {
@@ -310,15 +312,26 @@ class SpriteSheetHooks {
 					self::$spriteSheet->setColumns(self::$oldSpriteSheet->getColumns());
 					self::$spriteSheet->setRows(self::$oldSpriteSheet->getRows());
 					self::$spriteSheet->setInset(self::$oldSpriteSheet->getInset());
-					self::$spriteSheet->save();
 
-					return true;
+					return self::$spriteSheet->save();
 				}
 			}
 
 			//Handle individual sprite roll backs.
 			if ($wgRequest->getInt('spritePreviousId') > 0) {
-				self::$oldSpriteSheet = self::$spriteSheet->getRevisionById($wgRequest->getInt('sheetPreviousId'));
+				$oldSpriteName = SpriteName::newFromRevisionId($wgRequest->getInt('spritePreviousId'));
+
+				if ($action == 'rollback' && $wgUser->isAllowed('spritesheet_rollback') && $oldSpriteName !== false && $oldSpriteName->getId()) {
+					$spriteName = SpriteName::newFromId($oldSpriteName->getId(), self::$spriteSheet);
+					if ($spriteName !== false && $spriteName->getId()) {
+						$spriteName->setName($oldSpriteName->getName());
+						$spriteName->setType($oldSpriteName->getType());
+						$spriteName->setValues($oldSpriteName->getValues());
+						$spriteName->setDeleted($oldSpriteName->isDeleted());
+
+						return $spriteName->save();
+					}
+				}
 			}
 		}
 

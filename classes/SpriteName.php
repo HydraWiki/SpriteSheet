@@ -109,6 +109,8 @@ class SpriteName {
 
 		$spriteName->setId($id);
 
+		$spriteName->load();
+
 		return $spriteName;
 	}
 
@@ -190,7 +192,8 @@ class SpriteName {
 			'`name`'			=> $this->getName(),
 			'`type`'			=> $this->getType(),
 			'`values`'			=> $this->getValues(false),
-			'`edited`'			=> time()
+			'`edited`'			=> time(),
+			'`deleted`'			=> intval($this->isDeleted())
 		];
 
 		$this->DB->begin();
@@ -231,56 +234,6 @@ class SpriteName {
 
 			$success = true;
 		} else {
-			$this->DB->rollback();
-		}
-
-		return $success;
-	}
-
-	/**
-	 * Delete this Sprite Name from the database.
-	 *
-	 * @access	public
-	 * @return	boolean	Success
-	 */
-	public function delete() {
-		$success = false;
-
-		$spriteNameId = $this->getId();
-
-		$this->DB->begin();
-		if ($spriteNameId > 0) {
-			$this->data['deleted'] = 1;
-
-			if (!$this->saveOldVersion()) {
-				$this->DB->rollback();
-				throw new MWException(__METHOD__.': Could not save an old version while attempting to delete.');
-				return false;
-			}
-
-			//Do the delete.
-			$result = $this->DB->update(
-				'spritename',
-				['deleted' => 1],
-				['spritename_id' => $spriteNameId],
-				__METHOD__
-			);
-		}
-
-		if ($result !== false) {
-			global $wgUser;
-
-			$this->DB->commit();
-
-			//Enforce sanity on data.
-			$this->data['spritename_id']	= $spriteNameId;
-			$this->data['edited']			= $save['edited'];
-
-			$this->logChanges();
-
-			$success = true;
-		} else {
-			$this->data['deleted'] = 0;
 			$this->DB->rollback();
 		}
 
@@ -479,6 +432,27 @@ class SpriteName {
 	}
 
 	/**
+	 * Delete this Sprite Name.
+	 *
+	 * @access	public
+	 * @param	boolean	[Optional] If this should be deleted.
+	 * @return	void
+	 */
+	public function setDeleted($deleted = true) {
+		$this->data['deleted'] = intval($deleted);
+	}
+
+	/**
+	 * Is thie sprite name deleted?
+	 *
+	 * @access	public
+	 * @return	boolean	Deleted
+	 */
+	public function isDeleted() {
+		return (bool) $this->data['deleted'];
+	}
+
+	/**
 	 * Return the SpriteSheet object associated with this sprite name.
 	 *
 	 * @access	public
@@ -496,16 +470,6 @@ class SpriteName {
 	 */
 	public function getParserTag() {
 		return "{{#".$this->getType().":".$this->getSpriteSheet()->getTitle()->getPrefixedDBkey()."|".$this->getName()."}}";
-	}
-
-	/**
-	 * Is thie sprite name deleted?
-	 *
-	 * @access	public
-	 * @return	boolean	Deleted
-	 */
-	public function isDeleted() {
-		return (bool) $this->data['deleted'];
 	}
 
 	/**
@@ -554,15 +518,17 @@ class SpriteName {
 	 * Get a previous revision for this spritename by its revision ID.
 	 *
 	 * @access	public
+	 * @param	integer	Revision ID
 	 * @return	mixed	SpriteName or false for no previous revision.
 	 */
-	static public function loadFromRevisionId($revisionId) {
-		$revResult = $this->DB->select(
+	static public function newFromRevisionId($revisionId) {
+		$DB = wfGetDB(DB_MASTER);
+
+		$revResult = $DB->select(
 			['spritename_rev'],
 			['*'],
 			[
-				'spritename_rev_id'	=> $revisionId,
-				'spritename_id'		=> $this->getId()
+				'spritename_rev_id'	=> $revisionId
 			],
 			__METHOD__
 		);
@@ -571,7 +537,10 @@ class SpriteName {
 
 		$spriteName = false;
 		if (is_array($revRow)) {
-			$spriteName = SpriteName::newFromRow($revRow, $this->spriteSheet);
+			$spriteSheet = SpriteSheet::newFromId($revRow['spritesheet_id']);
+			if ($spriteSheet !== false && $spriteSheet->exists()) {
+				$spriteName = SpriteName::newFromRow($revRow, $spriteSheet);
+			}
 		}
 
 		return $spriteName;

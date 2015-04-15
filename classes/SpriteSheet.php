@@ -683,6 +683,7 @@ class SpriteSheet {
 	 * Get a previous revision for this spritename by its revision ID.
 	 *
 	 * @access	public
+	 * @param	integer	Revision ID
 	 * @return	mixed	SpriteSheet or false for no previous revision.
 	 */
 	public function getRevisionById($revisionId) {
@@ -690,7 +691,7 @@ class SpriteSheet {
 			['spritesheet_rev'],
 			['*'],
 			[
-				'spritesheet_rev_id'	=> $revisionId,
+				'spritesheet_rev_id'	=> intval($revisionId),
 				'spritesheet_id'		=> $this->getId()
 			],
 			__METHOD__
