@@ -297,10 +297,10 @@ class SpriteSheetHooks {
 
 		if (($action == 'diff' || $action == 'rollback')) {
 			if ($wgRequest->getInt('sheetPreviousId') > 0) {
-				self::$oldSpriteSheet = self::$spriteSheet->getRevisionByOldId($wgRequest->getInt('sheetPreviousId'));
+				self::$oldSpriteSheet = self::$spriteSheet->getRevisionById($wgRequest->getInt('sheetPreviousId'));
 			}
 			if ($wgRequest->getInt('spritePreviousId') > 0) {
-				self::$oldSpriteSheet = self::$spriteSheet->getRevisionByOldId($wgRequest->getInt('sheetPreviousId'));
+				self::$oldSpriteSheet = self::$spriteSheet->getRevisionById($wgRequest->getInt('sheetPreviousId'));
 			}
 		}
 
@@ -370,7 +370,7 @@ class SpriteSheetHooks {
 		$extDir = __DIR__;
 
 		$updater->addExtensionUpdate(['addTable', 'spritesheet', "{$extDir}/install/sql/spritesheet_table_spritesheet.sql", true]);
-		$updater->addExtensionUpdate(['addTable', 'spritesheet_old', "{$extDir}/install/sql/spritesheet_table_spritesheet_old.sql", true]);
+		$updater->addExtensionUpdate(['addTable', 'spritesheet_rev', "{$extDir}/install/sql/spritesheet_table_spritesheet_rev.sql", true]);
 		$updater->addExtensionUpdate(['addTable', 'spritename', "{$extDir}/install/sql/spritesheet_table_spritename.sql", true]);
 		$updater->addExtensionUpdate(['addTable', 'spritename_rev', "{$extDir}/install/sql/spritesheet_table_spritename_rev.sql", true]);
 

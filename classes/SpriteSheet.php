@@ -235,7 +235,7 @@ class SpriteSheet {
 			$oldRow = $oldResult->fetchRow();
 			if (is_array($oldRow)) {
 				$this->DB->insert(
-					'spritesheet_old',
+					'spritesheet_rev',
 					$oldRow,
 					__METHOD__
 				);
@@ -270,8 +270,8 @@ class SpriteSheet {
 			$extra = [];
 			$oldSpriteSheet = $this->getPreviousRevision();
 
-			if ($oldSpriteSheet instanceOf SpriteSheet && $oldSpriteSheet->getOldId() !== false) {
-				$extra['spritesheet_old_id'] = $oldSpriteSheet->getOldId();
+			if ($oldSpriteSheet instanceOf SpriteSheet && $oldSpriteSheet->getRevisionId() !== false) {
+				$extra['spritesheet_rev_id'] = $oldSpriteSheet->getRevisionId();
 			}
 
 			$log = new LogPage('sprite');
@@ -641,10 +641,10 @@ class SpriteSheet {
 	 * Is this an old revision?
 	 *
 	 * @access	public
-	 * @return	boolean	Is Old Revision
+	 * @return	boolean	Is an old revision.
 	 */
-	public function isOldRevision() {
-		return (bool) $this->data['spritesheet_old_id'];
+	public function isRevision() {
+		return (bool) $this->data['spritesheet_rev_id'];
 	}
 
 	/**
@@ -655,17 +655,17 @@ class SpriteSheet {
 	 */
 	public function getPreviousRevision() {
 		$where['spritesheet_id'] = $this->getId();
-		if ($this->isOldRevision()) {
-			$where[] = "spritesheet_old_id < ".intval($this->data['spritesheet_old_id']);
+		if ($this->isRevision()) {
+			$where[] = "spritesheet_rev_id < ".intval($this->data['spritesheet_rev_id']);
 		}
 
 		$oldResult = $this->DB->select(
-			['spritesheet_old'],
+			['spritesheet_rev'],
 			['*'],
 			$where,
 			__METHOD__,
 			[
-				'ORDER BY'	=> 'spritesheet_old_id DESC'
+				'ORDER BY'	=> 'spritesheet_rev_id DESC'
 			]
 		);
 
@@ -680,27 +680,27 @@ class SpriteSheet {
 	}
 
 	/**
-	 * Get a previous revision for this spritesheet by its old ID.
+	 * Get a previous revision for this spritename by its revision ID.
 	 *
 	 * @access	public
 	 * @return	mixed	SpriteSheet or false for no previous revision.
 	 */
-	public function getRevisionByOldId($oldId) {
-		$oldResult = $this->DB->select(
-			['spritesheet_old'],
+	public function getRevisionById($revisionId) {
+		$revResult = $this->DB->select(
+			['spritesheet_rev'],
 			['*'],
 			[
-				'spritesheet_old_id'	=> $oldId,
+				'spritesheet_rev_id'	=> $revisionId,
 				'spritesheet_id'		=> $this->getId()
 			],
 			__METHOD__
 		);
 
-		$oldRow = $oldResult->fetchRow();
+		$revRow = $revResult->fetchRow();
 
 		$spriteSheet = false;
-		if (is_array($oldRow)) {
-			$spriteSheet = SpriteSheet::newFromRow($oldRow);
+		if (is_array($revRow)) {
+			$spriteSheet = SpriteSheet::newFromRow($revRow);
 		}
 
 		return $spriteSheet;
@@ -710,38 +710,38 @@ class SpriteSheet {
 	 * Return the old revision ID if this is an old revision.
 	 *
 	 * @access	public
-	 * @return	mixed	Old Revision ID or false if this is the current revision.
+	 * @return	mixed	Revision ID or false if this is the current revision.
 	 */
-	public function getOldId() {
-		if ($this->isOldRevision()) {
-			return $this->data['spritesheet_old_id'];
+	public function getRevisionId() {
+		if ($this->isRevision()) {
+			return $this->data['spritesheet_rev_id'];
 		}
 		return false;
 	}
 
 	/**
-	 * Return the old ID that comes after the supplied old ID.
+	 * Return the revision ID that comes after the supplied revision ID.
 	 *
 	 * @access	public
 	 * @param	integer	Old ID
-	 * @return	mixed	Next old ID or false if it is the most current.
+	 * @return	mixed	Next revision ID or false if it is not an old revision.
 	 */
-	static public function getNextOldId($oldId) {
+	static public function getNextRevisionId($revisionId) {
 		$DB = wfGetDB(DB_MASTER);
 
-		$oldResult = $DB->select(
-			['spritesheet_old'],
+		$revResult = $DB->select(
+			['spritesheet_rev'],
 			['*'],
-			["spritesheet_old_id > ".intval($oldId)],
+			["spritesheet_rev_id > ".intval($revisionId)],
 			__METHOD__,
 			[
-				'ORDER BY'	=> 'spritesheet_old_id ASC'
+				'ORDER BY'	=> 'spritesheet_rev_id ASC'
 			]
 		);
 
-		$oldRow = $oldResult->fetchRow();
-		if (is_array($oldRow)) {
-			return intval($oldRow['spritesheet_old_id']);
+		$revRow = $revResult->fetchRow();
+		if (is_array($revRow)) {
+			return intval($revRow['spritesheet_rev_id']);
 		}
 		return false;
 	}

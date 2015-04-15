@@ -43,7 +43,7 @@ class TemplateSpriteSheetEditor {
 						<label for='old_sprite_inset'>".wfMessage('sprite_inset')->escaped()."</label>
 						<input id='old_sprite_inset' name='old_sprite_inset' type='number' min='0' disabled='disabled' value='".$oldSpriteSheet->getInset()."'/>
 
-						<input name='old_spritesheet_id' type='hidden' disabled='disabled' value='".$oldSpriteSheet->getOldId()."'/>
+						<input name='old_spritesheet_id' type='hidden' disabled='disabled' value='".$oldSpriteSheet->getRevisionId()."'/>
 					</fieldset>
 
 					<span class='current_revision'>".wfMessage('current_values')->escaped()."</span><br/>";
