@@ -267,6 +267,11 @@ class SpriteSheetHooks {
 			return true;
 		}
 
+		if ($this->checkAndDoRollbacks()) {
+			$output->redirect(self::$spriteSheet->getTitle()->getFullURL());
+			return true;
+		}
+
 		$logLink = Linker::link(SpecialPage::getTitleFor('Log'), wfMessage('sprite_sheet_log')->escaped(), [], ['page' => self::$spriteSheet->getTitle()->getPrefixedText()]);
 
 		//Permission checks.
@@ -287,33 +292,37 @@ class SpriteSheetHooks {
 	}
 
 	/**
-	 * Function Documentation
+	 * Pefrom any rollbacks as necessary.
 	 *
 	 * @access	private
-	 * @return	void
+	 * @return	boolean	If rollbacks were performed.
 	 */
 	private function checkAndDoRollbacks() {
 		$action = $wgRequest->getVal('sheetAction', false);
 
 		if (($action == 'diff' || $action == 'rollback')) {
+			//Handle sheet roll backs.
 			if ($wgRequest->getInt('sheetPreviousId') > 0) {
 				self::$oldSpriteSheet = self::$spriteSheet->getRevisionById($wgRequest->getInt('sheetPreviousId'));
+
+				if ($action == 'rollback' && $wgUser->isAllowed('spritesheet_rollback') && self::$oldSpriteSheet !== false) {
+					//Perform the rollback then redirect to this page with a success message and the editor opened.
+					self::$spriteSheet->setColumns(self::$oldSpriteSheet->getColumns());
+					self::$spriteSheet->setRows(self::$oldSpriteSheet->getRows());
+					self::$spriteSheet->setInset(self::$oldSpriteSheet->getInset());
+					self::$spriteSheet->save();
+
+					return true;
+				}
 			}
+
+			//Handle individual sprite roll backs.
 			if ($wgRequest->getInt('spritePreviousId') > 0) {
 				self::$oldSpriteSheet = self::$spriteSheet->getRevisionById($wgRequest->getInt('sheetPreviousId'));
 			}
 		}
 
-		if ($action == 'rollback' && $wgUser->isAllowed('spritesheet_rollback') && self::$oldSpriteSheet !== false) {
-			//Perform the rollback then redirect to this page with a success message and the editor opened.
-			self::$spriteSheet->setColumns(self::$oldSpriteSheet->getColumns());
-			self::$spriteSheet->setRows(self::$oldSpriteSheet->getRows());
-			self::$spriteSheet->setInset(self::$oldSpriteSheet->getInset());
-			self::$spriteSheet->save();
-
-			$output->redirect(self::$spriteSheet->getTitle()->getFullURL());
-			return true;
-		}
+		return false;
 	}
 
 	/**
