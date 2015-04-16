@@ -12,6 +12,52 @@
 
 class SpriteSheetHooks {
 	/**
+	 * Valid parameters.
+	 *
+	 * @var		array
+	 */
+	static private $parameters = [
+		'file' => [
+			'required'	=> true,
+			'default'	=> null
+		],
+		'name' => [
+			'required'	=> false,
+			'default'	=> null
+		],
+		'column' => [
+			'required'	=> false,
+			'default'	=> null
+		],
+		'row' => [
+			'required'	=> false,
+			'default'	=> null
+		],
+		'width' => [
+			'required'	=> false,
+			'default'	=> null,
+		],
+		'link' => [
+			'required'	=> false,
+			'default'	=> null
+		],
+	];
+
+	/**
+	 * Any error messages that may have been triggerred.
+	 *
+	 * @var		array
+	 */
+	static private $errors = false;
+
+	/**
+	 * The tag type being processed, either sprite or slice.
+	 *
+	 * @var		array
+	 */
+	static private $tagType = false;
+
+	/**
 	 * SpriteSheet Object - Used to hold a SpriteSheet when viewing an image page.
 	 *
 	 * @var		object
@@ -33,10 +79,10 @@ class SpriteSheetHooks {
 	 * @return	boolean	true
 	 */
 	static public function onParserFirstCallInit(Parser &$parser) {
-		$parser->setFunctionHook("sprite", "SpriteSheetHooks::generateSpriteOutput");
-		$parser->setFunctionHook("slice", "SpriteSheetHooks::generateSliceOutput");
-		$parser->setFunctionHook("ifsprite", "SpriteSheetHooks::generateIfSpriteOutput");
-		$parser->setFunctionHook("ifslice", "SpriteSheetHooks::generateIfSliceOutput");
+		$parser->setFunctionHook("sprite", "SpriteSheetHooks::generateSpriteOutput", SFH_OBJECT_ARGS);
+		$parser->setFunctionHook("slice", "SpriteSheetHooks::generateSliceOutput", SFH_OBJECT_ARGS);
+		$parser->setFunctionHook("ifsprite", "SpriteSheetHooks::generateIfSpriteOutput", SFH_OBJECT_ARGS);
+		$parser->setFunctionHook("ifslice", "SpriteSheetHooks::generateIfSliceOutput", SFH_OBJECT_ARGS);
 
 		return true;
 	}
@@ -45,27 +91,32 @@ class SpriteSheetHooks {
 	 * The #sprite parser tag entry point.
 	 *
 	 * @access	public
-	 * @param	object	Parser object passed as a reference.
-	 * @param	string	Page title with namespace
-	 * @param	integer	Column Position
-	 * @param	integer	Row Position
-	 * @param	integer	[Optional] Thumbnail Width
+	 * @param	object	Parser
+	 * @param	object	PPFrame
+	 * @param	array	Arguments
 	 * @return	string	Wiki Text
 	 */
-	static public function generateSpriteOutput(&$parser, $file = null, $column = 0, $row = 0, $thumbWidth = 0) {
-		$namedMode = false;
-		if (!is_numeric($column) && empty($thumbWidth)) {
-			//For named sprites the column will be the sprite name and row will be the optional thumb width.  Thus the actual $thumbWidth variable should be empty.
-			$namedMode = true;
-			$rawSpriteName = trim($column);
-			$thumbWidth = intval($row);
-		} else {
-			$column		= abs(intval($column));
-			$row		= abs(intval($row));
-			$thumbWidth	= abs(intval($thumbWidth));
+	static public function generateSpriteOutput(Parser &$parser, PPFrame $frame, $arguments) {
+		self::$errors = false;
+		self::$tagType = "sprite";
+
+		/************************************/
+		/* Clean Parameters                 */
+		/************************************/
+		$rawParameterOptions = [];
+		if (is_array($arguments)) {
+			foreach ($arguments as $argument) {
+				$rawParameterOptions[] = trim($frame->expand($argument));
+			}
+		}
+		$parameters = self::cleanAndSetupParameters($rawParameterOptions);
+
+		//Check if any errors occurred during parameter processing and immediately alert the user to them.
+		if (!empty(self::$errors)) {
+			return self::makeErrorBox();
 		}
 
-		$title = Title::newFromDBKey($file);
+		$title = Title::newFromDBKey($parameters['file']);
 
 		if ($title->isKnown()) {
 			$spriteSheet = SpriteSheet::newFromTitle($title, true);
@@ -75,21 +126,32 @@ class SpriteSheetHooks {
 				return self::makeError('no_sprite_sheet_defined', [$title->getPrefixedText()]);
 			}
 
-			if ($namedMode) {
-				$spriteName = $spriteSheet->getSpriteName($rawSpriteName);
+			if (!empty($parameters['name'])) {
+				$spriteName = $spriteSheet->getSpriteName($parameters['name']);
 				if (!$spriteName->exists()) {
-					return self::makeError('could_not_find_named_sprite', [$file, $rawSpriteName]);
+					self::setError('could_not_find_named_sprite', [$parameters['file'], $parameters['name']]);
+					return self::makeErrorBox();
 				}
 				if ($spriteName->getType() != 'sprite') {
-					return self::makeError('wrong_named_sprite_slice');
+					self::setError('wrong_named_sprite_slice');
+					return self::makeErrorBox();
 				}
 
-				$html = $spriteSheet->getSpriteFromName($spriteName->getName(), $thumbWidth);
+				$html = $spriteSheet->getSpriteFromName($spriteName->getName(), $parameters['width']);
 			} else {
-				$html = $spriteSheet->getSpriteAtCoordinates($column, $row, $thumbWidth);
+				if (!isset($parameters['column']) || !is_numeric($parameters['column']) || $parameters['column'] < 0) {
+					self::setError('invalid_column_parameter');
+					return self::makeErrorBox();
+				}
+				if (!isset($parameters['row']) || !is_numeric($parameters['row']) || $parameters['row'] < 0) {
+					self::setError('invalid_row_parameter');
+					return self::makeErrorBox();
+				}
+				$html = $spriteSheet->getSpriteAtCoordinates($parameters['column'], $parameters['row'], $parameters['width']);
 			}
 		} else {
-			return self::makeError('could_not_find_title', [$file]);
+			self::setError('could_not_find_title', [$parameters['file']]);
+			return self::makeErrorBox();
 		}
 
 		$parser->getOutput()->addModules('ext.spriteSheet');
@@ -135,6 +197,9 @@ class SpriteSheetHooks {
 	 * @return	string	Wiki Text
 	 */
 	static public function generateSliceOutput(&$parser, $file = null, $xPercent = 0, $yPercent = 0, $widthPercent = 0, $heightPercent = 0, $thumbWidth = 0) {
+		self::$errors = false;
+		self::$tagType = "slice";
+
 		$namedMode = false;
 		$pixelMode = false;
 		if (!is_numeric($column) && empty($widthPercent)) {
@@ -208,18 +273,77 @@ class SpriteSheetHooks {
 	}
 
 	/**
+	 * Clean user supplied parameters and setup defaults.
+	 *
+	 * @access	private
+	 * @param	array	Raw strings of 'parameter=option'.
+	 * @return	array	Safe Parameter => Option key value pairs.
+	 */
+	static private function cleanAndSetupParameters($rawParameterOptions) {
+		//Check user supplied parameters.
+		$cleanParameterOptions = [];
+		foreach ($rawParameterOptions as $raw) {
+			$equals = strpos($raw, '=');
+			if ($equals === false || $equals === 0 || $equals === strlen($raw) - 1) {
+				continue;
+			}
+
+			list($parameter, $option) = explode('=', $raw);
+			$parameter = strtolower(trim($parameter));
+			$option = trim($option);
+
+			if (isset(self::$parameters[$parameter])) {
+				if (is_array(self::$parameters[$parameter]['values'])) {
+					if (!in_array($option, self::$parameters[$parameter]['values'])) {
+						//Throw an error.
+						self::setError('spritesheet_error_invalid_option', [$parameter, $option]);
+					} else {
+						$cleanParameterOptions[$parameter] = $option;
+					}
+				} else {
+					$cleanParameterOptions[$parameter] = $option;
+				}
+			} else {
+				self::setError('spritesheet_error_bad_parameter', [$parameter]);
+			}
+		}
+
+		foreach (self::$parameters as $parameter => $parameterData) {
+			if ($parameterData['required'] && !array_key_exists($parameter, $cleanParameterOptions)) {
+				self::setError('spritesheet_error_parameter_required', [$parameter]);
+			}
+			//Assign the default if not supplied by the user and a default exists.
+			if (!$parameterData['required'] && !array_key_exists($parameter, $cleanParameterOptions) && $parameterData['default'] !== null) {
+				$cleanParameterOptions[$parameter] = $parameterData['default'];
+			}
+		}
+
+		return $cleanParameterOptions;
+	}
+
+	/**
+	 * Set a non-fatal error to be returned to the end user later.
+	 *
+	 * @access	private
+	 * @param	string	Message language string.
+	 * @param	array	[Optional] Message replacements.
+	 * @return	void
+	 */
+	static private function setError($message, $replacements = []) {
+		self::$errors[] = wfMessage($message, $replacements)->escaped();
+	}
+
+	/**
 	 * Make a standard error box.
 	 *
 	 * @access	private
-	 * @param	string	Language String Message
-	 * @param	array	[Optional] Array of extra parameters.
 	 * @return	string	HTML Error
 	 */
-	static private function makeError($message, $parameters = []) {
+	static private function makeErrorBox() {
 		return "
 		<div class='errorbox'>
 			<strong>SpriteSheet ".SPRITESHEET_VERSION."</strong><br/>
-			".wfMessage($message, $parameters)->text()."
+			".implode("<br/>\n", self::$errors)."
 		</div>";
 	}
 

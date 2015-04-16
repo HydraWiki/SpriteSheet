@@ -446,6 +446,9 @@ class SpriteSheet {
 	public function getSpriteAtCoordinates($column, $row, $thumbWidth = null) {
 		$file = wfFindFile($this->getTitle());
 
+		$column = intval($column);
+		$row = intval($row);
+
 		if (is_object($file) && $file->exists()) {
 			if ($thumbWidth > 0) {
 				$file = $file->transform(['width' => $thumbWidth, 'height' => $file->getHeight()]);

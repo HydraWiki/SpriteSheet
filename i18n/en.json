@@ -50,5 +50,10 @@
 	"click_to_edit": "Click to Edit",
 	"visit_remote_repository_to_edit_sprite_sheet": "This sprite sheet was loaded from the remote repository where this image is located.\nTo edit the sprite sheet please [$1 visit the file page on the remote repository].",
 	"previous_values": "Previous",
-	"current_values": "Current"
+	"current_values": "Current",
+	"spritesheet_error_bad_parameter": "Parameter \"$1\" is not recognized.",
+	"spritesheet_error_parameter_required": "Parameter \"$1\" is required to be supplied.",
+	"spritesheet_error_invalid_option": "The option specified, \"$2\", for parameter \"$1\" is not a valid option for that parameter.",
+	"invalid_column_parameter": "Invalid column(X) position.",
+	"invalid_row_parameter": "Invalid row(Y) position."
 }
