@@ -453,6 +453,17 @@ class SpriteSheet {
 			if ($thumbWidth > 0) {
 				$file = $file->transform(['width' => $thumbWidth, 'height' => $file->getHeight()]);
 			}
+			/*if ($thumbWidth > 0) {
+				$originalWidth = $file->getWidth();
+				var_dump($thumbWidth);
+				if ($pixelMode) {
+					$scaling = $thumbWidth / $width;
+				} else {
+					$scaling = $thumbWidth / ($originalWidth * ($width / 100));
+				}
+				var_dump($scaling);
+				$file = $file->transform(['width' => $file->getWidth() * $scaling, 'height' => $file->getHeight() * $scaling]);
+			}*/
 
 			$spriteWidth = ($file->getWidth() / $this->getColumns());
 			$spriteHeight = ($file->getHeight() / $this->getRows());
@@ -589,31 +600,40 @@ class SpriteSheet {
 	 * @param	boolean	[Optional] Use pixel positioning instead of percentage.
 	 * @return	mixed	HTML or false on error.
 	 */
-	public function getSlice($xPercent, $yPercent, $widthPrecent, $heightPercent, $thumbWidth = null, $pixelMode = false) {
+	public function getSlice($x, $y, $width, $height, $thumbWidth = null, $pixelMode = false) {
 		$file = wfFindFile($this->getTitle());
 
 		if (is_object($file) && $file->exists()) {
 			$scaling = 1;
 			if ($thumbWidth > 0) {
 				$originalWidth = $file->getWidth();
-				$file = $file->transform(['width' => $thumbWidth, 'height' => $file->getHeight()]);
-				if ($originalWidth != $thumbWidth) {
-					$scaling = $thumbWidth / $originalWidth;
+
+				if ($pixelMode) {
+					$scaling = $thumbWidth / $width;
+				} else {
+					$scaling = $thumbWidth / ($originalWidth * ($width / 100));
 				}
+				if ($scaling > 1) {
+					//Reset because Mediawiki will never resize past 100%.
+					$scaling = 1;
+				}
+
+				$file = $file->transform(['width' => $file->getWidth() * $scaling, 'height' => $file->getHeight() * $scaling]);
 			}
 
 			if (!$pixelMode) {
-				$sliceX = $file->getWidth() * ($xPercent / 100);
-				$sliceY = $file->getHeight() * ($yPercent / 100);
+				//Scaling does not need to be applied when using percentages.
+				$sliceX = $file->getWidth() * ($x / 100);
+				$sliceY = $file->getHeight() * ($y / 100);
 
-				$sliceWidth = $file->getWidth() * ($widthPrecent / 100);
-				$sliceHeight = $file->getHeight() * ($heightPercent / 100);
+				$sliceWidth = $file->getWidth() * ($width / 100);
+				$sliceHeight = $file->getHeight() * ($height / 100);
 			} else {
-				$sliceX = $xPercent * $scaling;
-				$sliceY = $yPercent * $scaling;
+				$sliceX = $x * $scaling;
+				$sliceY = $y * $scaling;
 
-				$sliceWidth = $widthPrecent * $scaling;
-				$sliceHeight = $heightPercent * $scaling;
+				$sliceWidth = $width * $scaling;
+				$sliceHeight = $height * $scaling;
 			}
 
 			return "<div class='sprite' style='width: {$sliceWidth}px; height: {$sliceHeight}px; overflow: hidden; position: relative;'><img src='".$file->getUrl()."' style='position: absolute; left: -{$sliceX}px; top: -{$sliceY}px;'/></div>";

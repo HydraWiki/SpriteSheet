@@ -39,7 +39,7 @@ class SpriteSheetHooks {
 			'resize' => [
 				'required'	=> false,
 				'default'	=> null,
-				'sanitize'	=> "#^(?P<number>\d+(?:\.\d+)?)(?P<unit>px$|%$|$)#i"
+				'sanitize'	=> "#^(?P<number>\d+(?:\.\d+)?)(?P<unit>px$|$)#i"
 			],
 			'link' => [
 				'required'	=> false,
@@ -78,7 +78,7 @@ class SpriteSheetHooks {
 			'resize' => [
 				'required'	=> false,
 				'default'	=> null,
-				'sanitize'	=> "#^(?P<number>\d+(?:\.\d+)?)(?P<unit>px$|%$|$)#i"
+				'sanitize'	=> "#^(?P<number>\d+(?:\.\d+)?)(?P<unit>px$|$)#i"
 			],
 			'link' => [
 				'required'	=> false,

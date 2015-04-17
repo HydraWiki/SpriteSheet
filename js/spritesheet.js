@@ -790,7 +790,7 @@ mw.spriteSheet = {
 		this.selectedSprite.xPos = xPos;
 		this.selectedSprite.yPos = yPos;
 
-		var example = "{{#sprite:"+title+"|"+xPos+"|"+yPos+"}}";
+		var example = "{{#sprite:file="+title+"|column="+xPos+"|row="+yPos+"}}";
 
 		//Update the preview.
 		this.updateSpritePreview(example);
@@ -846,7 +846,7 @@ mw.spriteSheet = {
 		this.selectedSlice.widthPercent = widthPercent;
 		this.selectedSlice.heightPercent = heightPercent;
 
-		var example = "{{#slice:"+title+"|"+xPercent+"|"+yPercent+"|"+widthPercent+"|"+heightPercent+"}}";
+		var example = "{{#slice:file="+title+"|x="+xPercent+"|y="+yPercent+"|width="+widthPercent+"|height="+heightPercent+"}}";
 
 		this.updateSpritePreview(example);
 

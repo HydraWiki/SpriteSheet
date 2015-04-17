@@ -469,7 +469,7 @@ class SpriteName {
 	 * @return	string	Parser Tag
 	 */
 	public function getParserTag() {
-		return "{{#".$this->getType().":".$this->getSpriteSheet()->getTitle()->getPrefixedDBkey()."|".$this->getName()."}}";
+		return "{{#".$this->getType().":file=".$this->getSpriteSheet()->getTitle()->getPrefixedDBkey()."|name=".$this->getName()."}}";
 	}
 
 	/**
