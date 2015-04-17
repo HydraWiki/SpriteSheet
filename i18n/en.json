@@ -54,6 +54,5 @@
 	"spritesheet_error_bad_parameter": "Parameter \"$1\" is not recognized.",
 	"spritesheet_error_parameter_required": "Parameter \"$1\" is required to be supplied.",
 	"spritesheet_error_invalid_option": "The option specified, \"$2\", for parameter \"$1\" is not a valid option for that parameter.",
-	"invalid_column_parameter": "Invalid column(X) position.",
-	"invalid_row_parameter": "Invalid row(Y) position."
+	"slice_error_mixed_units": "Mixed units of measurement are not allowed.  Please specify only percentage(%) or pixels(px)."
 }

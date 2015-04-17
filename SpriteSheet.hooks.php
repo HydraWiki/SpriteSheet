@@ -16,30 +16,74 @@ class SpriteSheetHooks {
 	 *
 	 * @var		array
 	 */
-	static private $parameters = [
-		'file' => [
-			'required'	=> true,
-			'default'	=> null
+	static private $validParameters = [
+		'sprite'	=> [
+			'file' => [
+				'required'	=> true,
+				'default'	=> null
+			],
+			'name' => [
+				'required'	=> false,
+				'default'	=> null
+			],
+			'column' => [
+				'required'	=> false,
+				'default'	=> null,
+				'sanitize'	=> "#^(?P<integer>\d+)$#i"
+			],
+			'row' => [
+				'required'	=> false,
+				'default'	=> null,
+				'sanitize'	=> "#^(?P<integer>\d+)$#i"
+			],
+			'resize' => [
+				'required'	=> false,
+				'default'	=> null,
+				'sanitize'	=> "#^(?P<number>\d+(?:\.\d+)?)(?P<unit>px$|%$|$)#i"
+			],
+			'link' => [
+				'required'	=> false,
+				'default'	=> null
+			]
 		],
-		'name' => [
-			'required'	=> false,
-			'default'	=> null
-		],
-		'column' => [
-			'required'	=> false,
-			'default'	=> null
-		],
-		'row' => [
-			'required'	=> false,
-			'default'	=> null
-		],
-		'width' => [
-			'required'	=> false,
-			'default'	=> null,
-		],
-		'link' => [
-			'required'	=> false,
-			'default'	=> null
+		'slice'	=> [
+			'file' => [
+				'required'	=> true,
+				'default'	=> null
+			],
+			'name' => [
+				'required'	=> false,
+				'default'	=> null
+			],
+			'x' => [
+				'required'	=> false,
+				'default'	=> null,
+				'sanitize'	=> "#^(?P<number>\d+(?:\.\d+)?)(?P<unit>px$|%$|$)#i"
+			],
+			'y' => [
+				'required'	=> false,
+				'default'	=> null,
+				'sanitize'	=> "#^(?P<number>\d+(?:\.\d+)?)(?P<unit>px$|%$|$)#i"
+			],
+			'width' => [
+				'required'	=> false,
+				'default'	=> null,
+				'sanitize'	=> "#^(?P<number>\d+(?:\.\d+)?)(?P<unit>px$|%$|$)#i"
+			],
+			'height' => [
+				'required'	=> false,
+				'default'	=> null,
+				'sanitize'	=> "#^(?P<number>\d+(?:\.\d+)?)(?P<unit>px$|%$|$)#i"
+			],
+			'resize' => [
+				'required'	=> false,
+				'default'	=> null,
+				'sanitize'	=> "#^(?P<number>\d+(?:\.\d+)?)(?P<unit>px$|%$|$)#i"
+			],
+			'link' => [
+				'required'	=> false,
+				'default'	=> null
+			],
 		],
 	];
 
@@ -100,16 +144,7 @@ class SpriteSheetHooks {
 		self::$errors = false;
 		self::$tagType = "sprite";
 
-		/************************************/
-		/* Clean Parameters                 */
-		/************************************/
-		$rawParameterOptions = [];
-		if (is_array($arguments)) {
-			foreach ($arguments as $argument) {
-				$rawParameterOptions[] = trim($frame->expand($argument));
-			}
-		}
-		$parameters = self::cleanAndSetupParameters($rawParameterOptions);
+		$parameters = self::cleanAndSetupParameters($arguments, $frame);
 
 		//Check if any errors occurred during parameter processing and immediately alert the user to them.
 		if (!empty(self::$errors)) {
@@ -139,15 +174,15 @@ class SpriteSheetHooks {
 
 				$html = $spriteSheet->getSpriteFromName($spriteName->getName(), $parameters['width']);
 			} else {
-				if (!isset($parameters['column']) || !is_numeric($parameters['column']) || $parameters['column'] < 0) {
-					self::setError('invalid_column_parameter');
+				if (!isset($parameters['column']['integer']) || $parameters['column']['integer'] < 0) {
+					self::setError('spritesheet_error_invalid_option', ['column', $parameters['column']['integer']]);
 					return self::makeErrorBox();
 				}
-				if (!isset($parameters['row']) || !is_numeric($parameters['row']) || $parameters['row'] < 0) {
-					self::setError('invalid_row_parameter');
+				if (!isset($parameters['row']['integer']) || $parameters['row']['integer'] < 0) {
+					self::setError('spritesheet_error_invalid_option', ['row', $parameters['row']['integer']]);
 					return self::makeErrorBox();
 				}
-				$html = $spriteSheet->getSpriteAtCoordinates($parameters['column'], $parameters['row'], $parameters['width']);
+				$html = $spriteSheet->getSpriteAtCoordinates($parameters['column']['integer'], $parameters['row']['integer'], $parameters['resize']['number']);
 			}
 		} else {
 			self::setError('could_not_find_title', [$parameters['file']]);
@@ -187,56 +222,70 @@ class SpriteSheetHooks {
 	 * The #slice parser tag entry point.
 	 *
 	 * @access	public
-	 * @param	object	Parser object passed as a reference.
-	 * @param	string	Page title with namespace
-	 * @param	integer	X coordinate, percentage
-	 * @param	integer	Y coordinate, percentage
-	 * @param	integer	Width, percentage
-	 * @param	integer	Height, percentage
-	 * @param	integer	[Optional] Thumbnail Width
+	 * @param	object	Parser
+	 * @param	object	PPFrame
+	 * @param	array	Arguments
 	 * @return	string	Wiki Text
 	 */
-	static public function generateSliceOutput(&$parser, $file = null, $xPercent = 0, $yPercent = 0, $widthPercent = 0, $heightPercent = 0, $thumbWidth = 0) {
+	static public function generateSliceOutput(Parser &$parser, PPFrame $frame, $arguments) {
 		self::$errors = false;
 		self::$tagType = "slice";
 
-		$namedMode = false;
-		$pixelMode = false;
-		if (!is_numeric($column) && empty($widthPercent)) {
-			//For named slice the $xPercent will be the slice name and $yPercent will be the optional thumb width.  The rest should be empty.
-			$namedMode = true;
-			$rawSliceName = trim($xPercent);
-			$thumbWidth = intval($yPercent);
-		} else {
-			if (!is_numeric($xPercent) && strpos($xPercent, 'px') > 0) {
-				//User has specified to use pixels for measurement.
-				$pixelMode = true;
-			}
-			$xPercent		= abs(floatval($xPercent));
-			$yPercent		= abs(floatval($yPercent));
-			$widthPercent	= abs(floatval($widthPercent));
-			$heightPercent	= abs(floatval($heightPercent));
-			$thumbWidth		= abs(intval($thumbWidth));
+		$parameters = self::cleanAndSetupParameters($arguments, $frame);
+
+		//Check if any errors occurred during parameter processing and immediately alert the user to them.
+		if (!empty(self::$errors)) {
+			return self::makeErrorBox();
 		}
 
-		$title = Title::newFromDBKey($file);
+		$pixelMode = false;
+
+		$title = Title::newFromDBKey($parameters['file']);
 
 		if ($title) {
 			$spriteSheet = SpriteSheet::newFromTitle($title, true);
 
 			if ($spriteSheet !== false) {
-				if ($namedMode) {
-					$sliceName = $spriteSheet->getSpriteName($rawSliceName);
+				if (!empty($parameters['name'])) {
+					$sliceName = $spriteSheet->getSpriteName($parameters['name']);
 					if (!$sliceName->exists()) {
-						return self::makeError('could_not_find_named_slice', [$file, $rawSliceName]);
+						self::setError('could_not_find_named_slice', [$parameters['file'], $parameters['name']]);
+						return self::makeErrorBox();
 					}
 					if ($sliceName->getType() != 'slice') {
-						return self::makeError('wrong_named_sprite_slice');
+						self::setError('wrong_named_sprite_slice');
+						return self::makeErrorBox();
 					}
 
-					$html = $spriteSheet->getSliceFromName($sliceName->getName(), $thumbWidth, $pixelMode);
+					$html = $spriteSheet->getSliceFromName($sliceName->getName(), $parameters['resize'], $pixelMode);
 				} else {
-					$html = $spriteSheet->getSlice($xPercent, $yPercent, $widthPercent, $heightPercent, $thumbWidth, $pixelMode);
+					//The unit of measure is allowed to be specified, but they must match to be valid.
+					$unitParams = ['x', 'y', 'width', 'height'];
+					$totalUnitParams = 4;
+					foreach ($unitParams as $unitParam) {
+						if (!isset($parameters[$unitParam]['number']) || $parameters[$unitParam]['number'] < 0) {
+							self::setError('spritesheet_error_invalid_option', [$unitParam, $parameters[$unitParam]['number']]);
+						}
+
+						if ($parameters[$unitParam]['unit'] == 'px') {
+							$pixels++;
+						}
+						if (!$parameters[$unitParam]['unit'] || $parameters[$unitParam]['unit'] == '%') {
+							$percents++;
+						}
+					}
+					if (!empty(self::$errors)) {
+						return self::makeErrorBox();
+					}
+
+					if ($pixels != $totalUnitParams && $percents != $totalUnitParams) {
+						self::setError('slice_error_mixed_units');
+						return self::makeErrorBox();
+					} elseif ($pixels == $totalUnitParams) {
+						$pixelMode = true;
+					}
+
+					$html = $spriteSheet->getSlice($parameters['x']['number'], $parameters['y']['number'], $parameters['width']['number'], $parameters['height']['number'], $parameters['resize']['number'], $pixelMode);
 				}
 
 				$parser->getOutput()->addModules('ext.spriteSheet');
@@ -249,7 +298,8 @@ class SpriteSheetHooks {
 			}
 		}
 
-		return self::makeError('could_not_find_title', [$file]);
+		self::setError('could_not_find_title', [$parameters['file']]);
+		return self::makeErrorBox();
 	}
 
 	/**
@@ -277,9 +327,22 @@ class SpriteSheetHooks {
 	 *
 	 * @access	private
 	 * @param	array	Raw strings of 'parameter=option'.
+	 * @param	object	PPFrame
 	 * @return	array	Safe Parameter => Option key value pairs.
 	 */
-	static private function cleanAndSetupParameters($rawParameterOptions) {
+	static private function cleanAndSetupParameters($arguments, PPFrame $frame) {
+		/************************************/
+		/* Clean Parameters                 */
+		/************************************/
+		$rawParameterOptions = [];
+		if (is_array($arguments)) {
+			foreach ($arguments as $argument) {
+				$rawParameterOptions[] = trim($frame->expand($argument));
+			}
+		}
+
+		$validParameters = self::$validParameters[self::$tagType];
+
 		//Check user supplied parameters.
 		$cleanParameterOptions = [];
 		foreach ($rawParameterOptions as $raw) {
@@ -292,23 +355,34 @@ class SpriteSheetHooks {
 			$parameter = strtolower(trim($parameter));
 			$option = trim($option);
 
-			if (isset(self::$parameters[$parameter])) {
-				if (is_array(self::$parameters[$parameter]['values'])) {
-					if (!in_array($option, self::$parameters[$parameter]['values'])) {
+			if (isset($validParameters[$parameter])) {
+				$cleanParameterOptions[$parameter] = $option;
+
+				if (is_array($validParameters[$parameter]['values'])) {
+					if (!in_array($option, $validParameters[$parameter]['values'])) {
 						//Throw an error.
+						unset($cleanParameterOptions[$parameter]);
 						self::setError('spritesheet_error_invalid_option', [$parameter, $option]);
 					} else {
 						$cleanParameterOptions[$parameter] = $option;
 					}
-				} else {
-					$cleanParameterOptions[$parameter] = $option;
+				}
+
+				if (isset($validParameters[$parameter]['sanitize'])) {
+					if (preg_match($validParameters[$parameter]['sanitize'], $option, $matches)) {
+						$cleanParameterOptions[$parameter] = $matches;
+					} else {
+						unset($cleanParameterOptions[$parameter]);
+						self::setError('spritesheet_error_invalid_option', [$parameter, $option]);
+					}
 				}
 			} else {
 				self::setError('spritesheet_error_bad_parameter', [$parameter]);
 			}
 		}
 
-		foreach (self::$parameters as $parameter => $parameterData) {
+		//Enforce required and default.
+		foreach ($validParameters as $parameter => $parameterData) {
 			if ($parameterData['required'] && !array_key_exists($parameter, $cleanParameterOptions)) {
 				self::setError('spritesheet_error_parameter_required', [$parameter]);
 			}
