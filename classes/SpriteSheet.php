@@ -449,21 +449,18 @@ class SpriteSheet {
 		$column = intval($column);
 		$row = intval($row);
 
-		if (is_object($file) && $file->exists()) {
-			if ($thumbWidth > 0) {
-				$file = $file->transform(['width' => $thumbWidth, 'height' => $file->getHeight()]);
-			}
-			/*if ($thumbWidth > 0) {
+		if (is_object($file) && $file->exists()) {if ($thumbWidth > 0) {
 				$originalWidth = $file->getWidth();
-				var_dump($thumbWidth);
-				if ($pixelMode) {
-					$scaling = $thumbWidth / $width;
-				} else {
-					$scaling = $thumbWidth / ($originalWidth * ($width / 100));
+
+				$scaling = $thumbWidth / ($originalWidth / $this->getColumns());
+
+				if ($scaling > 1) {
+					//Reset because Mediawiki will never resize past 100%.
+					$scaling = 1;
 				}
-				var_dump($scaling);
+
 				$file = $file->transform(['width' => $file->getWidth() * $scaling, 'height' => $file->getHeight() * $scaling]);
-			}*/
+			}
 
 			$spriteWidth = ($file->getWidth() / $this->getColumns());
 			$spriteHeight = ($file->getHeight() / $this->getRows());
