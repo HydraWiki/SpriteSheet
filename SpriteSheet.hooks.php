@@ -44,6 +44,10 @@ class SpriteSheetHooks {
 			'link' => [
 				'required'	=> false,
 				'default'	=> null
+			],
+			'wikitext' => [
+				'required'	=> false,
+				'default'	=> null
 			]
 		],
 		'slice'	=> [
@@ -84,6 +88,10 @@ class SpriteSheetHooks {
 				'required'	=> false,
 				'default'	=> null
 			],
+			'wikitext' => [
+				'required'	=> false,
+				'default'	=> null
+			]
 		],
 	];
 
@@ -208,10 +216,12 @@ class SpriteSheetHooks {
 	 * @return	string	Wiki Text
 	 */
 	static public function generateIfSpriteOutput(Parser &$parser, PPFrame $frame, $arguments) {
-		$output = self::generateSpriteOutput(&$parser, $frame, $arguments;
+		$output = self::generateSpriteOutput($parser, $frame, $arguments);
+
+		$parameters = self::cleanAndSetupParameters($arguments, $frame);
 
 		if (!is_array($output)) {
-			return $wikiText;
+			return $parameters['wikitext'];
 		}
 		return $output;
 	}
@@ -304,18 +314,18 @@ class SpriteSheetHooks {
 	 * The #ifslice parser tag entry point.
 	 *
 	 * @access	public
-	 * @param	object	Parser object passed as a reference.
-	 * @param	string	Page title with namespace
-	 * @param	string	Slice Name
-	 * @param	integer	[Optional] Thumbnail Width
-	 * @param	string	Wiki Text to render if the slice is not found.
+	 * @param	object	Parser
+	 * @param	object	PPFrame
+	 * @param	array	Arguments
 	 * @return	string	Wiki Text
 	 */
-	static public function generateIfSliceOutput(&$parser, $file = null, $name = null, $thumbWidth = 0, $wikiText = null) {
-		$output = self::generateSliceOutput($parser, $file, $name, $thumbWidth);
+	static public function generateIfSliceOutput(Parser &$parser, PPFrame $frame, $arguments) {
+		$output = self::generateSliceOutput($parser, $frame, $arguments);
+
+		$parameters = self::cleanAndSetupParameters($arguments, $frame);
 
 		if (!is_array($output)) {
-			return $wikiText;
+			return $parameters['wikitext'];
 		}
 		return $output;
 	}
