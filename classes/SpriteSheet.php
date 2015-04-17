@@ -435,21 +435,25 @@ class SpriteSheet {
 	}
 
 	/**
-	 * Return sprite at coordinate position.
+	 * Return sprite HTML at coordinate position.
 	 *
 	 * @access	public
 	 * @param	integer	Column
 	 * @param	integer	Row
 	 * @param	integer	[Optional] Thumbnail Width
+	 * @param	integer	[Optional] Page to link to.
 	 * @return	mixed	HTML or false on error.
 	 */
-	public function getSpriteAtCoordinates($column, $row, $thumbWidth = null) {
+	public function getSpriteHtml($column, $row, $thumbWidth = null, $link = false) {
 		$file = wfFindFile($this->getTitle());
 
 		$column = intval($column);
 		$row = intval($row);
 
-		if (is_object($file) && $file->exists()) {if ($thumbWidth > 0) {
+		$link = $this->getUrlFromText($link);
+
+		if (is_object($file) && $file->exists()) {
+			if ($thumbWidth > 0) {
 				$originalWidth = $file->getWidth();
 
 				$scaling = $thumbWidth / ($originalWidth / $this->getColumns());
@@ -471,7 +475,7 @@ class SpriteSheet {
 			$spriteWidth = $spriteWidth - ($this->getInset() * 2);
 			$spriteHeight = $spriteHeight - ($this->getInset() * 2);
 
-			return "<div class='sprite' style='width: {$spriteWidth}px; height: {$spriteHeight}px; overflow: hidden; position: relative;'><img src='".$file->getUrl()."' style='position: absolute; left: -{$spriteX}px; top: -{$spriteY}px;'/></div>";
+			return "<div class='sprite' style='width: {$spriteWidth}px; height: {$spriteHeight}px; overflow: hidden; position: relative;'>".($link !== false ? "<a href='{$link}'>" : '')."<img src='".$file->getUrl()."' style='position: absolute; left: -{$spriteX}px; top: -{$spriteY}px;'/>".($link !== false ? "</a>" : '')."</div>";
 		}
 		return false;
 	}
@@ -482,14 +486,15 @@ class SpriteSheet {
 	 * @access	public
 	 * @param	string	Sprite Name
 	 * @param	integer	[Optional] Thumbnail Width
+	 * @param	integer	[Optional] Page to link to.
 	 * @return	mixed	HTML or false on error.
 	 */
-	public function getSpriteFromName($name, $thumbWidth = null) {
+	public function getSpriteHtmlFromName($name, $thumbWidth = null, $link = false) {
 		$spriteName = $this->getSpriteName($name);
 
 		if ($spriteName->exists()) {
 			$values = $spriteName->getValues();
-			return $this->getSpriteAtCoordinates($values['xPos'], $values['yPos'], $thumbWidth);
+			return $this->getSpriteHtml($values['xPos'], $values['yPos'], $thumbWidth, $link);
 		}
 		return false;
 	}
@@ -586,7 +591,7 @@ class SpriteSheet {
 	}
 
 	/**
-	 * Return slice from input.
+	 * Return slice HTML from input.
 	 *
 	 * @access	public
 	 * @param	integer	X coordinate, percentage
@@ -594,11 +599,14 @@ class SpriteSheet {
 	 * @param	integer	Width, percentage
 	 * @param	integer	Height, percentage
 	 * @param	integer	[Optional] Thumbnail Width
+	 * @param	integer	[Optional] Page to link to.
 	 * @param	boolean	[Optional] Use pixel positioning instead of percentage.
 	 * @return	mixed	HTML or false on error.
 	 */
-	public function getSlice($x, $y, $width, $height, $thumbWidth = null, $pixelMode = false) {
+	public function getSliceHtml($x, $y, $width, $height, $thumbWidth = null, $link = false, $pixelMode = false) {
 		$file = wfFindFile($this->getTitle());
+
+		$link = $this->getUrlFromText($link);
 
 		if (is_object($file) && $file->exists()) {
 			$scaling = 1;
@@ -633,7 +641,7 @@ class SpriteSheet {
 				$sliceHeight = $height * $scaling;
 			}
 
-			return "<div class='sprite' style='width: {$sliceWidth}px; height: {$sliceHeight}px; overflow: hidden; position: relative;'><img src='".$file->getUrl()."' style='position: absolute; left: -{$sliceX}px; top: -{$sliceY}px;'/></div>";
+			return "<div class='sprite' style='width: {$sliceWidth}px; height: {$sliceHeight}px; overflow: hidden; position: relative;'>".($link !== false ? "<a href='{$link}'>" : '')."<img src='".$file->getUrl()."' style='position: absolute; left: -{$sliceX}px; top: -{$sliceY}px;'/>".($link !== false ? "</a>" : '')."</div>";
 		}
 		return false;
 	}
@@ -644,15 +652,16 @@ class SpriteSheet {
 	 * @access	public
 	 * @param	string	Slice Name
 	 * @param	integer	[Optional] Thumbnail Width
+	 * @param	integer	[Optional] Page to link to.
 	 * @param	boolean	[Optional] Use pixel positioning instead of percentage.
 	 * @return	mixed	HTML or false on error.
 	 */
-	public function getSliceFromName($name, $thumbWidth = null, $pixelMode = false) {
+	public function getSliceHtmlFromName($name, $thumbWidth = null, $link = false, $pixelMode = false) {
 		$sliceName = $this->getSliceName($name);
 
 		if ($sliceName->exists()) {
 			$values = $sliceName->getValues();
-			return $this->getSlice($values['xPercent'], $values['yPercent'], $values['widthPercent'], $values['heightPercent'], $thumbWidth, $pixelMode);
+			return $this->getSliceHtml($values['xPercent'], $values['yPercent'], $values['widthPercent'], $values['heightPercent'], $thumbWidth, $link, $pixelMode);
 		}
 		return false;
 	}
@@ -801,6 +810,28 @@ class SpriteSheet {
 	 */
 	public function isLocal() {
 		return true;
+	}
+
+	/**
+	 * Get a URL from unsanitized input.  Could be a Title value or a proper URL.
+	 *
+	 * @access	private
+	 * @return	mixed	Full URL or false on error.
+	 */
+	private function getUrlFromText($text) {
+		if (empty($text)) {
+			return false;
+		}
+
+		if (filter_var($text, FILTER_VALIDATE_URL)) {
+			//Yep, it's a URL.
+			return $text;
+		}
+		$title = Title::newFromText($text);
+		if ($title instanceOf Title) {
+			return $title->getFullURL();
+		}
+		return false;
 	}
 }
 

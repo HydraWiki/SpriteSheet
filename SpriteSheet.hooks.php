@@ -172,7 +172,7 @@ class SpriteSheetHooks {
 					return self::makeErrorBox();
 				}
 
-				$html = $spriteSheet->getSpriteFromName($spriteName->getName(), $parameters['width']);
+				$html = $spriteSheet->getSpriteHtmlFromName($spriteName->getName(), $parameters['width']);
 			} else {
 				if (!isset($parameters['column']['integer']) || $parameters['column']['integer'] < 0) {
 					self::setError('spritesheet_error_invalid_option', ['column', $parameters['column']['integer']]);
@@ -182,7 +182,7 @@ class SpriteSheetHooks {
 					self::setError('spritesheet_error_invalid_option', ['row', $parameters['row']['integer']]);
 					return self::makeErrorBox();
 				}
-				$html = $spriteSheet->getSpriteAtCoordinates($parameters['column']['integer'], $parameters['row']['integer'], $parameters['resize']['number']);
+				$html = $spriteSheet->getSpriteHtml($parameters['column']['integer'], $parameters['row']['integer'], $parameters['resize']['number'], $parameters['link']);
 			}
 		} else {
 			self::setError('could_not_find_title', [$parameters['file']]);
@@ -202,15 +202,13 @@ class SpriteSheetHooks {
 	 * The #ifsprite parser tag entry point.
 	 *
 	 * @access	public
-	 * @param	object	Parser object passed as a reference.
-	 * @param	string	Page title with namespace
-	 * @param	string	Sprite Name
-	 * @param	integer	[Optional] Thumbnail Width
-	 * @param	string	Wiki Text to render if the sprite is not found.
+	 * @param	object	Parser
+	 * @param	object	PPFrame
+	 * @param	array	Arguments
 	 * @return	string	Wiki Text
 	 */
-	static public function generateIfSpriteOutput(&$parser, $file = null, $name = null, $thumbWidth = 0, $wikiText = null) {
-		$output = self::generateSpriteOutput($parser, $file, $name, $thumbWidth);
+	static public function generateIfSpriteOutput(Parser &$parser, PPFrame $frame, $arguments) {
+		$output = self::generateSpriteOutput(&$parser, $frame, $arguments;
 
 		if (!is_array($output)) {
 			return $wikiText;
@@ -257,7 +255,7 @@ class SpriteSheetHooks {
 						return self::makeErrorBox();
 					}
 
-					$html = $spriteSheet->getSliceFromName($sliceName->getName(), $parameters['resize'], $pixelMode);
+					$html = $spriteSheet->getSliceHtmlFromName($sliceName->getName(), $parameters['resize'], $pixelMode);
 				} else {
 					//The unit of measure is allowed to be specified, but they must match to be valid.
 					$unitParams = ['x', 'y', 'width', 'height'];
@@ -285,7 +283,7 @@ class SpriteSheetHooks {
 						$pixelMode = true;
 					}
 
-					$html = $spriteSheet->getSlice($parameters['x']['number'], $parameters['y']['number'], $parameters['width']['number'], $parameters['height']['number'], $parameters['resize']['number'], $pixelMode);
+					$html = $spriteSheet->getSliceHtml($parameters['x']['number'], $parameters['y']['number'], $parameters['width']['number'], $parameters['height']['number'], $parameters['resize']['number'], $parameters['link'], $pixelMode);
 				}
 
 				$parser->getOutput()->addModules('ext.spriteSheet');
