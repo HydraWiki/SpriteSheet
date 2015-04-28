@@ -24,29 +24,48 @@ Done! Navigate to "Special:Version" on your wiki to verify that the extension is
 ##Tags
 
 ###\#sprite - Parser Tag
-The #sprite tag format accepts X and Y coordinate positions to select a section of the image from a traditional column and row format.
+The #sprite tag format accepts X and Y coordinate positions to select a section of the image in a traditional column and row format.
 
 Basic Syntax:
 
-	{{#sprite:File:Image_Name.png|xPos|yPos}}
+	{{#sprite:file=Example.png|column=0|row=0}}
 
-With optional thumbnail resize:
+It can also be spaced across lines for readability:
 
-	{{#sprite:File:Image_Name.png|xPos|yPos|thumbWidth}}
+	{{#sprite:
+	file=Example.png
+	|column=0
+	|row=0
+	}}
 
-####Attributes for #sprite Tag
+With optional resize and link:
 
-|       Attribute       | Description                                                                                                                                                                         |
-|----------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| File                  | **Required**: yes<br/>The file page containing the image to use.                                                                                                                    |
-| X Coordinate Position | **Required**: yes<br/>The X Coordinate Position of the sprite to select.  Coordinates use zero based numbering.                                                                     |
-| Y Coordinate Position | **Required**: yes<br/>The Y Coordinate Position of the sprite to select.  Coordinates use zero based numbering.                                                                     |
-| Thumb Width           | **Required**: no, **Default**: null<br/>Size the thumbnail width of the entire image before selecting,the sprite.  This is the width of the entire image; not the individual sprite.|
+	{{#sprite:
+	file=Example.png
+	|column=0
+	|row=0
+	|resize=300
+	|link=ExampleArticle
+	}}
+
+####Parameters for #sprite Tag
+
+| Parameter | Description                                                                                                                                      |
+|----------:|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| file      | **Required**: yes<br/>The file page containing the image to use.                                                                                 |
+| column    | **Required**: yes<br/>The X Coordinate Position of the sprite to select.  Coordinates use zero based numbering.                                  |
+| row       | **Required**: yes<br/>The Y Coordinate Position of the sprite to select.  Coordinates use zero based numbering.                                  |
+| resize    | **Required**: no, **Default**: null<br/>Display size in pixel width of the sprite.  Note: Will not resize larger than 100% of the original size. |
+| link      | **Required**: no, **Default**: null<br/>Page name or external URL to have the sprite link to.                                                    |
 
 ####Example
 
 To display the sprite located at column 4, row 2:
-<pre>{{#sprite:File:Hanamura-screenshot.jpg|4|2}}</pre>
+<pre>{{#sprite:
+file=File:Hanamura-screenshot.jpg
+|column=4
+|row=2
+}}</pre>
 
 ![](documentation/SpriteUsageExample.png)
 
@@ -56,47 +75,80 @@ The #ifsprite tag is used to display a named sprite if it exists.  If the named 
 
 Basic Syntax:
 
-	{{#ifsprite:File:Image_Name.png|spriteName|[thumbWidth]|[wikiText]}}
+	{{#ifsprite:
+	file=File:Example.png
+	|name=TestSprite
+	|wikitext={{SpriteNotFound}}
+	}}
 
-####Attributes for #ifsprite Tag
+####Parameters for #ifsprite Tag
 
-|       Attribute       | Description                                                                                                                                                                         |
-|----------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| File                  | **Required**: yes<br/>The file page containing the image to use.                                                                                                                    |
-| Sprite Name           | **Required**: yes<br/>The named sprite to load.                                                                                                                                     |
-| Thumb Width           | **Required**: no, **Default**: null<br/>Size the thumbnail width of the entire image before selecting,the sprite.  This is the width of the entire image; not the individual sprite.|
-| Wiki Text             | **Required**: no, **Default**: null<br/>The wiki text to parse and display if the named sprite is not found.  Can be left blank to not display anything.                            |
+| Parameter | Description                                                                                                                                               |
+|----------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| file      | **Required**: yes<br/>The file page containing the image to use.                                                                                          |
+| name      | **Required**: yes<br/>The named sprite to load.                                                                                                           |
+| resize    | **Required**: no, **Default**: null<br/>Display size in pixel width of the sprite.  Note: Will not resize larger than 100% of the original size.          |
+| wikitext  | **Required**: yes, **Default**: null<br/>The wiki text to parse and display if the named sprite is not found.  Can be left blank to not display anything. |
 
 ####Example
 
-<pre>{{#ifsprite:File:Hanamura-screenshot.jpg|Plaque||[http://www.example.com/ Use This Example]}}</pre>
+<pre>{{#ifsprite:
+file=File:Hanamura-screenshot.jpg
+|name=Plaque
+|wikitext=[http://www.example.com/ Use This Example]
+}}</pre>
 
 
 ###\#slice - Parser Tag
-The #slice tag takes X and Y percentage positioning along with width and height percentaging sizing to select a section of the image.  This works regardless if the image is manually resized or done through thumbnail sizing.  If pixel perfect accurancy is required the unit of measurement can be manually specified to use pixels for each argument; "10px".  However, using pixels does not guarantee the slice will always contain the same section if the image is edited or resized.
+The #slice tag takes X and Y positioning along with width and height sizing to select a section of the image.  All four parameters take units in pixels(px) or percentages(%), but they all must use the same unit.
 
 Basic Syntax:
 
-	{{#slice:File:Image_Name.png|xPercent|yPercent|widthPercent|heightPercent}}
+	{{#slice:file=File:Example.png|x=0|y=0|width=10|height=10}}
 
-With optional thumbnail resize:
+It can also be spaced across lines for readability:
 
-	{{#slice:File:Image_Name.png|xPercent|yPercent|widthPercent|heightPercent|thumbWidth}}
+	{{#slice:
+	file=File:Example.png
+	|x=0
+	|y=0
+	|width=10
+	|height=10
+	}}
 
-####Attributes for #slice Tag
+With optional resize and link:
 
-|       Attribute       | Description                                                                                                                                                                          |
-|----------------------:|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| File                  | **Required**: yes<br/>The file page containing the image to use.                                                                                                                     |
-| X Percentage Position | **Required**: yes<br/>The X Percentage Position of the slice to cut.                                                                                                                 |
-| Y Percentage Position | **Required**: yes<br/>The Y Percentage Position of the slice to cut.                                                                                                                 |
-| Width, in Percentage  | **Required**: yes<br/>Width in percentage starting from the Y position.                                                                                                              |
-| Height, in Percentage | **Required**: yes<br/>Height in percentage starting from the Y position.                                                                                                             |
-| Thumb Width           | **Required**: no, **Default**: none<br/>Size the thumbnail width of the entire image before selecting the sprite.  This is the width of the entire image; not the individual sprite. |
+	{{#slice:
+	file=Example.png
+	|x=0
+	|y=0
+	|width=10
+	|height=10
+	|resize=300
+	|link=ExampleArticle
+	}}
+
+####Parameters for #slice Tag
+
+| Parameter | Description                                                                                                                                      |
+|----------:|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| file      | **Required**: yes<br/>The file page containing the image to use.                                                                                 |
+| x         | **Required**: yes<br/>The X position, in pixels or percentage, of the slice to cut.                                                              |
+| y         | **Required**: yes<br/>The Y position, in pixels or percentage, of the slice to cut.                                                              |
+| width     | **Required**: yes<br/>Width in in pixels or percentage starting from the Y position.                                                             |
+| height    | **Required**: yes<br/>Height in in pixels or percentage starting from the Y position.                                                            |
+| resize    | **Required**: no, **Default**: null<br/>Display size in pixel width of the sprite.  Note: Will not resize larger than 100% of the original size. |
+| link      | **Required**: no, **Default**: null<br/>Page name or external URL to have the sprite link to.                                                    |
 
 ####Example
 
-<pre>{{#slice:File:Hanamura-screenshot.jpg|28.25|32.97|25.12|23.58}}</pre>
+<pre>{{#slice:
+file=File:Hanamura-screenshot.jpg
+|x=28.25
+|y=32.97
+|width=25.12
+|height=23.58
+}}</pre>
 
 ![](documentation/SliceUsageExample.png)
 
@@ -106,21 +158,28 @@ The #ifslice tag is used to display a named slice if it exists.  If the named sl
 
 Basic Syntax:
 
-	{{#ifslice:File:Image_Name.png|sliceName|[thumbWidth]|[wikiText]}}
+	{{#ifslice:
+	file=File:Image_Name.png
+	|name=SliceTest
+	|wikitext={{SpriteNotFound}}
+	}}
 
 ####Attributes for #ifslice Tag
 
-|       Attribute       | Description                                                                                                                                                                         |
-|----------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| File                  | **Required**: yes<br/>The file page containing the image to use.                                                                                                                    |
-| Slice Name            | **Required**: yes<br/>The named slice to load.                                                                                                                                      |
-| Thumb Width           | **Required**: no, **Default**: null<br/>Size the thumbnail width of the entire image before selecting,the slice.  This is the width of the entire image; not the individual slice.  |
-| Wiki Text             | **Required**: no, **Default**: null<br/>The wiki text to parse and display if the named slice is not found.  Can be left blank to not display anything.                             |
+| Parameter | Description                                                                                                                                              |
+|----------:|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| file      | **Required**: yes<br/>The file page containing the image to use.                                                                                         |
+| name      | **Required**: yes<br/>The named slice to load.                                                                                                           |
+| resize    | **Required**: no, **Default**: null<br/>Display size in pixel width of the slice.  Note: Will not resize larger than 100% of the original size.          |
+| wikitext  | **Required**: yes, **Default**: null<br/>The wiki text to parse and display if the named slice is not found.  Can be left blank to not display anything. |
 
 ####Example
 
-<pre>{{#ifslice:File:Hanamura-screenshot.jpg|Plaque||[http://www.example.com/ Use This Example]}}</pre>
-
+<pre>{{#ifslice:
+file=File:Hanamura-screenshot.jpg
+|name=Plaque
+|wikitext=[http://www.example.com/ Use This Example]
+}}</pre>
 
 ##Naming Sprites/Slices
 
