@@ -144,10 +144,10 @@ With optional resize and link:
 
 <pre>{{#slice:
 file=File:Hanamura-screenshot.jpg
-|x=28.25
-|y=32.97
-|width=25.12
-|height=23.58
+|x=27.88
+|y=32.31
+|width=25.62
+|height=25.55
 }}</pre>
 
 ![](documentation/SliceUsageExample.png)
