@@ -1,4 +1,19 @@
 #Changes
+##1.1.0
+* This version is not backwards compatible with previous versions.
+* The SpriteSheet Editor is now hidden by default to reduce the number of curious edits.  Wiki editors are cats.
+* Spritesheets no longer automatically saved.  The save button is disabled by default and will be activated when changes are made.  A visual indicator has been added when changes are pending.
+* Will now respect page protection on images when editing sprite sheets.
+* Parser tags were changed to a "parameter=option" format.  This is to prevent feature creep from destroying the tag format and consistency.  It also allows for easier templating.
+* The "thumbnail" parameter has been renamed to "resize".  It now controls the direct size of the sprite output instead of the overall image itself.  This is a more natural thought process when handling the output.
+* Better parameter validation and error handling.
+* New "link" parameter to have the sprite link to a page or external URL.
+* Complete revisioning with the ability to roll back spritesheets, sprites, and slices.
+* Spritesheets can now display an overlayed visual difference between revisions.
+* Logging has been standardized and improved in relation to the revisioning feature.
+* Fixes for CSS selector tagetting.
+* Fixed an issue with remote spritesheets that prevented caching correctly.
+
 ##1.0.1
 * Do not display sprite sheet editor on non-images.
 
