@@ -164,7 +164,7 @@ Basic Syntax:
 	|wikitext={{SpriteNotFound}}
 	}}
 
-####Attributes for #ifslice Tag
+####Parameters for #ifslice Tag
 
 | Parameter | Description                                                                                                                                              |
 |----------:|----------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -185,9 +185,9 @@ file=File:Hanamura-screenshot.jpg
 
 ![](documentation/SpriteNaming.png)
 
-After a sprite or slice has been selected a pop up will open under the tag preview.  This allows a custom name to be set for the selection that can be recalled later.  It uses the same #sprite and #slice parser tags with only the name as the first argument after the file name.  Adding the optional thumb width is still supported.
+After a sprite or slice has been selected a pop up will open under the tag preview.  This allows a custom name to be set for the selection that can be recalled later.  It uses the same #sprite and #slice parser tags with the "name" parameter instead of specifying the positioning.
 
-<pre>{{#sprite:File:Hanamura-screenshot.jpg|Plaque}}</pre>
-<pre>{{#sprite:File:Hanamura-screenshot.jpg|Plaque|800}}</pre>
-<pre>{{#slice:File:Hanamura-screenshot.jpg|Plaque}}</pre>
-<pre>{{#slice:File:Hanamura-screenshot.jpg|Plaque|500}}</pre>
+<pre>{{#sprite:file=File:Hanamura-screenshot.jpg|name=Plaque}}</pre>
+<pre>{{#sprite:file=File:Hanamura-screenshot.jpg|name=Plaque|resize=800}}</pre>
+<pre>{{#slice:file=File:Hanamura-screenshot.jpg|name=Plaque}}</pre>
+<pre>{{#slice:file=File:Hanamura-screenshot.jpg|name=Plaque|resize=500}}</pre>

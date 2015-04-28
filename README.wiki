@@ -4,8 +4,8 @@
 |status      = stable
 |type        = parser function
 |author      = Curse Inc. Wiki Platform Team, Alexia E. Smith ([[User:Alexia E. Smith|Alexia E. Smith]])
-|version     = 1.0.1
-|update      = 2015-03-17
+|version     = 1.1.0
+|update      = 2015-04-29
 |mediawiki   = 1.23+
 |php         = 5.4+
 |download    = {{ {{TNTN|GithubDownload}} |CurseStaff|SpriteSheet}}
@@ -29,7 +29,7 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 
 ==Installation==
 
-{{ {{TNTN|ExtensionInstall}} |download-link=[https://github.com/CurseStaff/SpriteSheet/archive/v1.0.1.zip Download]}}
+{{ {{TNTN|ExtensionInstall}} |download-link=[https://github.com/CurseStaff/SpriteSheet/archive/v1.1.0.zip Download]}}
 
 ==Usage==
 
@@ -38,44 +38,66 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 ===Tags===
 
 ====#sprite - Parser Tag====
-The #sprite tag format accepts X and Y coordinate positions to select a section of the image from a traditional column and row format.
+The #sprite tag format accepts X and Y coordinate positions to select a section of the image in a traditional column and row format.
 
 Basic Syntax:
 
-	<code><nowiki>{{#sprite:File:Image_Name.png|xPos|yPos}}</nowiki></code>
+	<code><nowiki>{{#sprite:file=Example.png|column=0|row=0}}</nowiki></code>
 
-With optional thumbnail resize:
+It can also be spaced across lines for readability:
 
-	<code><nowiki>{{#sprite:File:Image_Name.png|xPos|yPos|thumbWidth}}</nowiki></code>
+	<code><nowiki>{{#sprite:
+	file=Example.png
+	|column=0
+	|row=0
+	}}</nowiki></code>
 
-===== Attributes for #sprite Tag =====
+With optional resize and link:
+
+	<code><nowiki>{{#sprite:
+	file=Example.png
+	|column=0
+	|row=0
+	|resize=300
+	|link=ExampleArticle
+	}}</nowiki></code>
+
+===== Parameters for #sprite Tag =====
 
 {| class="wikitable"
 |-
-! Attribute
+! Parameter
 ! Description
 |-
-| <code>File</code>
+| <code>file</code>
 | '''Required:''' yes
 :The file page containing the image to use.
 |-
-| <code>X Coordinate Position</code>
+| <code>column</code>
 | '''Required:''' yes
 :The X Coordinate Position of the sprite to select.  Coordinates use zero based numbering.
 |-
-| <code>Y Coordinate Position</code>
+| <code>row</code>
 | '''Required:''' yes
 :The Y Coordinate Position of the sprite to select.  Coordinates use zero based numbering.
 |-
-| <code>Thumb Width</code>
+| <code>resize</code>
 | '''Required:''' no, '''Default:''' <tt>null</tt>
-:Size the thumbnail width of the entire image before selecting the sprite.  This is the width of the entire image; not the individual sprite.
+:Display size in pixel width of the sprite.  Note: Will not resize larger than 100% of the original size.
+|-
+| <code>link</code>
+| '''Required:''' no, '''Default:''' <tt>null</tt>
+:Page name or external URL to have the sprite link to. 
 |}
 
 ===== Example =====
 
 To display the sprite located at column 4, row 2:
-<pre>{{#sprite:File:Hanamura-screenshot.jpg|4|2}}</pre>
+<pre>{{#sprite:
+file=File:Hanamura-screenshot.jpg
+|column=4
+|row=2
+}}</pre>
 
 [[File:SpriteSheet-SpriteUsageExample.png]]
 
@@ -85,83 +107,118 @@ The #ifsprite tag is used to display a named sprite if it exists.  If the named 
 
 Basic Syntax:
 
-	<code><nowiki>{{#ifsprite:File:Image_Name.png|spriteName|[thumbWidth]|[wikiText]}}</nowiki></code>
+	<code><nowiki>{{#ifsprite:
+	file=File:Example.png
+	|name=TestSprite
+	|wikitext={{SpriteNotFound}}
+	}}</nowiki></code>
 
-===== Attributes for #ifsprite Tag =====
+===== Parameters for #ifsprite Tag =====
 
 {| class="wikitable"
 |-
-! Attribute
+! Parameter
 ! Description
 |-
-| <code>File</code>
+| <code>file</code>
 | '''Required:''' yes
 :The file page containing the image to use.
 |-
-| <code>Sprite Name</code>
+| <code>name</code>
 | '''Required:''' yes
 :The named sprite to load.
 |-
-| <code>Thumb Width</code>
+| <code>resize</code>
 | '''Required:''' no, '''Default:''' <tt>none</tt>
-:Size the thumbnail width of the entire image before selecting the sprite.  This is the width of the entire image; not the individual sprite.
+:Display size in pixel width of the sprite.  Note: Will not resize larger than 100% of the original size.
 |-
-| <code>Wiki Text</code>
-| '''Required:''' no, '''Default:''' <tt>none</tt>
+| <code>wikitext</code>
+| '''Required:''' yes, '''Default:''' <tt>none</tt>
 :The wiki text to parse and display if the named sprite is not found.  Can be left blank to not display anything.
 |}
 
 ===== Example =====
 
-<pre>{{#ifsprite:File:Hanamura-screenshot.jpg|Plaque||[http://www.example.com/ Use This Example]}}</pre>
-
+<pre>{{#ifsprite:
+file=File:Hanamura-screenshot.jpg
+|name=Plaque
+|wikitext=[http://www.example.com/ Use This Example]
+}}</pre>
 
 ====#slice - Parser Tag====
-The #slice tag takes X and Y percentage positioning along with width and height percentaging sizing to select a section of the image.  This works regardless if the image is manually resized or done through thumbnail sizing.  If pixel perfect accurancy is required the unit of measurement can be manually specified to use pixels for each argument; "10px".  However, using pixels does not guarantee the slice will always contain the same section if the image is edited or resized.
+The #slice tag takes X and Y positioning along with width and height sizing to select a section of the image.  All four parameters take units in pixels(px) or percentages(%), but they all must use the same unit.
 
 Basic Syntax:
 
-	<code><nowiki>{{#slice:File:Image_Name.png|xPercent|yPercent|widthPercent|heightPercent}}</nowiki></code>
+	<code><nowiki>{{#slice:file=File:Example.png|x=0|y=0|width=10|height=10}}</nowiki></code>
 
-With optional thumbnail resize:
+It can also be spaced across lines for readability:
 
-	<code><nowiki>{{#slice:File:Image_Name.png|xPercent|yPercent|widthPercent|heightPercent|thumbWidth}}</nowiki></code>
+	<code><nowiki>{{#slice:
+	file=File:Example.png
+	|x=0
+	|y=0
+	|width=10
+	|height=10
+	}}</nowiki></code>
 
-===== Attributes for #slice Tag =====
+With optional resize and link:
+
+	<code><nowiki>{{#slice:
+	file=Example.png
+	|x=0
+	|y=0
+	|width=10
+	|height=10
+	|resize=300
+	|link=ExampleArticle
+	}}</nowiki></code>
+
+===== Parameters for #slice Tag =====
 
 {| class="wikitable"
 |-
-! Attribute
+! Parameter
 ! Description
 |-
-| <code>File</code>
+| <code>file</code>
 | '''Required:''' yes
 :The file page containing the image to use.
 |-
-| <code>X Percentage Position</code>
+| <code>x</code>
 | '''Required:''' yes
-:The X Percentage Position of the slice to cut.
+:The X position, in pixels or percentage, of the slice to cut.
 |-
-| <code>Y Percentage Position</code>
+| <code>y</code>
 | '''Required:''' yes
-:The Y Percentage Position of the slice to cut.
+:The Y position, in pixels or percentage, of the slice to cut.
 |-
-| <code>Width, in Percentage</code>
+| <code>width</code>
 | '''Required:''' yes
-:Width in percentage starting from the X position.
+:Width in in pixels or percentage starting from the Y position.
 |-
-| <code>Height, in Percentage</code>
+| <code>height</code>
 | '''Required:''' yes
-:Height in percentage starting from the Y position.
+:Height in in pixels or percentage starting from the Y position.
 |-
-| <code>Thumb Width</code>
-| '''Required:''' no, '''Default:''' <tt>none</tt>
-:Size the thumbnail width of the entire image before selecting the sprite.  This is the width of the entire image; not the individual sprite.
+| <code>resize</code>
+| '''Required:''' no, '''Default:''' <tt>null</tt>
+:Display size in pixel width of the sprite.  Note: Will not resize larger than 100% of the original size.
+|-
+| <code>link</code>
+| '''Required:''' no, '''Default:''' <tt>null</tt>
+:Page name or external URL to have the sprite link to. 
 |}
 
 ===== Example =====
 
-<pre>{{#slice:File:Hanamura-screenshot.jpg|28.25|32.97|25.12|23.58}}</pre>
+<pre>{{#slice:
+file=File:Hanamura-screenshot.jpg
+|x=27.88
+|y=32.31
+|width=25.62
+|height=25.55
+}}</pre>
 
 [[File:SpriteSheet-SliceUsageExample.png]]
 
@@ -171,44 +228,51 @@ The #ifslice tag is used to display a named slice if it exists.  If the named sl
 
 Basic Syntax:
 
-	<code><nowiki>{{#ifslice:File:Image_Name.png|sliceName|[thumbWidth]|[wikiText]}}</nowiki></code>
+	<code><nowiki>{{#ifslice:
+	file=File:Image_Name.png
+	|name=SliceTest
+	|wikitext={{SpriteNotFound}}
+	}}</nowiki></code>
 
-===== Attributes for #ifslice Tag =====
+===== Parameters for #ifslice Tag =====
 
 {| class="wikitable"
 |-
-! Attribute
+! Parameter
 ! Description
 |-
-| <code>File</code>
+| <code>file</code>
 | '''Required:''' yes
 :The file page containing the image to use.
 |-
-| <code>Slice Name</code>
+| <code>name</code>
 | '''Required:''' yes
 :The named slice to load.
 |-
-| <code>Thumb Width</code>
+| <code>resize</code>
 | '''Required:''' no, '''Default:''' <tt>none</tt>
-:Size the thumbnail width of the entire image before selecting the sprite.  This is the width of the entire image; not the individual sprite.
+:Display size in pixel width of the slice.  Note: Will not resize larger than 100% of the original size.
 |-
-| <code>Wiki Text</code>
-| '''Required:''' no, '''Default:''' <tt>none</tt>
+| <code>wikitext</code>
+| '''Required:''' yes, '''Default:''' <tt>none</tt>
 :The wiki text to parse and display if the named slice is not found.  Can be left blank to not display anything.
 |}
 
 ===== Example =====
 
-<pre>{{#ifslice:File:Hanamura-screenshot.jpg|Plaque||[http://www.example.com/ Use This Example]}}</pre>
-
+<pre>{{#ifslice:
+file=File:Hanamura-screenshot.jpg
+|name=Plaque
+|wikitext=[http://www.example.com/ Use This Example]
+}}</pre>
 
 ===Naming Sprites/Slices===
 
 [[File:SpriteSheet-SpriteNaming.png]]
 
-After a sprite or slice has been selected a pop up will open under the tag preview.  This allows a custom name to be set for the selection that can be recalled later.  It uses the same #sprite and #slice parser tags with only the name as the first argument after the file name.  Adding the optional thumb width is still supported.
+After a sprite or slice has been selected a pop up will open under the tag preview.  This allows a custom name to be set for the selection that can be recalled later.  It uses the same #sprite and #slice parser tags with the "name" parameter instead of specifying the positioning.
 
-<pre>{{#sprite:File:Hanamura-screenshot.jpg|Plaque}}</pre>
-<pre>{{#sprite:File:Hanamura-screenshot.jpg|Plaque|800}}</pre>
-<pre>{{#slice:File:Hanamura-screenshot.jpg|Plaque}}</pre>
-<pre>{{#slice:File:Hanamura-screenshot.jpg|Plaque|500}}</pre>
+<pre>{{#sprite:file=File:Hanamura-screenshot.jpg|name=Plaque}}</pre>
+<pre>{{#sprite:file=File:Hanamura-screenshot.jpg|name=Plaque|resize=800}}</pre>
+<pre>{{#slice:file=File:Hanamura-screenshot.jpg|name=Plaque}}</pre>
+<pre>{{#slice:file=File:Hanamura-screenshot.jpg|name=Plaque|resize=500}}</pre>
