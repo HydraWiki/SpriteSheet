@@ -82,7 +82,7 @@ $wgResourceModules['ext.spriteSheet'] = [
 		'save_named_sprite',
 		'save_named_slice',
 		'please_enter_sprite_name',
-		'please_select_sprite',
+		'please_select_sprite_type',
 		'show_named_sprites',
 		'hide_named_sprites',
 		'click_to_edit',

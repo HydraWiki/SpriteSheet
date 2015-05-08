@@ -327,7 +327,7 @@ mw.spriteSheet = {
 		var spriteName = $('#sprite_name').val();
 
 		if (!this.selectedType) {
-			alert(mw.message('please_select_sprite').text());
+			alert(mw.message('please_select_sprite_type').text());
 			return;
 		}
 
