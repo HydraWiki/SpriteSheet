@@ -6,8 +6,9 @@ CREATE TABLE /*_*/spritename (
   `values` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `edited` int(14) NOT NULL DEFAULT '0',
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`spritename_id`),
-  UNIQUE KEY `spritesheet_id_name` (`spritesheet_id`,`name`),
-  KEY `type` (`type`),
-  KEY `edited` (`edited`)
+  PRIMARY KEY (`spritename_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE /*_*/spritename ADD UNIQUE `spritesheet_id_name` (`spritesheet_id`,`name`),
+ADD INDEX `type` (`type`),
+ADD INDEX `edited` (`edited`);

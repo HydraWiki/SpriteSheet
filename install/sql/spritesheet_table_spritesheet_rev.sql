@@ -6,8 +6,9 @@ CREATE TABLE /*_*/spritesheet_rev (
   `rows` int(11) NOT NULL,
   `inset` int(11) NOT NULL,
   `edited` int(14) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`spritesheet_rev_id`),
-  KEY `spritesheet_id` (`spritesheet_id`),
-  KEY `title` (`title`),
-  KEY `edited` (`edited`)
+  PRIMARY KEY (`spritesheet_rev_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE /*_*/spritesheet_rev ADD INDEX `spritesheet_id` (`spritesheet_id`),
+ADD INDEX `title` (`title`),
+ADD INDEX `edited` (`edited`);
