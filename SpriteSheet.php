@@ -19,6 +19,7 @@ $credits = [
 	'name'				=> 'SpriteSheet',
 	'author'			=> ['Curse Inc. Wiki Platform Team', 'Alexia E. Smith'],
 	'descriptionmsg'	=> 'spritesheet_description',
+	'url'				=> 'https://github.com/CurseStaff/SpriteSheet',
 	'version'			=> SPRITESHEET_VERSION
 ];
 $wgExtensionCredits['other'][] = $credits;
