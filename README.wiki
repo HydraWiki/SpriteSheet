@@ -29,15 +29,15 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 
 ==Installation==
 
-{{ {{TNTN|ExtensionInstall}} |download-link=[https://github.com/CurseStaff/SpriteSheet/archive/v1.1.0.zip Download]}}
+{{ {{TNTN|ExtensionInstall}} |download-link=[https://github.com/CurseStaff/SpriteSheet/archive/v1.1.1.zip Download]}}
 
 ==Configuration==
 There are two available rights that may be assigned to groups, 'edit_sprites' and 'spritesheet_rollback'.  The 'edit_sprites' permission gives the ability to edit sprite sheets, sprites, slices, assign names, and delete.  The 'spritesheet_rollback' allows the ability to rollback changes from the change log.
 
 Default permissions:
 
-	<code><nowiki>$wgGroupPermissions['autoconfirmed']['edit_sprites'] = true;
-	$wgGroupPermissions['sysop']['spritesheet_rollback'] = true;</nowiki></code>
+<pre><nowiki>$wgGroupPermissions['autoconfirmed']['edit_sprites'] = true;
+$wgGroupPermissions['sysop']['spritesheet_rollback'] = true;</nowiki></pre>
 
 ==Usage==
 
@@ -50,25 +50,25 @@ The #sprite tag format accepts X and Y coordinate positions to select a section 
 
 Basic Syntax:
 
-	<code><nowiki>{{#sprite:file=Example.png|column=0|row=0}}</nowiki></code>
+<pre><nowiki>{{#sprite:file=Example.png|column=0|row=0}}</nowiki></pre>
 
 It can also be spaced across lines for readability:
 
-	<code><nowiki>{{#sprite:
-	file=Example.png
-	|column=0
-	|row=0
-	}}</nowiki></code>
+<pre><nowiki>{{#sprite:
+file=Example.png
+|column=0
+|row=0
+}}</nowiki></pre>
 
 With optional resize and link:
 
-	<code><nowiki>{{#sprite:
-	file=Example.png
-	|column=0
-	|row=0
-	|resize=300
-	|link=ExampleArticle
-	}}</nowiki></code>
+<pre><nowiki>{{#sprite:
+file=Example.png
+|column=0
+|row=0
+|resize=300
+|link=ExampleArticle
+}}</nowiki></pre>
 
 ===== Parameters for #sprite Tag =====
 
@@ -115,11 +115,11 @@ The #ifsprite tag is used to display a named sprite if it exists.  If the named 
 
 Basic Syntax:
 
-	<code><nowiki>{{#ifsprite:
-	file=File:Example.png
-	|name=TestSprite
-	|wikitext={{SpriteNotFound}}
-	}}</nowiki></code>
+<pre><nowiki>{{#ifsprite:
+file=File:Example.png
+|name=TestSprite
+|wikitext={{SpriteNotFound}}
+}}</nowiki></pre>
 
 ===== Parameters for #ifsprite Tag =====
 
@@ -158,29 +158,29 @@ The #slice tag takes X and Y positioning along with width and height sizing to s
 
 Basic Syntax:
 
-	<code><nowiki>{{#slice:file=File:Example.png|x=0|y=0|width=10|height=10}}</nowiki></code>
+<pre><nowiki>{{#slice:file=File:Example.png|x=0|y=0|width=10|height=10}}</nowiki></pre>
 
 It can also be spaced across lines for readability:
 
-	<code><nowiki>{{#slice:
-	file=File:Example.png
-	|x=0
-	|y=0
-	|width=10
-	|height=10
-	}}</nowiki></code>
+<pre><nowiki>{{#slice:
+file=File:Example.png
+|x=0
+|y=0
+|width=10
+|height=10
+}}</nowiki></pre>
 
 With optional resize and link:
 
-	<code><nowiki>{{#slice:
-	file=Example.png
-	|x=0
-	|y=0
-	|width=10
-	|height=10
-	|resize=300
-	|link=ExampleArticle
-	}}</nowiki></code>
+<pre><nowiki>{{#slice:
+file=Example.png
+|x=0
+|y=0
+|width=10
+|height=10
+|resize=300
+|link=ExampleArticle
+}}</nowiki></pre>
 
 ===== Parameters for #slice Tag =====
 
@@ -236,11 +236,11 @@ The #ifslice tag is used to display a named slice if it exists.  If the named sl
 
 Basic Syntax:
 
-	<code><nowiki>{{#ifslice:
-	file=File:Image_Name.png
-	|name=SliceTest
-	|wikitext={{SpriteNotFound}}
-	}}</nowiki></code>
+<pre><nowiki>{{#ifslice:
+file=File:Image_Name.png
+|name=SliceTest
+|wikitext={{SpriteNotFound}}
+}}</nowiki></pre>
 
 ===== Parameters for #ifslice Tag =====
 
