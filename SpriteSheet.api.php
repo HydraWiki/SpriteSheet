@@ -286,6 +286,8 @@ class SpriteSheetAPI extends ApiBase {
 				}
 
 				if ($validName) {
+					$spriteName->setDeleted(false);
+
 					switch ($this->params['type']) {
 						case 'sprite':
 							if ($this->spriteSheet->validateSpriteCoordindates($values['xPos'], $values['yPos'])) {
