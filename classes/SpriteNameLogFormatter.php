@@ -24,7 +24,7 @@ class SpriteNameLogFormatter extends LogFormatter {
 		$type = $this->entry->getSubtype();
 		$spriteSheet = SpriteSheet::newFromTitle($title, true);
 
-		if ($spriteSheet !== false) {
+		if ($spriteSheet !== false && $spriteSheet->exists()) {
 			if (!empty($parameters[3])) {
 				$spriteName = $spriteSheet->getSpriteName($parameters[3]);
 
