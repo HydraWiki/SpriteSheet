@@ -537,7 +537,11 @@ mw.spriteSheet = {
 					if (result.success != true) {
 						alert(result.message);
 					} else {
-						mw.spriteSheet.spriteNames = result.data;
+						if (result.data.length > 0) {
+							mw.spriteSheet.spriteNames = result.data;
+						} else {
+							mw.spriteSheet.spriteNames = {};
+						}
 						mw.spriteSheet.fetchedSpriteNames = true;
 					}
 					mw.spriteSheet.hideProgressIndicator();
@@ -588,7 +592,6 @@ mw.spriteSheet = {
 			$("#named_sprites").html(mw.message('no_results_named_sprites').escaped());
 		} else {
 			list = $("<ul>");
-
 			$.each(this.spriteNames, function(spriteName, data) {
 				if (data.deleted != true) {
 					$(list).append(mw.spriteSheet.formatSpriteNameListItem(data));
