@@ -17,6 +17,14 @@ Add the following code at the bottom of your LocalSettings.php:
 
 Done! Navigate to "Special:Version" on your wiki to verify that the extension is successfully installed.
 
+#Configuration
+There are two available rights that may be assigned to groups, 'edit_sprites' and 'spritesheet_rollback'.  The 'edit_sprites' permission gives the ability to edit sprite sheets, sprites, slices, assign names, and delete.  The 'spritesheet_rollback' allows the ability to rollback changes from the change log.
+
+Default permissions:
+
+	$wgGroupPermissions['autoconfirmed']['edit_sprites'] = true;
+	$wgGroupPermissions['sysop']['spritesheet_rollback'] = true;
+
 #Usage
 
 ![](documentation/BasicInterface.png)
