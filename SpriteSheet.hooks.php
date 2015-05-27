@@ -180,7 +180,7 @@ class SpriteSheetHooks {
 					return self::makeErrorBox();
 				}
 
-				$html = $spriteSheet->getSpriteHtmlFromName($spriteName->getName(), $parameters['width']);
+				$html = $spriteSheet->getSpriteHtmlFromName($spriteName->getName(), $parameters['resize']['number']);
 			} else {
 				if (!isset($parameters['column']['integer']) || $parameters['column']['integer'] < 0) {
 					self::setError('spritesheet_error_invalid_option', ['column', $parameters['column']['integer']]);
@@ -265,7 +265,7 @@ class SpriteSheetHooks {
 						return self::makeErrorBox();
 					}
 
-					$html = $spriteSheet->getSliceHtmlFromName($sliceName->getName(), $parameters['resize'], $pixelMode);
+					$html = $spriteSheet->getSliceHtmlFromName($sliceName->getName(), $parameters['resize']['number'], $pixelMode);
 				} else {
 					//The unit of measure is allowed to be specified, but they must match to be valid.
 					$unitParams = ['x', 'y', 'width', 'height'];
