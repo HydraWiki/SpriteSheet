@@ -1,3 +1,13 @@
+Object.size = function(obj) {
+	var size = 0, key;
+	for (key in obj) {
+		if (obj.hasOwnProperty(key)) {
+			size++;
+		}
+	}
+	return size;
+};
+
 mw.spriteSheet = {
 	canvas: null,
 	values: {},
@@ -537,7 +547,7 @@ mw.spriteSheet = {
 					if (result.success != true) {
 						alert(result.message);
 					} else {
-						if (result.data.length > 0) {
+						if (Object.size(result.data) > 0) {
 							mw.spriteSheet.spriteNames = result.data;
 						} else {
 							mw.spriteSheet.spriteNames = {};
