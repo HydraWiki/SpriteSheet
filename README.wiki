@@ -4,8 +4,8 @@
 |status      = stable
 |type        = parser function
 |author      = Curse Inc. Wiki Platform Team, Alexia E. Smith ([[User:Alexia E. Smith|Alexia E. Smith]])
-|version     = 1.1.1
-|update      = 2015-05-14
+|version     = 1.1.2
+|update      = 2015-05-27
 |mediawiki   = 1.23+
 |php         = 5.4+
 |download    = {{ {{TNTN|GithubDownload}} |CurseStaff|SpriteSheet}}
@@ -29,7 +29,7 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 
 ==Installation==
 
-{{ {{TNTN|ExtensionInstall}} |download-link=[https://github.com/CurseStaff/SpriteSheet/archive/v1.1.1.zip Download]}}
+{{ {{TNTN|ExtensionInstall}} |download-link=[https://github.com/CurseStaff/SpriteSheet/archive/v1.1.2.zip Download]}}
 
 ==Configuration==
 There are two available rights that may be assigned to groups, 'edit_sprites' and 'spritesheet_rollback'.  The 'edit_sprites' permission gives the ability to edit sprite sheets, sprites, slices, assign names, and delete.  The 'spritesheet_rollback' allows the ability to rollback changes from the change log.
