@@ -140,7 +140,6 @@ class SpriteSheet {
 	 *
 	 * @access	public
 	 * @param	array	Database Row
-	 * @param	object	Valid SpriteSheet that exists.
 	 * @return	mixed	$spriteSheet or false on error.
 	 */
 	static public function newFromRow($row) {
