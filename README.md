@@ -14,6 +14,10 @@ Download and place the file(s) in a directory called SpriteSheet in your extensi
 Add the following code at the bottom of your LocalSettings.php:
 
 	require_once("$IP/extensions/SpriteSheet/SpriteSheet.php");
+	
+Enter the following command into your console:
+	
+	php maintenance/update.php
 
 Done! Navigate to "Special:Version" on your wiki to verify that the extension is successfully installed.
 
