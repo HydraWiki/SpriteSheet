@@ -29,7 +29,9 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 
 ==Installation==
 
-{{ {{TNTN|ExtensionInstall}} |download-link=[https://github.com/CurseStaff/SpriteSheet/archive/v1.1.2.zip Download]}}
+{{{{TNTN|ExtensionInstall}}
+|db-update=true
+|download-link=[https://github.com/CurseStaff/SpriteSheet/archive/v1.1.2.zip Download]}}
 
 ==Configuration==
 There are two available rights that may be assigned to groups, 'edit_sprites' and 'spritesheet_rollback'.  The 'edit_sprites' permission gives the ability to edit sprite sheets, sprites, slices, assign names, and delete.  The 'spritesheet_rollback' allows the ability to rollback changes from the change log.

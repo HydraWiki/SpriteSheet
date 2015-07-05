@@ -15,7 +15,7 @@ Add the following code at the bottom of your LocalSettings.php:
 
 	require_once("$IP/extensions/SpriteSheet/SpriteSheet.php");
 	
-Enter the following command into your console:
+Enter the following command into your console or terminal on the server to update the database:
 	
 	php maintenance/update.php
 
