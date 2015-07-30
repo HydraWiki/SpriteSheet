@@ -1,4 +1,16 @@
 #Changes
+##1.1.3
+* Fixes errors with the sprite sheet changes log that was displaying the edited message template on new sprite sheets.
+
+##1.1.2
+* Fixes resize parameter being broken with named sprites and slices.
+* Fixes an issue with calculating the size of an object in Javascript.
+
+##1.1.1
+* The very first sprite/slice created on a Sheet will not be listed in the show sprite/slice list and requires a page refresh.
+* Saving a sprite/slice that has been previously deleted results in it not updating the deleted status.
+* The log formatter for sprite names would attempt to use valid, but nonexistent sprite sheets resulting in a fatal error.
+
 ##1.1.0
 * This version is not backwards compatible with previous versions.
 * The SpriteSheet Editor is now hidden by default to reduce the number of curious edits.  Wiki editors are cats.

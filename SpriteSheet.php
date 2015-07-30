@@ -13,7 +13,7 @@
 /******************************************/
 /* Credits								  */
 /******************************************/
-define('SPRITESHEET_VERSION', '1.1.2');
+define('SPRITESHEET_VERSION', '1.1.3');
 $credits = [
 	'path'				=> __FILE__,
 	'name'				=> 'SpriteSheet',
