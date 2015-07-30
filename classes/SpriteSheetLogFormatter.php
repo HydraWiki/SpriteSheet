@@ -32,7 +32,6 @@ class SpriteSheetLogFormatter extends LogFormatter {
 
 		$this->sheetCreatedEdited = "created";
 		if ($spriteSheet !== false) {
-			$lastRevision = $spriteSheet->getPreviousRevision();
 			//Handle old revision ID.
 			if ($parameters[3] > 0) {
 				$this->sheetCreatedEdited = "edited";
@@ -55,7 +54,7 @@ class SpriteSheetLogFormatter extends LogFormatter {
 		$messageKey = $this->getMessageKey();
 		$message = $this->msg($messageKey);
 		$message->params($parameters);
-		var_dump($messageKey);
+
 		return $message;
 	}
 
