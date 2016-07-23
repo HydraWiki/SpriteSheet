@@ -1,4 +1,8 @@
 #Changes
+##1.1.4
+* Fixed MediaWiki 1.26+ compatibility.
+* Added extension registration entry point.
+
 ##1.1.3
 * Fixes errors with the sprite sheet changes log that was displaying the edited message template on new sprite sheets.
 

@@ -13,13 +13,13 @@
 /******************************************/
 /* Credits								  */
 /******************************************/
-define('SPRITESHEET_VERSION', '1.1.3');
+define('SPRITESHEET_VERSION', '1.1.4');
 $credits = [
 	'path'				=> __FILE__,
 	'name'				=> 'SpriteSheet',
-	'author'			=> ['Curse Inc. Wiki Platform Team', 'Alexia E. Smith'],
+	'author'			=> ['Alexia E. Smith', 'Hydra Wiki Platform Team'],
 	'descriptionmsg'	=> 'spritesheet_description',
-	'url'				=> 'https://github.com/CurseStaff/SpriteSheet',
+	'url'				=> 'https://github.com/HydraWiki/SpriteSheet',
 	'license-name'		=> 'LGPL-3.0',
 	'version'			=> SPRITESHEET_VERSION
 ];
@@ -76,9 +76,6 @@ $wgResourceModules['ext.spriteSheet'] = [
 	'scripts'		=> [
 		'js/ocanvas-2.7.3.min.js',
 		'js/spritesheet.js'
-	],
-	'dependencies'	=> [
-		'jquery'
 	],
 	'messages'		=> [
 		'save_named_sprite',

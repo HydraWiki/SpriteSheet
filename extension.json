@@ -1,0 +1,111 @@
+{
+	"name": "SpriteSheet",
+	"version": "1.1.4",
+	"author": [
+		"Curse Inc. Wiki Platform Team",
+		"Alexia E. Smith"
+	],
+	"url": "https://github.com/HydraWiki/SpriteSheet",
+	"descriptionmsg": "spritesheet_description",
+	"license-name": "LGPL-3.0",
+	"type": "other",
+	"GroupPermissions": {
+		"autoconfirmed": {
+			"edit_sprites": true
+		},
+		"sysop": {
+			"spritesheet_rollback": true
+		}
+	},
+	"AvailableRights": [
+		"edit_sprites",
+		"spritesheet_rollback"
+	],
+	"LogTypes": {
+		"sprite": "sprite"
+	},
+	"LogNames": {
+		"sprite": "sprite_log_name"
+	},
+	"LogHeaders": {
+		"sprite": "sprite_log_description"
+	},
+	"LogActionsHandlers": {
+		"sprite/sheet": "SpriteSheetLogFormatter",
+		"sprite/sprite": "SpriteNameLogFormatter",
+		"sprite/sprite-deleted": "SpriteNameLogFormatter",
+		"sprite/sprite-rename": "SpriteNameLogFormatter",
+		"sprite/slice": "SpriteNameLogFormatter",
+		"sprite/slice-deleted": "SpriteNameLogFormatter",
+		"sprite/slice-rename": "SpriteNameLogFormatter"
+	},
+	"APIModules": {
+		"spritesheet": "SpriteSheetAPI"
+	},
+	"MessagesDirs": {
+		"SpriteSheet": [
+			"i18n"
+		]
+	},
+	"ExtensionMessagesFiles": {
+		"SpriteSheetMagic": "SpriteSheet.i18n.magic.php"
+	},
+	"AutoloadClasses": {
+		"SpriteSheetHooks": "SpriteSheet.hooks.php",
+		"SpriteSheet": "classes/SpriteSheet.php",
+		"SpriteSheetRemote": "classes/SpriteSheet.php",
+		"SpriteName": "classes/SpriteName.php",
+		"SpriteSheetLogFormatter": "classes/SpriteSheetLogFormatter.php",
+		"SpriteNameLogFormatter": "classes/SpriteNameLogFormatter.php",
+		"SpriteSheetAPI": "SpriteSheet.api.php",
+		"TemplateSpriteSheetEditor": "templates/TemplateSpriteSheetEditor.php"
+	},
+	"ResourceModules": {
+		"ext.spriteSheet": {
+			"styles": [
+				"css/spritesheet.css"
+			],
+			"scripts": [
+				"js/ocanvas-2.7.3.min.js",
+				"js/spritesheet.js"
+			],
+			"messages": [
+				"save_named_sprite",
+				"save_named_slice",
+				"please_enter_sprite_name",
+				"please_select_sprite_type",
+				"show_named_sprites",
+				"hide_named_sprites",
+				"click_to_edit",
+				"click_grid_for_preview",
+				"no_results_named_sprites"
+			],
+			"position": "top"
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteExtPath": "SpriteSheet"
+	},
+	"Hooks": {
+		"ParserFirstCallInit": [
+			"SpriteSheetHooks::onParserFirstCallInit"
+		],
+		"ImagePageShowTOC": [
+			"SpriteSheetHooks::onImagePageShowTOC"
+		],
+		"ImageOpenShowImageInlineBefore": [
+			"SpriteSheetHooks::onImageOpenShowImageInlineBefore"
+		],
+		"PageRenderingHash": [
+			"SpriteSheetHooks::onPageRenderingHash"
+		],
+		"TitleMoveComplete": [
+			"SpriteSheetHooks::onTitleMoveComplete"
+		],
+		"LoadExtensionSchemaUpdates": [
+			"SpriteSheetHooks::onLoadExtensionSchemaUpdates"
+		]
+	},
+	"manifest_version": 1
+}
