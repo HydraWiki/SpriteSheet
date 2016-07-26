@@ -277,6 +277,10 @@ class SpriteSheetAPI extends ApiBase {
 			$values = @json_decode($this->params['values'], true);
 
 			if ($this->spriteSheet !== false) {
+				if (!$this->spriteSheet->exists()) {
+					//Save the sheet first otherwise calls to SpriteName will fail.
+					$this->spriteSheet->save();
+				}
 				$spriteName = $this->spriteSheet->getSpriteName($this->form['sprite_name']);
 				$validName = true;
 
