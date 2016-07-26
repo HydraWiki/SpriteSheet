@@ -1,7 +1,10 @@
 #Changes
 ##1.1.4
 * Fixed MediaWiki 1.26+ compatibility.
+ * Removed jQuery dependency in resource loader module
+ * Added formatversion=2 to all API calls due to a dumb change in MediaWiki's core API.
 * Added extension registration entry point.
+* Fixed saving a new named sprite when the sheet did not exist yet in the database.
 
 ##1.1.3
 * Fixes errors with the sprite sheet changes log that was displaying the edited message template on new sprite sheets.
