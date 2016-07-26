@@ -296,6 +296,7 @@ mw.spriteSheet = {
 			{
 				action: 'spritesheet',
 				do: 'saveSpriteSheet',
+				formatversion: 2,
 				format: 'json',
 				form: $('#spritesheet_editor form fieldset#spritesheet_form').serialize()
 			}
@@ -351,6 +352,7 @@ mw.spriteSheet = {
 			{
 				action: 'spritesheet',
 				do: 'saveSpriteName',
+				formatversion: 2,
 				format: 'json',
 				form: $('#spritesheet_editor form fieldset#spritesheet_form').serialize(),
 				type: mw.spriteSheet.selectedType,
@@ -405,6 +407,7 @@ mw.spriteSheet = {
 			{
 				action: 'spritesheet',
 				do: 'updateSpriteName',
+				formatversion: 2,
 				format: 'json',
 				form: $('#spritesheet_editor form fieldset#spritesheet_form').serialize(),
 				spritename_id: spriteData.id,
@@ -465,6 +468,7 @@ mw.spriteSheet = {
 			{
 				action: 'spritesheet',
 				do: 'deleteSpriteName',
+				formatversion: 2,
 				format: 'json',
 				form: $('#spritesheet_editor form fieldset#spritesheet_form').serialize(),
 				spritename_id: spriteData.id,
@@ -523,6 +527,7 @@ mw.spriteSheet = {
 		var parameters = {
 			action: 'spritesheet',
 			do: 'getAllSpriteNames',
+			formatversion: 2,
 			format: 'json',
 			form: $('#spritesheet_editor form fieldset#spritesheet_form').serialize(),
 			title: title,
