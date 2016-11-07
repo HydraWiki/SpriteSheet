@@ -161,12 +161,12 @@ class SpriteSheetHooks {
 
 		$title = Title::newFromDBKey($parameters['file']);
 
-		if ($title->isKnown()) {
+		if ($title !== null && $title->isKnown()) {
 			$spriteSheet = SpriteSheet::newFromTitle($title, true);
 
 			if (!$spriteSheet->getId() || !$spriteSheet->getColumns() || !$spriteSheet->getRows()) {
 				//Either a sprite sheet does not exist or has invalid values.
-				return self::makeError('no_sprite_sheet_defined', [$title->getPrefixedText()]);
+				return self::makeErrorBox('no_sprite_sheet_defined', [$title->getPrefixedText()]);
 			}
 
 			if (!empty($parameters['name'])) {
@@ -250,7 +250,7 @@ class SpriteSheetHooks {
 
 		$title = Title::newFromDBKey($parameters['file']);
 
-		if ($title) {
+		if ($title !== null) {
 			$spriteSheet = SpriteSheet::newFromTitle($title, true);
 
 			if ($spriteSheet !== false) {

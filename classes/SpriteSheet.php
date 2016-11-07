@@ -892,7 +892,7 @@ class SpriteSheetRemote extends SpriteSheet {
 		if (!$this->isLoaded) {
 			$this->image = wfFindFile($this->getTitle());
 
-			if ($this->image !== false && $this->image->exists() && !$this->image->isLocal()) {
+			if ($this->image !== false && $this->image->exists() && !$this->image->isLocal() && $this->image->getRepo() instanceof ForeignAPIRepo) {
 				$query = [
 					'action'	=> 'spritesheet',
 					'do'		=> 'getSpriteSheet',

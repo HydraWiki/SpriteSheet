@@ -1,4 +1,9 @@
 #Changes
+##1.1.5
+* Fixed an incorrect call to makeErrorBox().
+* Fixed checking titles for existence that in some cases would fail with a fatal error.
+* Fixed central repositories trying to work through a ForeignDBRepo when SpriteSheet only supports ForeignAPIRepo.
+
 ##1.1.4
 * Fixed MediaWiki 1.26+ compatibility.
  * Removed jQuery dependency in resource loader module

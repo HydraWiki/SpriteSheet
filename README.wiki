@@ -4,10 +4,10 @@
 |status      = stable
 |type        = parser function
 |author      = Alexia E. Smith ([[User:Alexia E. Smith|Alexia E. Smith]]), Hydra Wiki Platform Team
-|version     = 1.1.4
-|update      = 2016-07-23
+|version     = 1.1.5
+|update      = 2016-11-07
 |mediawiki   = 1.23+
-|php         = 5.4+
+|php         = 5.5+
 |download    = {{ {{TNTN|GithubDownload}} |HydraWiki|SpriteSheet}}
 |hook1       = ParserFirstCallInit
 |hook2       = ImagePageShowTOC
@@ -31,7 +31,7 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 
 {{{{TNTN|ExtensionInstall}}
 |db-update=true
-|download-link=[https://github.com/HydraWiki/SpriteSheet/archive/v1.1.4.zip Download]}}
+|download-link=[https://github.com/HydraWiki/SpriteSheet/archive/v1.1.5.zip Download]}}
 
 ==Configuration==
 There are two available rights that may be assigned to groups, 'edit_sprites' and 'spritesheet_rollback'.  The 'edit_sprites' permission gives the ability to edit sprite sheets, sprites, slices, assign names, and delete.  The 'spritesheet_rollback' allows the ability to rollback changes from the change log.
