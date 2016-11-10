@@ -100,7 +100,7 @@ class SpriteSheetHooks {
 	 *
 	 * @var		array
 	 */
-	static private $errors = false;
+	static private $errors = [];
 
 	/**
 	 * The tag type being processed, either sprite or slice.
@@ -149,7 +149,7 @@ class SpriteSheetHooks {
 	 * @return	string	Wiki Text
 	 */
 	static public function generateSpriteOutput(Parser &$parser, PPFrame $frame, $arguments) {
-		self::$errors = false;
+		self::$errors = [];
 		self::$tagType = "sprite";
 
 		$parameters = self::cleanAndSetupParameters($arguments, $frame);
@@ -166,7 +166,8 @@ class SpriteSheetHooks {
 
 			if (!$spriteSheet->getId() || !$spriteSheet->getColumns() || !$spriteSheet->getRows()) {
 				//Either a sprite sheet does not exist or has invalid values.
-				return self::makeErrorBox('no_sprite_sheet_defined', [$title->getPrefixedText()]);
+				self::setError('no_sprite_sheet_defined', [$title->getPrefixedText()]);
+				return self::makeErrorBox();
 			}
 
 			if (!empty($parameters['name'])) {
