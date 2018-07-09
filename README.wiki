@@ -1,20 +1,20 @@
-{{ {{TNTN|Extension}}
+{{TNT|Extension
 |name        = SpriteSheet
-|license     = {{EL|LGPL3}}
+|license     = LGPL-3.0
 |status      = stable
 |type        = parser function
 |author      = Alexia E. Smith ([[User:Alexia E. Smith|Alexia E. Smith]]), Hydra Wiki Platform Team
-|version     = 1.1.5
-|update      = 2016-11-07
-|mediawiki   = 1.23+
-|php         = 5.5+
-|download    = {{ {{TNTN|GithubDownload}} |HydraWiki|SpriteSheet}}
+|version     = 1.2.0
+|update      = 2018-07-09
+|mediawiki   = 1.27+
+|php         = 7.0+
+|download    = {{TNT|GithubDownload|HydraWiki|SpriteSheet}}
 |hook1       = ParserFirstCallInit
 |hook2       = ImagePageShowTOC
 |hook3       = ImageOpenShowImageInlineBefore
 |hook4       = PageRenderingHash
 |hook5       = LoadExtensionSchemaUpdates
-|description = Adds a parser functions called <tt>#sprite</tt> and <tt>#slice</tt> to display defined sections of an image without having to use an external editor.
+|description = Adds a parser functions called <code>#sprite</code> and <code>#slice</code> to display defined sections of an image without having to use an external editor.
 |example     = [http://help.gamepedia.com/Extension:SpriteSheet/Example Gamepedia Help Wiki]
 }}
 
@@ -29,9 +29,9 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 
 ==Installation==
 
-{{{{TNTN|ExtensionInstall}}
+{{TNT|ExtensionInstall
 |db-update=true
-|download-link=[https://github.com/HydraWiki/SpriteSheet/archive/v1.1.5.zip Download]}}
+|download-link=[https://github.com/HydraWiki/SpriteSheet/archive/v1.2.0.zip Download]}}
 
 ==Configuration==
 There are two available rights that may be assigned to groups, 'edit_sprites' and 'spritesheet_rollback'.  The 'edit_sprites' permission gives the ability to edit sprite sheets, sprites, slices, assign names, and delete.  The 'spritesheet_rollback' allows the ability to rollback changes from the change log.
@@ -52,12 +52,12 @@ The #sprite tag format accepts X and Y coordinate positions to select a section 
 
 Basic Syntax:
 
-<pre><nowiki>{{#sprite:file=Example.png|column=0|row=0}}</nowiki></pre>
+<pre><nowiki>{{#sprite:file=File:Example.png|column=0|row=0}}</nowiki></pre>
 
 It can also be spaced across lines for readability:
 
 <pre><nowiki>{{#sprite:
-file=Example.png
+file=File:Example.png
 |column=0
 |row=0
 }}</nowiki></pre>
@@ -65,7 +65,7 @@ file=Example.png
 With optional resize and link:
 
 <pre><nowiki>{{#sprite:
-file=Example.png
+file=File:Example.png
 |column=0
 |row=0
 |resize=300
@@ -92,11 +92,11 @@ file=Example.png
 :The Y Coordinate Position of the sprite to select.  Coordinates use zero based numbering.
 |-
 | <code>resize</code>
-| '''Required:''' no, '''Default:''' <tt>null</tt>
+| '''Required:''' no, '''Default:''' <code>null</code>
 :Display size in pixel width of the sprite.  Note: Will not resize larger than 100% of the original size.
 |-
 | <code>link</code>
-| '''Required:''' no, '''Default:''' <tt>null</tt>
+| '''Required:''' no, '''Default:''' <code>null</code>
 :Page name or external URL to have the sprite link to. 
 |}
 
@@ -139,11 +139,11 @@ file=File:Example.png
 :The named sprite to load.
 |-
 | <code>resize</code>
-| '''Required:''' no, '''Default:''' <tt>none</tt>
+| '''Required:''' no, '''Default:''' <code>none</code>
 :Display size in pixel width of the sprite.  Note: Will not resize larger than 100% of the original size.
 |-
 | <code>wikitext</code>
-| '''Required:''' yes, '''Default:''' <tt>none</tt>
+| '''Required:''' yes, '''Default:''' <code>none</code>
 :The wiki text to parse and display if the named sprite is not found.  Can be left blank to not display anything.
 |}
 
@@ -212,11 +212,11 @@ file=Example.png
 :Height in in pixels or percentage starting from the Y position.
 |-
 | <code>resize</code>
-| '''Required:''' no, '''Default:''' <tt>null</tt>
+| '''Required:''' no, '''Default:''' <code>null</code>
 :Display size in pixel width of the sprite.  Note: Will not resize larger than 100% of the original size.
 |-
 | <code>link</code>
-| '''Required:''' no, '''Default:''' <tt>null</tt>
+| '''Required:''' no, '''Default:''' <code>null</code>
 :Page name or external URL to have the sprite link to. 
 |}
 
@@ -260,11 +260,11 @@ file=File:Image_Name.png
 :The named slice to load.
 |-
 | <code>resize</code>
-| '''Required:''' no, '''Default:''' <tt>none</tt>
+| '''Required:''' no, '''Default:''' <code>none</code>
 :Display size in pixel width of the slice.  Note: Will not resize larger than 100% of the original size.
 |-
 | <code>wikitext</code>
-| '''Required:''' yes, '''Default:''' <tt>none</tt>
+| '''Required:''' yes, '''Default:''' <code>none</code>
 :The wiki text to parse and display if the named slice is not found.  Can be left blank to not display anything.
 |}
 
@@ -286,3 +286,5 @@ After a sprite or slice has been selected a pop up will open under the tag previ
 <pre>{{#sprite:file=File:Hanamura-screenshot.jpg|name=Plaque|resize=800}}</pre>
 <pre>{{#slice:file=File:Hanamura-screenshot.jpg|name=Plaque}}</pre>
 <pre>{{#slice:file=File:Hanamura-screenshot.jpg|name=Plaque|resize=500}}</pre>
+
+[[Category:Image extensions]]

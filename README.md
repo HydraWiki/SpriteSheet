@@ -40,12 +40,12 @@ The #sprite tag format accepts X and Y coordinate positions to select a section 
 
 Basic Syntax:
 
-	{{#sprite:file=Example.png|column=0|row=0}}
+	{{#sprite:file=File:Example.png|column=0|row=0}}
 
 It can also be spaced across lines for readability:
 
 	{{#sprite:
-	file=Example.png
+	file=File:Example.png
 	|column=0
 	|row=0
 	}}
@@ -53,7 +53,7 @@ It can also be spaced across lines for readability:
 With optional resize and link:
 
 	{{#sprite:
-	file=Example.png
+	file=File:Example.png
 	|column=0
 	|row=0
 	|resize=300
