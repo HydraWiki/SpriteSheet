@@ -181,7 +181,7 @@ class SpriteSheetHooks {
 					return self::makeErrorBox();
 				}
 
-				$html = $spriteSheet->getSpriteHtmlFromName($spriteName->getName(), $parameters['resize']['number']);
+				$html = $spriteSheet->getSpriteHtmlFromName($spriteName->getName(), isset($parameters['resize']['number']) ? $parameters['resize']['number'] : null);
 			} else {
 				if (!isset($parameters['column']['integer']) || $parameters['column']['integer'] < 0) {
 					self::setError('spritesheet_error_invalid_option', ['column', $parameters['column']['integer']]);
@@ -266,7 +266,7 @@ class SpriteSheetHooks {
 						return self::makeErrorBox();
 					}
 
-					$html = $spriteSheet->getSliceHtmlFromName($sliceName->getName(), $parameters['resize']['number'], $pixelMode);
+					$html = $spriteSheet->getSliceHtmlFromName($sliceName->getName(), isset($parameters['resize']['number']) ? $parameters['resize']['number'] : null, $pixelMode);
 				} else {
 					//The unit of measure is allowed to be specified, but they must match to be valid.
 					$unitParams = ['x', 'y', 'width', 'height'];
@@ -367,7 +367,7 @@ class SpriteSheetHooks {
 			if (isset($validParameters[$parameter])) {
 				$cleanParameterOptions[$parameter] = $option;
 
-				if (is_array($validParameters[$parameter]['values'])) {
+				if (isset($validParameters[$parameter]['values']) && is_array($validParameters[$parameter]['values'])) {
 					if (!in_array($option, $validParameters[$parameter]['values'])) {
 						//Throw an error.
 						unset($cleanParameterOptions[$parameter]);
@@ -574,7 +574,7 @@ class SpriteSheetHooks {
 	 * @param	string	Reason given by the user performing the move.
 	 * @return	boolean True
 	 */
-	static public function onTitleMoveComplete(Title &$oldTitle, Title &$newTitle, User &$user, $oldId, $newId, $reason = null) {
+	static public function onTitleMoveComplete(Title &$oldTitle, Title &$newTitle, User $user, $oldId, $newId, $reason = null) {
 		$spriteSheet = SpriteSheet::newFromTitle($oldTitle);
 
 		if (!$spriteSheet || !$spriteSheet->exists()) {

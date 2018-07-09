@@ -1,6 +1,6 @@
 {
 	"name": "SpriteSheet",
-	"version": "1.1.5",
+	"version": "1.2.0",
 	"author": [
 		"Curse Inc. Wiki Platform Team",
 		"Alexia E. Smith"
@@ -80,7 +80,11 @@
 				"click_grid_for_preview",
 				"no_results_named_sprites"
 			],
-			"position": "top"
+			"position": "top",
+			"targets": [
+				"desktop",
+				"mobile"
+			]
 		}
 	},
 	"ResourceFileModulePaths": {
@@ -107,5 +111,5 @@
 			"SpriteSheetHooks::onLoadExtensionSchemaUpdates"
 		]
 	},
-	"manifest_version": 1
+	"manifest_version": 2
 }

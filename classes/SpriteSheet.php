@@ -313,7 +313,7 @@ class SpriteSheet {
 	 * @return	integer	Sprite Sheet ID
 	 */
 	public function getId() {
-		return intval($this->data['spritesheet_id']);
+		return !isset($this->data['spritesheet_id']) ? 0 : intval($this->data['spritesheet_id']);
 	}
 
 	/**
@@ -367,7 +367,7 @@ class SpriteSheet {
 	 * @return	integer	Columns
 	 */
 	public function getColumns() {
-		return intval($this->data['columns']);
+		return !isset($this->data['columns']) ? 0 : intval($this->data['columns']);
 	}
 
 	/**
@@ -388,7 +388,7 @@ class SpriteSheet {
 	 * @return	integer	Rows
 	 */
 	public function getRows() {
-		return intval($this->data['rows']);
+		return !isset($this->data['rows']) ? 0 : intval($this->data['rows']);
 	}
 
 	/**
@@ -409,7 +409,7 @@ class SpriteSheet {
 	 * @return	integer	Inset
 	 */
 	public function getInset() {
-		return intval($this->data['inset']);
+		return !isset($this->data['inset']) ? 0 : intval($this->data['inset']);
 	}
 
 	/**
