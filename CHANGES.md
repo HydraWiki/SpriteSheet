@@ -1,4 +1,9 @@
 #Changes
+##1.2.0
+* Switched to extension registration only.
+* Various E_NOTICE fixes and PHP 7.0+ compatibility fixes.
+* Fixed CSS and JS not loading for Extension:MobileFrontend.
+
 ##1.1.5
 * Fixed an incorrect call to makeErrorBox().
 * Fixed checking titles for existence that in some cases would fail with a fatal error.
