@@ -199,7 +199,7 @@ class SpriteName {
 		$this->DB->startAtomic(__METHOD__);
 		if ($spriteNameId > 0) {
 			if (!$this->saveOldVersion()) {
-				$this->DB->rollback();
+				$this->DB->cancelAtomic(__METHOD__);
 				throw new MWException(__METHOD__.': Could not save an old version while attempting to save.');
 				return false;
 			}
