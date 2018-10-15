@@ -223,7 +223,7 @@ class SpriteSheet {
 
 		$spriteSheetId = $this->getId();
 
-		$this->DB->begin();
+		$this->DB->startAtomic(__METHOD__);
 		if ($spriteSheetId > 0) {
 			$oldResult = $this->DB->select(
 				['spritesheet'],
@@ -260,8 +260,6 @@ class SpriteSheet {
 		if ($result !== false) {
 			global $wgUser;
 
-			$this->DB->commit();
-
 			//Enforce sanity on data.
 			$this->data['spritesheet_id']	= $spriteSheetId;
 			$this->data['edited']			= $save['edited'];
@@ -284,8 +282,9 @@ class SpriteSheet {
 
 			$success = true;
 		} else {
-			$this->DB->rollback();
+			$this->DB->cancelAtomic(__METHOD__);
 		}
+		$this->DB->endAtomic(__METHOD__);
 
 		return $success;
 	}

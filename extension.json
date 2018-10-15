@@ -9,6 +9,9 @@
 	"descriptionmsg": "spritesheet_description",
 	"license-name": "LGPL-3.0",
 	"type": "other",
+	"requires": {
+		"MediaWiki": ">= 1.31.0"
+	},
 	"GroupPermissions": {
 		"autoconfirmed": {
 			"edit_sprites": true

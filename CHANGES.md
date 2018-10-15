@@ -1,4 +1,7 @@
 #Changes
+##1.3.0
+* Updated to newer database atomic section API.  This requires MediaWiki 1.31 or higher.
+
 ##1.2.0
 * Switched to extension registration only.
 * Various E_NOTICE fixes and PHP 7.0+ compatibility fixes.

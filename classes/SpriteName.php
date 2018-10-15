@@ -196,7 +196,7 @@ class SpriteName {
 			'`deleted`'			=> intval($this->isDeleted())
 		];
 
-		$this->DB->begin();
+		$this->DB->startAtomic(__METHOD__);
 		if ($spriteNameId > 0) {
 			if (!$this->saveOldVersion()) {
 				$this->DB->rollback();
@@ -222,10 +222,6 @@ class SpriteName {
 		}
 
 		if ($result !== false) {
-			global $wgUser;
-
-			$this->DB->commit();
-
 			//Enforce sanity on data.
 			$this->data['spritename_id']	= $spriteNameId;
 			$this->data['edited']			= $save['edited'];
@@ -234,8 +230,9 @@ class SpriteName {
 
 			$success = true;
 		} else {
-			$this->DB->rollback();
+			$this->DB->cancelAtomic(__METHOD__);
 		}
+		$this->DB->endAtomic(__METHOD__);
 
 		return $success;
 	}
@@ -283,6 +280,8 @@ class SpriteName {
 	 * @return	void
 	 */
 	private function logChanges() {
+		global $wgUser;
+
 		$extra = [$this->getName()];
 		$oldSpriteName = $this->getPreviousRevision();
 		$type = $this->getType();
