@@ -201,7 +201,6 @@ class SpriteName {
 			if (!$this->saveOldVersion()) {
 				$this->DB->cancelAtomic(__METHOD__);
 				throw new MWException(__METHOD__.': Could not save an old version while attempting to save.');
-				return false;
 			}
 
 			//Do the update.
@@ -226,13 +225,14 @@ class SpriteName {
 			$this->data['spritename_id']	= $spriteNameId;
 			$this->data['edited']			= $save['edited'];
 
+			$this->DB->endAtomic(__METHOD__);
+
 			$this->logChanges();
 
 			$success = true;
 		} else {
 			$this->DB->cancelAtomic(__METHOD__);
 		}
-		$this->DB->endAtomic(__METHOD__);
 
 		return $success;
 	}

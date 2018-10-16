@@ -264,6 +264,8 @@ class SpriteSheet {
 			$this->data['spritesheet_id']	= $spriteSheetId;
 			$this->data['edited']			= $save['edited'];
 
+			$this->DB->endAtomic(__METHOD__);
+
 			$extra = [];
 			$oldSpriteSheet = $this->getPreviousRevision();
 
@@ -284,7 +286,6 @@ class SpriteSheet {
 		} else {
 			$this->DB->cancelAtomic(__METHOD__);
 		}
-		$this->DB->endAtomic(__METHOD__);
 
 		return $success;
 	}
