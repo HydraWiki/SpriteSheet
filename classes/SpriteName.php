@@ -282,16 +282,18 @@ class SpriteName {
 	private function logChanges() {
 		global $wgUser;
 
-		$extra = [$this->getName()];
+		$extra = [
+			'4:name' => $this->getName()
+		];
 		$oldSpriteName = $this->getPreviousRevision();
 		$type = $this->getType();
 
 		if ($oldSpriteName instanceOf SpriteName && $oldSpriteName->getRevisionId() !== false) {
-			$extra['spritename_rev_id'] = $oldSpriteName->getRevisionId();
+			$extra['5:spritename_rev_id'] = $oldSpriteName->getRevisionId();
 			if ($oldSpriteName->getName() != $this->getName()) {
 				$type .= "-rename";
-				$extra['old_name'] = $oldSpriteName->getName();
-				$extra['new_name'] = $this->getName();
+				$extra['6:old_name'] = $oldSpriteName->getName();
+				$extra['7:new_name'] = $this->getName();
 			}
 		}
 
@@ -299,14 +301,13 @@ class SpriteName {
 			$type = $this->getType().'-deleted';
 		}
 
-		$log = new LogPage('sprite');
-		$log->addEntry(
-			$type,
-			$this->getSpriteSheet()->getTitle(),
-			null,
-			$extra,
-			$wgUser
-		);
+		$log = new ManualLogEntry('sprite', $type);
+		$log->setPerformer($wgUser);
+		$log->setTarget($this->getSpriteSheet()->getTitle());
+		$log->setComment(null);
+		$log->setParameters($extra);
+		$logId = $log->insert();
+		$log->publish($logId);
 	}
 
 	/**
@@ -337,7 +338,7 @@ class SpriteName {
 	 * @return	boolean
 	 */
 	public function exists() {
-		return ($this->data['spritename_id'] > 0 && !$this->isDeleted() && $this->isLoaded);
+		return (isset($this->data['spritename_id']) && $this->data['spritename_id'] > 0 && !$this->isDeleted() && $this->isLoaded);
 	}
 
 	/**

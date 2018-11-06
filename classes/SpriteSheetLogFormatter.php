@@ -33,7 +33,7 @@ class SpriteSheetLogFormatter extends LogFormatter {
 		$this->sheetCreatedEdited = "created";
 		if ($spriteSheet !== false) {
 			//Handle old revision ID.
-			if ($parameters[3] > 0) {
+			if (isset($parameters[3]) && $parameters[3] > 0) {
 				$this->sheetCreatedEdited = "edited";
 				$links = $spriteSheet->getRevisionLinks($parameters[3]);
 				$parameters[3] = ['raw' => implode(" | ", $links)];

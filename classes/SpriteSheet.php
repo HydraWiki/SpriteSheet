@@ -270,17 +270,16 @@ class SpriteSheet {
 			$oldSpriteSheet = $this->getPreviousRevision();
 
 			if ($oldSpriteSheet instanceOf SpriteSheet && $oldSpriteSheet->getRevisionId() !== false) {
-				$extra['spritesheet_rev_id'] = $oldSpriteSheet->getRevisionId();
+				$extra['4:spritesheet_rev_id'] = $oldSpriteSheet->getRevisionId();
 			}
 
-			$log = new LogPage('sprite');
-			$log->addEntry(
-				'sheet',
-				$this->getTitle(),
-				null,
-				$extra,
-				$wgUser
-			);
+			$log = new ManualLogEntry('sprite', 'sheet');
+			$log->setPerformer($wgUser);
+			$log->setTarget($this->getTitle());
+			$log->setComment(null);
+			$log->setParameters($extra);
+			$logId = $log->insert();
+			$log->publish($logId);
 
 			$success = true;
 		} else {

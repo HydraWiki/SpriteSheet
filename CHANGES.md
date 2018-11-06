@@ -1,4 +1,7 @@
 #Changes
+##1.3.1
+* Fix logging to use newer API.
+
 ##1.3.0
 * Updated to newer database atomic section API.  This requires MediaWiki 1.31 or higher.
 

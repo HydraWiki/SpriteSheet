@@ -28,7 +28,7 @@ class SpriteNameLogFormatter extends LogFormatter {
 			if (!empty($parameters[3])) {
 				$spriteName = $spriteSheet->getSpriteName($parameters[3]);
 
-				if ($spriteName != false && $parameters[4] > 0) {
+				if ($spriteName != false && isset($parameters[4]) && $parameters[4] > 0) {
 					$links = $spriteName->getRevisionLinks($parameters[4]);
 					if ($links !== false) {
 						$parameters[4] = ['raw' => "(".implode(" | ", $links).")"];
