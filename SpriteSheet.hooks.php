@@ -159,7 +159,7 @@ class SpriteSheetHooks {
 			return self::makeErrorBox();
 		}
 
-		$title = Title::newFromDBKey($parameters['file']);
+		$title = self::getTitleFromFileName($parameters['file']);
 
 		if ($title !== null && $title->isKnown()) {
 			$spriteSheet = SpriteSheet::newFromTitle($title, true);
@@ -249,10 +249,16 @@ class SpriteSheetHooks {
 
 		$pixelMode = false;
 
-		$title = Title::newFromDBKey($parameters['file']);
+		$title = self::getTitleFromFileName($parameters['file']);
 
-		if ($title !== null) {
+		if ($title !== null && $title->isKnown()) {
 			$spriteSheet = SpriteSheet::newFromTitle($title, true);
+
+			if (!$spriteSheet->getId()) {
+				//Either a sprite sheet does not exist or has invalid values.
+				self::setError('no_sprite_sheet_defined', [$title->getPrefixedText()]);
+				return self::makeErrorBox();
+			}
 
 			if ($spriteSheet !== false) {
 				if (!empty($parameters['name'])) {
@@ -329,6 +335,25 @@ class SpriteSheetHooks {
 			return $parameters['wikitext'];
 		}
 		return $output;
+	}
+
+	/**
+	 * Get the title from the file name and handle redirects.
+	 *
+	 * @access	private
+	 * @param	string	File Name
+	 * @return	mixed	Title|null
+	 */
+	static private function getTitleFromFileName($file) {
+		$title = Title::newFromDBKey($file);
+		if ($title->isRedirect()) {
+			$oldPage = WikiPage::factory($title);
+			$newTitle = $oldPage->getRedirectTarget();
+			if ($newTitle !== null) {
+				$title = $newTitle;
+			}
+		}
+		return $title;
 	}
 
 	/**
@@ -425,7 +450,7 @@ class SpriteSheetHooks {
 	static private function makeErrorBox() {
 		return "
 		<div class='errorbox'>
-			<strong>SpriteSheet ".SPRITESHEET_VERSION."</strong><br/>
+			<strong>SpriteSheet</strong><br/>
 			".implode("<br/>\n", self::$errors)."
 		</div>";
 	}

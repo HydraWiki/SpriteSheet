@@ -1,4 +1,9 @@
 #Changes
+##1.3.2
+* Removed deprecated SPRITESHEET_VERSION constant.
+* Fixed SpriteSheet class showing E_NOTICE for missing spritesheet_id.
+* Moved file pages that left a redirect are now handled.
+
 ##1.3.1
 * Fix logging to use newer API.
 

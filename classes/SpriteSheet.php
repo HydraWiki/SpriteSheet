@@ -322,7 +322,7 @@ class SpriteSheet {
 	 * @return	boolean
 	 */
 	public function exists() {
-		return $this->data['spritesheet_id'] > 0;
+		return isset($this->data['spritesheet_id']) ? $this->data['spritesheet_id'] > 0 : false;
 	}
 
 	/**
