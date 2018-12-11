@@ -31,6 +31,7 @@ The '''SpriteSheet''' extension allows uploaded images to be divided into sprite
 
 {{TNT|ExtensionInstall
 |db-update=true
+|registration=required
 |download-link=[https://github.com/HydraWiki/SpriteSheet/archive/v1.3.2.zip Download]}}
 
 ==Configuration==
